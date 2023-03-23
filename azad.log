@@ -1,0 +1,853 @@
+31.7.2020 9:49:36 >>> #####DEVICE#########
+31.7.2020 9:49:36 >>> AudioIN=No
+31.7.2020 9:49:36 >>> AudioOUT=No
+31.7.2020 9:49:36 >>> VideoIN=No
+31.7.2020 9:49:36 >>> VideoOUT=No
+31.7.2020 9:49:36 >>> UART=No
+31.7.2020 9:49:36 >>> RS485=No
+31.7.2020 9:49:36 >>> I2C=No
+31.7.2020 9:49:36 >>> SPI=No
+31.7.2020 9:49:36 >>> GPIO=No
+31.7.2020 9:49:36 >>> USBIO=No
+31.7.2020 9:49:36 >>> Radio=No
+31.7.2020 9:49:36 >>> Temp=No
+31.7.2020 9:49:36 >>> Clock=No
+31.7.2020 9:49:36 >>> PN532=No
+31.7.2020 9:49:36 >>> Zoom=No
+31.7.2020 9:49:36 >>> FlvBufferSize=3
+31.7.2020 9:49:36 >>> AccelerateTextRender=Yes
+31.7.2020 9:49:36 >>> Random=No
+31.7.2020 9:49:36 >>> TextColor=65280
+31.7.2020 9:49:36 >>> ShowMode=1
+31.7.2020 9:49:36 >>> MenuSize=0.5
+31.7.2020 9:49:36 >>> BackUpSlowCaptured=No
+31.7.2020 9:49:36 >>> BackUpFastCaptured=No
+31.7.2020 9:49:36 >>> BackUpDiffCaptured=No
+31.7.2020 9:49:36 >>> BackUpModuleCaptured=No
+31.7.2020 9:49:36 >>> BackUpEventCaptured=No
+31.7.2020 9:49:36 >>> BackUpActionCaptured=No
+31.7.2020 9:49:36 >>> FastCaptureFileSize=500
+31.7.2020 9:49:36 >>> FastCaptureTimeSize=600
+31.7.2020 9:49:36 >>> SlowCaptureFileSize=30
+31.7.2020 9:49:36 >>> SlowCaptureTimeSize=600
+31.7.2020 9:49:36 >>> DiffCaptureFileSize=100
+31.7.2020 9:49:36 >>> DiffCaptureTimeSize=600
+31.7.2020 9:49:36 >>> ModuleCaptureFileSize=10
+31.7.2020 9:49:36 >>> ModuleCaptureTimeSize=1000
+31.7.2020 9:49:36 >>> EventCaptureFileSize=10
+31.7.2020 9:49:36 >>> EventCaptureTimeSize=3000
+31.7.2020 9:49:36 >>> ActionCaptureFileSize=10
+31.7.2020 9:49:36 >>> ActionCaptureTimeSize=3000
+31.7.2020 9:49:36 >>> FastCaptOrderLmt=2
+31.7.2020 9:49:36 >>> SlowCaptOrderLmt=3
+31.7.2020 9:49:36 >>> DiffCaptOrderLmt=4
+31.7.2020 9:49:36 >>> EventCaptEnabled=0
+31.7.2020 9:49:36 >>> ActionCaptEnabled=0
+31.7.2020 9:49:36 >>> ModuleCaptOrderLmt=1
+31.7.2020 9:49:36 >>> EventCaptOrderLmt=1
+31.7.2020 9:49:36 >>> ActionCaptOrderLmt=1
+31.7.2020 9:49:36 >>> FastCaptOrderAddr=127.0.0.1
+31.7.2020 9:49:36 >>> SlowCaptOrderAddr=127.0.0.1
+31.7.2020 9:49:36 >>> DiffCaptOrderAddr=127.0.0.1
+31.7.2020 9:49:36 >>> ModuleCaptOrderAddr=
+31.7.2020 9:49:36 >>> EventCaptOrderAddr=
+31.7.2020 9:49:36 >>> ActionCaptOrderAddr=
+31.7.2020 9:49:36 >>> FastCaptPrePath=
+31.7.2020 9:49:36 >>> SlowCaptPrePath=
+31.7.2020 9:49:36 >>> DiffCaptPrePath=
+31.7.2020 9:49:36 >>> ModuleCaptPrePath=
+31.7.2020 9:49:36 >>> EventCaptPrePath=
+31.7.2020 9:49:36 >>> ActionCaptPrePath=
+31.7.2020 9:49:36 >>> MinFreeSpaceCapture=0
+31.7.2020 9:49:36 >>> MinFreeSpaceBackUp=0
+31.7.2020 9:49:36 >>> CaptureFilesView=1
+31.7.2020 9:49:36 >>> BackUpFilesView=1
+31.7.2020 9:49:36 >>> CaptureFilesLevel=0
+31.7.2020 9:49:36 >>> BackUpFilesLevel=0
+31.7.2020 9:49:36 >>> CaptureFilesViewDef=0
+31.7.2020 9:49:36 >>> LogIP=172.16.1.11
+31.7.2020 9:49:36 >>> LogEmailAddr=ed-209@mail.ru
+31.7.2020 9:49:36 >>> BackUpMediaPath=/home/pi/MediaCapturedArhiv/
+31.7.2020 9:49:36 >>> FileWriterService=0
+31.7.2020 9:49:36 >>> WriterServicePath=/home/pi/Archiv/
+31.7.2020 9:49:36 >>> FastCaptOrderEnable=No
+31.7.2020 9:49:36 >>> SlowCaptOrderEnable=No
+31.7.2020 9:49:36 >>> DiffCaptOrderEnable=No
+31.7.2020 9:49:36 >>> ModuleCaptOrderEnable=No
+31.7.2020 9:49:36 >>> EventCaptOrderEnable=No
+31.7.2020 9:49:36 >>> ActionCaptOrderEnable=No
+31.7.2020 9:49:36 >>> MediaCapturePath=/home/pi/MediaCaptured/
+31.7.2020 9:49:36 >>> ClearModulesFiles=1
+31.7.2020 9:49:36 >>> ClearEventsFiles=1
+31.7.2020 9:49:36 >>> ClearActionsFiles=1
+31.7.2020 9:49:36 >>> CameraShotFile=/var/log/CameraShotFile.jpg
+31.7.2020 9:49:36 >>> CameraSensorFile=/var/log/CameraSensorFile.jpg
+31.7.2020 9:49:36 >>> CameraRectFile=/var/log/RectView.jpg
+31.7.2020 9:49:36 >>> MediaIoTimeout=60
+31.7.2020 9:49:36 >>> #####WEB SERVER#########
+31.7.2020 9:49:36 >>> WEBServer=Yes
+31.7.2020 9:49:36 >>> RTSPForceAudio=Yes
+31.7.2020 9:49:36 >>> WEBAuth=0
+31.7.2020 9:49:36 >>> WEBPort=80
+31.7.2020 9:49:36 >>> WebMaxTimeIdle=3600
+31.7.2020 9:49:36 >>> #####TIME#########
+31.7.2020 9:49:36 >>> PaddingSize=0
+31.7.2020 9:49:36 >>> AlarmFile=Alarms.ini
+31.7.2020 9:49:36 >>> AlarmPath=/mnt/FLASH/AlarmShows
+31.7.2020 9:49:36 >>> #####WEATHER#########
+31.7.2020 9:49:36 >>> TimeZone=40000
+31.7.2020 9:49:36 >>> #####DEBUG#########
+31.7.2020 9:49:36 >>> FileLog=Yes
+31.7.2020 9:49:36 >>> ScreenLog=Yes
+31.7.2020 9:49:36 >>> MessageLog=Yes
+31.7.2020 9:49:36 >>> LocalMessLog=Yes
+31.7.2020 9:49:36 >>> EmailLog=No
+31.7.2020 9:49:36 >>> EmailLogPause=300000
+31.7.2020 9:49:36 >>> SoundMessagePause=5000
+31.7.2020 9:49:36 >>> LogPath=azad.log
+31.7.2020 9:49:36 >>> DefAlarmSound=
+31.7.2020 9:49:36 >>> SoundMessageID=
+31.7.2020 9:49:36 >>> DefAlarmRepeats=5
+31.7.2020 9:49:36 >>> #####SHOW#########
+31.7.2020 9:49:36 >>> VSync=Yes
+31.7.2020 9:49:36 >>> ShowsPath=/home/pi/Shows
+31.7.2020 9:49:36 >>> SlideShowTimer=300
+31.7.2020 9:49:36 >>> SlideShowOnTime=80002
+31.7.2020 9:49:36 >>> SlideShowOffTime=80001
+31.7.2020 9:49:36 >>> ShowerLiveCtrlTime=60
+31.7.2020 9:49:36 >>> #####RADIO/MUSIC#########
+31.7.2020 9:49:36 >>> RadioVolume=2
+31.7.2020 9:49:36 >>> BasicVolume=82
+31.7.2020 9:49:36 >>> AlarmVolume=40
+31.7.2020 9:49:36 >>> #####RTSP#########
+31.7.2020 9:49:36 >>> RTSP=Yes
+31.7.2020 9:49:36 >>> RTSPAuth=0
+31.7.2020 9:49:36 >>> RTSPPort=554
+31.7.2020 9:49:36 >>> RTPClntVidPort=0
+31.7.2020 9:49:36 >>> RTPClntAudioPort=0
+31.7.2020 9:49:36 >>> RTPServVidPort=14090
+31.7.2020 9:49:36 >>> RTPServAudPort=14080
+31.7.2020 9:49:36 >>> #####MAIL#########
+31.7.2020 9:49:36 >>> MailAddress=ed215@inbox.ru
+31.7.2020 9:49:36 >>> MailServer=smtp://smtp.inbox.ru:587
+31.7.2020 9:49:36 >>> MailLogin=ed215
+31.7.2020 9:49:36 >>> MailPassword=qazwsxedc!@#
+31.7.2020 9:49:36 >>> MailAuth=
+31.7.2020 9:49:36 >>> 
+31.7.2020 9:49:36 >>> SystemName=System camera2
+31.7.2020 9:49:36 >>> SystemID=SS06
+31.7.2020 9:49:36 >>> #####IR COMMANDS#########
+31.7.2020 9:49:36 >>> IRCommand0=POWR; len:9
+31.7.2020 9:49:36 >>> IRCommand1=ZOOM; len:9
+31.7.2020 9:49:36 >>> IRCommand2=RCTV; len:9
+31.7.2020 9:49:36 >>> IRCommand3=TVTX; len:9
+31.7.2020 9:49:36 >>> IRCommand4=TVPL; len:9
+31.7.2020 9:49:36 >>> IRCommand5=CD; len:9
+31.7.2020 9:49:36 >>> IRCommand6=REC; len:9
+31.7.2020 9:49:36 >>> IRCommand7=PLAY; len:9
+31.7.2020 9:49:36 >>> IRCommand8=STOP; len:9
+31.7.2020 9:49:36 >>> IRCommand9=BKWD; len:9
+31.7.2020 9:49:36 >>> IRCommand10=FRWD; len:9
+31.7.2020 9:49:36 >>> IRCommand11=PREV; len:9
+31.7.2020 9:49:36 >>> IRCommand12=PAUS; len:9
+31.7.2020 9:49:36 >>> IRCommand13=NEXT; len:9
+31.7.2020 9:49:36 >>> IRCommand14=LEFT; len:9
+31.7.2020 9:49:36 >>> IRCommand15=UP; len:9
+31.7.2020 9:49:36 >>> IRCommand16=LEFT; len:9
+31.7.2020 9:49:36 >>> IRCommand17=RIGT; len:9
+31.7.2020 9:49:36 >>> IRCommand18=DOWN; len:9
+31.7.2020 9:49:36 >>> IRCommand19=OK; len:9
+31.7.2020 9:49:36 >>> IRCommand20=SAUD; len:9
+31.7.2020 9:49:36 >>> IRCommand21=NET; len:9
+31.7.2020 9:49:36 >>> IRCommand22=BACK; len:9
+31.7.2020 9:49:36 >>> IRCommand23=MUTE; len:9
+31.7.2020 9:49:36 >>> IRCommand24=INFO; len:9
+31.7.2020 9:49:36 >>> IRCommand25=VOL+; len:9
+31.7.2020 9:49:36 >>> IRCommand26=VOL-; len:9
+31.7.2020 9:49:36 >>> IRCommand27=MENU; len:9
+31.7.2020 9:49:36 >>> IRCommand28=CH+; len:9
+31.7.2020 9:49:36 >>> IRCommand29=CH-; len:9
+31.7.2020 9:49:36 >>> IRCommand30=KEY1; len:9
+31.7.2020 9:49:36 >>> IRCommand31=KEY2; len:9
+31.7.2020 9:49:36 >>> IRCommand32=KEY3; len:9
+31.7.2020 9:49:36 >>> IRCommand33=KEY4; len:9
+31.7.2020 9:49:36 >>> IRCommand34=KEY5; len:9
+31.7.2020 9:49:36 >>> IRCommand35=KEY6; len:9
+31.7.2020 9:49:36 >>> IRCommand36=KEY7; len:9
+31.7.2020 9:49:36 >>> IRCommand37=KEY8; len:9
+31.7.2020 9:49:36 >>> IRCommand38=KEY9; len:9
+31.7.2020 9:49:36 >>> IRCommand39=KEY*; len:9
+31.7.2020 9:49:36 >>> IRCommand40=KEY0; len:9
+31.7.2020 9:49:36 >>> IRCommand41=KEY#; len:9
+31.7.2020 9:49:36 >>> IRCommand42=CLR; len:9
+31.7.2020 9:49:36 >>> IRCommand43=TEXT; len:9
+31.7.2020 9:49:36 >>> IRCommand44=ENTR; len:9
+31.7.2020 9:49:36 >>> IRCommand45=RED; len:9
+31.7.2020 9:49:36 >>> IRCommand46=GREN; len:9
+31.7.2020 9:49:36 >>> IRCommand47=YELW; len:9
+31.7.2020 9:49:36 >>> IRCommand48=BLUE; len:9
+31.7.2020 9:49:36 >>> IRCommand49=ir1; len:9
+31.7.2020 9:49:36 >>> IRCommand50=ir2; len:9
+31.7.2020 9:49:36 >>> #####ALARMCLOCK#########
+31.7.2020 9:49:36 >>> #####SECURITY#########
+31.7.2020 9:49:36 >>> AccessLevel=0
+31.7.2020 9:49:36 >>> IntervalRescanCard=3000
+31.7.2020 9:49:36 >>> SecurityKey0=ID:cc, Serial:19.168.69.213; Sector:0; VerifyCode:1; VerifyValue:0;
+31.7.2020 9:49:36 >>> 	KeyA:255.255.255.255.255.255;
+31.7.2020 9:49:36 >>> 	KeyB:255.255.255.255.255.255;
+31.7.2020 9:49:36 >>> SecurityKey1=ID:ww, Serial:19.168.69.213; Sector:0; VerifyCode:1; VerifyValue:0;
+31.7.2020 9:49:36 >>> 	KeyA:255.255.255.255.255.255;
+31.7.2020 9:49:36 >>> 	KeyB:255.255.255.255.255.255;
+31.7.2020 9:49:36 >>> #####ACTIONS#########
+31.7.2020 9:49:36 >>> Action0=ActionID:AOFF, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:CM06, SubNum:1, SrcStatus:30()(<)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:1, DestStatus:1073741872(0)
+31.7.2020 9:49:36 >>> 	AfterAccept:2 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Пришла ночь 2
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:150000, TimeTo:30000
+31.7.2020 9:49:36 >>> Action1=ActionID:A001, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:CM06, SubNum:1, SrcStatus:35(#)(<)
+31.7.2020 9:49:36 >>> 	Dest:ID:CM06, SubNum:3, DestStatus:1073742014(╛)
+31.7.2020 9:49:36 >>> 	AfterAccept:2 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Включить ночной режим
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:150000, TimeTo:30000
+31.7.2020 9:49:36 >>> Action2=ActionID:A001, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:CM06, SubNum:1, SrcStatus:35(#)(<)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:842018881, DestStatus:1073741926(f)
+31.7.2020 9:49:36 >>> 	AfterAccept:3 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Включить обнаружение дня
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:150000, TimeTo:30000
+31.7.2020 9:49:36 >>> Action3=ActionID:AOFF, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:CM06, SubNum:1, SrcStatus:110(n)(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:1, DestStatus:1073741872(0)
+31.7.2020 9:49:36 >>> 	AfterAccept:2 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Пришел день 2
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:30000, TimeTo:150000
+31.7.2020 9:49:36 >>> Action4=ActionID:A002, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:CM06, SubNum:1, SrcStatus:110(n)(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:CM06, SubNum:3, DestStatus:1073742013(╜)
+31.7.2020 9:49:36 >>> 	AfterAccept:2 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Включить дневной режим
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:30000, TimeTo:150000
+31.7.2020 9:49:36 >>> Action5=ActionID:A002, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:CM06, SubNum:1, SrcStatus:110(n)(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:825241665, DestStatus:1073741926(f)
+31.7.2020 9:49:36 >>> 	AfterAccept:3 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Включить обнаружение ночи
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:30000, TimeTo:150000
+31.7.2020 9:49:36 >>> Action6=ActionID:A010, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:CM06, SubNum:4, SrcStatus:1()(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:CM06, SubNum:6, DestStatus:3()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:1500 TimerAfterOff:90000
+31.7.2020 9:49:36 >>> 	Name:Сделать снимки
+31.7.2020 9:49:36 >>> 	WeekDays:31, TimeFrom:80000, TimeTo:180000
+31.7.2020 9:49:36 >>> Action7=ActionID:A010, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:CM06, SubNum:4, SrcStatus:1()(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741876(4)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:3500 TimerAfterOff:90000
+31.7.2020 9:49:36 >>> 	Name:Отослать снимки
+31.7.2020 9:49:36 >>> 	WeekDays:31, TimeFrom:80000, TimeTo:180000
+31.7.2020 9:49:36 >>> Action8=ActionID:A100, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:SS06, SubNum:0, SrcStatus:1073741950(~)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:CNT1, SubNum:1, DestStatus:1073741854()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Таймер остановки
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:2000
+31.7.2020 9:49:36 >>> Action9=ActionID:A100, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:SS06, SubNum:0, SrcStatus:1073741950(~)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:CNT1, SubNum:1, DestStatus:1073741853()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Таймер остановки
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:2000
+31.7.2020 9:49:36 >>> Action10=ActionID:A100, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:RCT3, SubNum:0, SrcStatus:18()(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:CNT1, SubNum:1, DestStatus:1073741851()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Обнаружение движения в зоне 2 после 1
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:2000
+31.7.2020 9:49:36 >>> Action11=ActionID:A100, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:RCT3, SubNum:0, SrcStatus:18()(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:CNT1, SubNum:-20, DestStatus:1073741855()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Обнаружение движения в зоне 2
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:2000
+31.7.2020 9:49:36 >>> Action12=ActionID:A100, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:CNT1, SubNum:1, SrcStatus:1()(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:CM06, SubNum:6, DestStatus:3()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Сделать снимки
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:2000
+31.7.2020 9:49:36 >>> Action13=ActionID:A100, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:CNT1, SubNum:1, SrcStatus:-1(    )(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:CM06, SubNum:6, DestStatus:3()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Сделать снимки
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:2000
+31.7.2020 9:49:36 >>> Action14=ActionID:A100, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:CNT1, SubNum:1, SrcStatus:1()(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741876(4)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:2000 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Отослать снимки
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:2000
+31.7.2020 9:49:36 >>> Action15=ActionID:A100, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:CNT1, SubNum:1, SrcStatus:-1(    )(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741876(4)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:2000 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Отослать снимки
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:2000
+31.7.2020 9:49:36 >>> Action16=ActionID:A100, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:CNT1, SubNum:1, SrcStatus:1()(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:CNT1, SubNum:1, DestStatus:1073741851()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Сбросить счетчик
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:2000
+31.7.2020 9:49:36 >>> Action17=ActionID:A100, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:CNT1, SubNum:1, SrcStatus:-1(    )(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:CNT1, SubNum:1, DestStatus:1073741851()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Сбросить счетчик
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:2000
+31.7.2020 9:49:36 >>> Action18=ActionID:A100, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:SS06, SubNum:3, SrcStatus:1073741950(~)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:CM08, SubNum:1, DestStatus:1()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:2000
+31.7.2020 9:49:36 >>> 	Name:Тест
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:2000
+31.7.2020 9:49:36 >>> Action19=ActionID:A100, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:RCT0, SubNum:3, SrcStatus:5()(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:825241921, DestStatus:1073742004(┤)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:2000
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action20=ActionID:A100, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:RCT0, SubNum:4, SrcStatus:15()(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:825241921, DestStatus:1073742004(┤)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:2000
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action21=ActionID:A101, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:RCT1, SubNum:3, SrcStatus:20()(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:CNT1, SubNum:1, DestStatus:1073741855()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Обнаружение движения в зоне 1 (Яркость)
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action22=ActionID:A101, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:RCT1, SubNum:4, SrcStatus:20()(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:CNT1, SubNum:1, DestStatus:1073741855()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Обнаружение движения в зоне 1 (Цвет)
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action23=ActionID:A101, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:RCT2, SubNum:3, SrcStatus:20()(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:CNT1, SubNum:1, DestStatus:1073741855()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Обнаружение движения в зоне 2 (Яркость)
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action24=ActionID:A101, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:RCT2, SubNum:4, SrcStatus:20()(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:CNT1, SubNum:1, DestStatus:1073741855()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Обнаружение движения в зоне 2 (Цвет)
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action25=ActionID:A101, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:RCT3, SubNum:3, SrcStatus:20()(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:CNT1, SubNum:1, DestStatus:1073741855()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Обнаружение движения в зоне 3 (Яркость)
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action26=ActionID:A101, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:RCT3, SubNum:4, SrcStatus:20()(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:CNT1, SubNum:1, DestStatus:1073741855()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Обнаружение движения в зоне 3 (Цвет)
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action27=ActionID:A101, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:RCT4, SubNum:3, SrcStatus:20()(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:CNT1, SubNum:1, DestStatus:1073741855()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Обнаружение движения в зоне 4 (Яркость)
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action28=ActionID:A101, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:RCT4, SubNum:4, SrcStatus:20()(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:CNT1, SubNum:1, DestStatus:1073741855()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Обнаружение движения в зоне 4 (Цвет)
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action29=ActionID:A101, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:RCT5, SubNum:3, SrcStatus:20()(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:CNT1, SubNum:1, DestStatus:1073741855()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Обнаружение движения в зоне 5 (Яркость)
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action30=ActionID:A101, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:RCT5, SubNum:4, SrcStatus:20()(>)
+31.7.2020 9:49:36 >>> 	Dest:ID:CNT1, SubNum:1, DestStatus:1073741855()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Обнаружение движения в зоне 5 (Цвет)
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action31=ActionID:A102, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:CNT1, SubNum:1, SrcStatus:1()(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:CM06, SubNum:6, DestStatus:3()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:90000
+31.7.2020 9:49:36 >>> 	Name:Сделать снимки
+31.7.2020 9:49:36 >>> 	WeekDays:31, TimeFrom:70000, TimeTo:180000
+31.7.2020 9:49:36 >>> Action32=ActionID:A102, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:CNT1, SubNum:1, SrcStatus:1()(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741876(4)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:2000 TimerAfterOff:90000
+31.7.2020 9:49:36 >>> 	Name:Отослать снимки
+31.7.2020 9:49:36 >>> 	WeekDays:31, TimeFrom:70000, TimeTo:180000
+31.7.2020 9:49:36 >>> Action33=ActionID:A103, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:CNT1, SubNum:1, SrcStatus:1()(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SP01, SubNum:0, DestStatus:858796115(S003)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:90000
+31.7.2020 9:49:36 >>> 	Name:Позвонить в коридоре
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action34=ActionID:A103, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:CNT1, SubNum:1, SrcStatus:1()(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SP03, SubNum:1, DestStatus:858796115(S003)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:90000
+31.7.2020 9:49:36 >>> 	Name:Позвонить в спальне
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action35=ActionID:A104, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:CNT1, SubNum:1, SrcStatus:1()(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:DP02, SubNum:0, DestStatus:909135171(CM06)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:90000
+31.7.2020 9:49:36 >>> 	Name:Включить просмотр в спальне
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:210000, TimeTo:80000
+31.7.2020 9:49:36 >>> Action36=ActionID:A105, Enabled:No
+31.7.2020 9:49:36 >>> 	Source:ID:CNT1, SubNum:1, SrcStatus:1()(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:CNT1, SubNum:1, DestStatus:1073741851()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Сбросить счетчик
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action37=ActionID:A000, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:SS06, SubNum:11, SrcStatus:1073741950(~)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:G014, SubNum:1, DestStatus:0()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:2000
+31.7.2020 9:49:36 >>> 	Name:Выключение подсветки
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:60000, TimeTo:60001
+31.7.2020 9:49:36 >>> Action38=ActionID:A000, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:SS06, SubNum:11, SrcStatus:1073741950(~)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:G014, SubNum:1, DestStatus:1()
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:2000
+31.7.2020 9:49:36 >>> 	Name:Включение подсветки
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:230000, TimeTo:230001
+31.7.2020 9:49:36 >>> Action39=ActionID:A002, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1381453648(POWR)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:1, DestStatus:1073741965(Н)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:show off
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action40=ActionID:A003, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:4473170(RAD)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741965(Н)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:show full off
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action41=ActionID:A002, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:4343127(WEB)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:2, DestStatus:1073741965(Н)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:show on
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action42=ActionID:A002, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1297043290(ZOOM)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:2, DestStatus:1073741967(П)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:change zoom
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action43=ActionID:A002, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:17475(CD)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:1073741843, DestStatus:1073741956(Д)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:show streams
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action44=ActionID:A000, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:4475222(VID)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741932(l)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Current stream ON
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action45=ActionID:A000, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1146246978(BWRD)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741934(n)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Prev stream ON
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action46=ActionID:A000, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1146246982(FWRD)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741933(m)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Next stream ON
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action47=ActionID:A000, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1146437971(SAUD)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:3, DestStatus:1073741935(o)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Stream chil-out
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action48=ActionID:A002, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1415071060(TEXT)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:1073741837, DestStatus:1073741956(Д)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:show messages
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action49=ActionID:A002, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:5393475(CLR)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741873(1)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:messages delete
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action50=ActionID:A002, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:4408658(REC)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741898(J)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:split MIC file
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action51=ActionID:A002, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1431192909(MENU)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741870(.)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:menu show
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action52=ActionID:A003, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:20565(UP)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741865())
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:menu up
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action53=ActionID:A004, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1314344772(DOWN)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741866(*)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:menu down
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action54=ActionID:A007, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1413891404(LEFT)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:30, DestStatus:1073741962(К)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:slider left
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action55=ActionID:A008, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1414022994(RGHT)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:30, DestStatus:1073741961(Й)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:slide right
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action56=ActionID:A005, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1413891404(LEFT)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741867(+)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:menu left
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action57=ActionID:A006, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1414022994(RGHT)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741868(,)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:menu right
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action58=ActionID:A009, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:19279(OK)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741869(-)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:menu ok
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action59=ActionID:A010, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1163154765(MUTE)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741915([)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:sound mute
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action60=ActionID:A011, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:726421334(VOL+)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:3, DestStatus:1073741912(X)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:sound up
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action61=ActionID:A012, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:759975766(VOL-)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:3, DestStatus:1073741911(W)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:sound down
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action62=ActionID:A013, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:2967619(CH-)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741907(S)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:radio down
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action63=ActionID:A014, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:2836547(CH+)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741908(T)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:radio up
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action64=ActionID:A019, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1330007625(INFO)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:1, DestStatus:1073741889(A)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:menu show
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action65=ActionID:A020, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1347376211(STOP)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741878(6)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Stop connects
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action66=ActionID:A020, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1415071054(NEXT)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741879(7)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Stop connects
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action67=ActionID:A020, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1447383632(PREV)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741880(8)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Stop connects
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action68=ActionID:A020, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1497451600(PLAY)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741881(9)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Stop connects
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action69=ActionID:A020, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1398096208(PAUS)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741882(:)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Stop connects
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action70=ActionID:A020, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:SS06, SubNum:11, SrcStatus:5719374(NEW)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741929(i)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Не реагировать на себя
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action71=ActionID:A021, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:, SubNum:1, SrcStatus:5719374(NEW)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741872(0)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Новые устройства в сети
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action72=ActionID:A022, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:, SubNum:1, SrcStatus:1414745932(LOST)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741872(0)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Потеряно устройство
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action73=ActionID:A022, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:, SubNum:1, SrcStatus:1145981254(FIND)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741872(0)
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Найдено устройство
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action74=ActionID:A000, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:827934027(KEY1)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:DP01, SubNum:1, DestStatus:892357955(CM05)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Door alarm
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action75=ActionID:A000, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:878265675(KEY4)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:DP01, SubNum:1, DestStatus:942689603(CM08)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Camera 3
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action76=ActionID:A000, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:844711243(KEY2)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:DP01, SubNum:1, DestStatus:909135171(CM06)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Door alarm
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action77=ActionID:A000, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:861488459(KEY3)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:DP01, SubNum:1, DestStatus:959466819(CM09)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Camera 3
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action78=ActionID:A000, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:962151755(KEY9)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:842084435, DestStatus:1073741910(V)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Door alarm
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action79=ActionID:A000, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:928597323(KEY7)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741968(Р)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Camlist clear
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action80=ActionID:A000, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:928597323(KEY7)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:942689603, DestStatus:1073741969(С)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Add camera in list
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action81=ActionID:A000, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:928597323(KEY7)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:909135171, DestStatus:1073741969(С)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Add camera in list
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action82=ActionID:A000, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:928597323(KEY7)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:892357955, DestStatus:1073741969(С)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Add camera in list
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action83=ActionID:A000, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:928597323(KEY7)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:959466819, DestStatus:1073741969(С)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Add camera in list
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action84=ActionID:A000, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:928597323(KEY7)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741970(Т)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:show Camlist
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action85=ActionID:A100, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1313165895(GREN)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:G014, SubNum:1, DestStatus:2()
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:2000
+31.7.2020 9:49:36 >>> 	Name:Switch second hall light
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action86=ActionID:A100, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1464616281(YELW)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:G013, SubNum:1, DestStatus:1()
+31.7.2020 9:49:36 >>> 	AfterAccept:1 TimerWaitBefore:0 TimerAfterOff:2000
+31.7.2020 9:49:36 >>> 	Name:Switch first hall light
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> Action87=ActionID:A100, Enabled:Yes
+31.7.2020 9:49:36 >>> 	Source:ID:IR01, SubNum:1, SrcStatus:1262698818(BACK)(=)
+31.7.2020 9:49:36 >>> 	Dest:ID:SS06, SubNum:0, DestStatus:1073741871(/)
+31.7.2020 9:49:36 >>> 	AfterAccept:0 TimerWaitBefore:0 TimerAfterOff:0
+31.7.2020 9:49:36 >>> 	Name:Back stream menu
+31.7.2020 9:49:36 >>> 	WeekDays:127, TimeFrom:0, TimeTo:235959
+31.7.2020 9:49:36 >>> #####WIDGETS#########
+31.7.2020 9:49:36 >>> Widget0=WidgetID:W001, ShowMode:1
+31.7.2020 9:49:36 >>> 	Type:4, Name:Clock
+31.7.2020 9:49:36 >>> 	Scale:0.4, Direct:0, Speed:1, Setting:0
+31.7.2020 9:49:36 >>> 	Refresh:0, WeekDays:127
+31.7.2020 9:49:36 >>> 	NotBeforeTime:0, NotAfterTime:235959, NotBeforeTime2:80000, NotAfterTime2:230000, NotBeforeTime3:80000, NotAfterTime3:230000
+31.7.2020 9:49:36 >>> 	Path:
+31.7.2020 9:49:36 >>> Widget1=WidgetID:ttt, ShowMode:1
+31.7.2020 9:49:36 >>> 	Type:1, Name:ttt
+31.7.2020 9:49:36 >>> 	Scale:1, Direct:0, Speed:1, Setting:0
+31.7.2020 9:49:36 >>> 	Refresh:0, WeekDays:127
+31.7.2020 9:49:36 >>> 	NotBeforeTime:0, NotAfterTime:235959, NotBeforeTime2:0, NotAfterTime2:0, NotBeforeTime3:0, NotAfterTime3:0
+31.7.2020 9:49:36 >>> 	Path:
+31.7.2020 9:49:36 >>> Widget2=WidgetID:yyy, ShowMode:0
+31.7.2020 9:49:36 >>> 	Type:1, Name:yyyy
+31.7.2020 9:49:36 >>> 	Scale:2, Direct:0, Speed:4, Setting:0
+31.7.2020 9:49:36 >>> 	Refresh:0, WeekDays:127
+31.7.2020 9:49:36 >>> 	NotBeforeTime:0, NotAfterTime:235959, NotBeforeTime2:0, NotAfterTime2:0, NotBeforeTime3:0, NotAfterTime3:0
+31.7.2020 9:49:36 >>> 	Path:
+31.7.2020 9:49:36 >>> #####MODULES#########
+31.7.2020 9:49:36 >>> ModuleFile=Modules.ini
+31.7.2020 9:49:36 >>> Module0=Status:3;ID:SS06;Type:14;Name:System camera2;
+31.7.2020 9:49:36 >>> 	View:0;Access:0;Global:0;ScanSet:0;
+31.7.2020 9:49:36 >>> 	Setts:	(0)(0)(0)(0)(1)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0);
+31.7.2020 9:49:36 >>> Module1=Status:0;ID:rrr;Type:18;Name:rrr;
+31.7.2020 9:49:36 >>> 	View:0;Access:0;Global:0;ScanSet:1;
+31.7.2020 9:49:36 >>> 	Setts:	(552)(0)(167773769)(33216)(83886301)(4)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0);
+31.7.2020 9:49:36 >>> Module2=Status:0;ID:dd;Type:3;Name:dd;
+31.7.2020 9:49:36 >>> 	View:0;Access:0;Global:0;ScanSet:0;
+31.7.2020 9:49:36 >>> 	Setts:	(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0);
+31.7.2020 9:49:36 >>> Module3=Status:0;ID:IR01;Type:5;Name:rr;
+31.7.2020 9:49:36 >>> 	View:0;Access:0;Global:0;ScanSet:1;
+31.7.2020 9:49:36 >>> 	Setts:	(0)(2)(12)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0);
+31.7.2020 9:49:36 >>> Module4=Status:0;ID:SP1;Type:13;Name:s;
+31.7.2020 9:49:36 >>> 	View:0;Access:0;Global:0;ScanSet:0;
+31.7.2020 9:49:36 >>> 	Setts:	(13365)(0)(0)(0)(5)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0);
+31.7.2020 9:49:36 >>> Module5=Status:0;ID:eee;Type:10;Name:eeee;
+31.7.2020 9:49:36 >>> 	View:0;Access:0;Global:0;ScanSet:1;
+31.7.2020 9:49:36 >>> 	Setts:	(13621)(1)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0);
+31.7.2020 9:49:36 >>> Module6=Status:0;ID:iii;Type:8;Name:iiii;
+31.7.2020 9:49:36 >>> 	View:0;Access:0;Global:0;ScanSet:1;
+31.7.2020 9:49:36 >>> 	Setts:	(0)(1)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0)(0);
+31.7.2020 9:49:36 >>> Module7=Status:0;ID:ccc;Type:1;Name:mmmm;
+31.7.2020 9:49:36 >>> 	View:0;Access:0;Global:0;ScanSet:0;
+31.7.2020 9:49:36 >>> 	Setts:	(0)(5)(15)(60)(2000)(1)(20)(0)(16842752)(60)(1)(1)(0)(0)(0)(0)(20)(500)(500)(0)(0)(60)(60)(5)(1073742013)(50)(0)(1)(1073742027)(1073742055)(0)(0)(0)(100)(20)(20)(0)(1);
+31.7.2020 9:49:36 >>> #####SOUNDS#########
+31.7.2020 9:49:36 >>> Sound0=ID:S001;Path:Sounds/DoorRing1.snd
+31.7.2020 9:49:36 >>> Sound1=ID:S002;Path:Sounds/DoorRing2.snd
+31.7.2020 9:49:36 >>> Sound2=ID:S003;Path:Sounds/DoorRing3.snd
+31.7.2020 9:49:36 >>> Sound3=ID:S004;Path:Sounds/Alarm1.snd
+31.7.2020 9:49:36 >>> Sound4=ID:S005;Path:Sounds/Cord.snd
+31.7.2020 9:49:36 >>> Sound5=ID:S006;Path:Sounds/Error1.snd
+31.7.2020 9:49:36 >>> Sound6=ID:S007;Path:Sounds/Error2.snd
+31.7.2020 9:49:36 >>> Sound7=ID:S008;Path:Sounds/Event1.snd
+31.7.2020 9:49:36 >>> Sound8=ID:S009;Path:Sounds/Guitar.snd
+31.7.2020 9:49:36 >>> Sound9=ID:S010;Path:Sounds/Piano.snd
+31.7.2020 9:49:36 >>> Sound10=ID:S011;Path:Sounds/Alarm2.snd
+31.7.2020 9:49:36 >>> #####DIRECTORYES#########
+31.7.2020 9:49:36 >>> Directory0=Access:1 Path:/mnt/NAS
+31.7.2020 9:49:36 >>> Directory1=Access:2 Path:/home/pi/news
+31.7.2020 9:49:36 >>> Directory2=Access:0 Path:/home/pi
+31.7.2020 9:49:36 >>> Directory3=Access:0 Path:/var/log
+31.7.2020 9:49:36 >>> #####STREAM TYPES#########
+31.7.2020 9:49:36 >>> StreamType0=Name:'Others'
+31.7.2020 9:49:36 >>> StreamType1=Name:'Trances'
+31.7.2020 9:49:36 >>> StreamType2=Name:'Dreames'
+31.7.2020 9:49:36 >>> StreamType3=Name:'Chill'
+31.7.2020 9:49:36 >>> StreamType4=Name:'Dances'
+31.7.2020 9:49:36 >>> #####INTERNET STREAMS#########
+31.7.2020 9:49:36 >>> Stream0=Access:0 Type: 1 Name:'Trancemission' URL:'http://air.radiorecord.ru:805/tm_128'
+31.7.2020 9:49:36 >>> Stream1=Access:0 Type: 4 Name:'RadioRecord' URL:'http://air3.radiorecord.ru:805/rr_128'
+31.7.2020 9:49:36 >>> Stream2=Access:0 Type: 4 Name:'EDM' URL:'http://air.radiorecord.ru:805/club_128'
+31.7.2020 9:49:36 >>> Stream3=Access:0 Type: 4 Name:'DFM' URL:'http://dfm.magonet.ru/dfm64.aacp'
+31.7.2020 9:49:36 >>> Stream4=Access:0 Type: 0 Name:'MegaMix' URL:'http://air.radiorecord.ru:805/mix_128'
+31.7.2020 9:49:36 >>> Stream5=Access:0 Type: 0 Name:'Deep' URL:'http://air.radiorecord.ru:805/deep_128'
+31.7.2020 9:49:36 >>> Stream6=Access:0 Type: 0 Name:'Future House' URL:'http://air.radiorecord.ru:805/fut_128'
+31.7.2020 9:49:36 >>> Stream7=Access:0 Type: 0 Name:'Minimal/Tech' URL:'http://air.radiorecord.ru:805/mini_128'
+31.7.2020 9:49:36 >>> Stream8=Access:0 Type: 0 Name:'Pirate Station' URL:'http://air.radiorecord.ru:805/ps_128'
+31.7.2020 9:49:36 >>> Stream9=Access:0 Type: 0 Name:'Russian Mix' URL:'http://air.radiorecord.ru:805/rus_128'
+31.7.2020 9:49:36 >>> Stream10=Access:0 Type: 0 Name:'Vip House' URL:'http://air.radiorecord.ru:805/vip_128'
+31.7.2020 9:49:36 >>> Stream11=Access:0 Type: 0 Name:'Super Disco 90' URL:'http://air.radiorecord.ru:805/sd90_128'
+31.7.2020 9:49:36 >>> Stream12=Access:0 Type: 0 Name:'Breaks' URL:'http://air.radiorecord.ru:805/brks_128'
+31.7.2020 9:49:36 >>> Stream13=Access:0 Type: 0 Name:'GOA/PSY' URL:'http://air.radiorecord.ru:805/goa_128'
+31.7.2020 9:49:36 >>> Stream14=Access:0 Type: 0 Name:'Tropical' URL:'http://air.radiorecord.ru:805/trop_128'
+31.7.2020 9:49:36 >>> Stream15=Access:0 Type: 0 Name:'Dubstep' URL:'http://air.radiorecord.ru:805/dub_128'
+31.7.2020 9:49:36 >>> Stream16=Access:0 Type: 0 Name:'Dancecore' URL:'http://air.radiorecord.ru:805/dc_128'
+31.7.2020 9:49:36 >>> Stream17=Access:0 Type: 0 Name:'Techno' URL:'http://air.radiorecord.ru:805/techno_128'
+31.7.2020 9:49:36 >>> Stream18=Access:0 Type: 0 Name:'HardStyle' URL:'http://air.radiorecord.ru:805/teo_128'
+31.7.2020 9:49:36 >>> Stream19=Access:0 Type: 0 Name:'Trap' URL:'http://air.radiorecord.ru:805/trap_128'
+31.7.2020 9:49:36 >>> Stream20=Access:0 Type: 0 Name:'Pump' URL:'http://air.radiorecord.ru:805/pump_128'
+31.7.2020 9:49:36 >>> Stream21=Access:0 Type: 0 Name:'Rock' URL:'http://air.radiorecord.ru:805/rock_128'
+31.7.2020 9:49:36 >>> Stream22=Access:0 Type: 0 Name:'SlowFM' URL:'http://air.radiorecord.ru:805/mdl_128'
+31.7.2020 9:49:36 >>> Stream23=Access:0 Type: 0 Name:'GoalFM' URL:'http://air.radiorecord.ru:805/gop_128'
+31.7.2020 9:49:36 >>> Stream24=Access:0 Type: 0 Name:'YoFM' URL:'http://air.radiorecord.ru:805/yo_128'
+31.7.2020 9:49:36 >>> Stream25=Access:0 Type: 0 Name:'RaveFM' URL:'http://air.radiorecord.ru:805/rave_128'
+31.7.2020 9:49:36 >>> Stream26=Access:0 Type: 3 Name:'Chill-Out' URL:'http://air.radiorecord.ru:805/chil_128'
+31.7.2020 9:49:36 >>> Stream27=Access:0 Type: 3 Name:'Chill-Out hi' URL:'https://hirschmilch.de:7001/chillout.mp3'
+31.7.2020 9:49:36 >>> Stream28=Access:0 Type: 3 Name:'Chill-Out101 m' URL:'http://ic3.101.ru:8000/m15_3'
+31.7.2020 9:49:36 >>> Stream29=Access:0 Type: 3 Name:'Chill-Out 101 c' URL:'http://ic3.101.ru:8000/c15_3'
+31.7.2020 9:49:36 >>> Stream30=Access:0 Type: 3 Name:'Chill-Out' URL:'http://pub2.diforfree.org:8000/di_chillout_hi'
+31.7.2020 9:49:36 >>> Stream31=Access:0 Type: 3 Name:'Chill-Out dreams' URL:'http://pub2.diforfree.org:8000/di_chilloutdreams_hi'
+31.7.2020 9:49:36 >>> #####MENU ACTIONS#########
+31.7.2020 9:49:36 >>> ActionMenu0=Access:0 ID:SS06 Sub:1 Status:1073741891 Name:'Send email'
+31.7.2020 9:49:36 >>> ActionMenu1=Access:0 ID:CM06 Sub:6 Status:16 Name:'CamShot'
+31.7.2020 9:49:36 >>> ActionMenu2=Access:0 ID:rrr Sub:1 Status:0 Name:'0'
+31.7.2020 9:49:36 >>> ActionMenu3=Access:0 ID:rrr Sub:1 Status:3 Name:'128'
+31.7.2020 9:49:36 >>> ActionMenu4=Access:0 ID:rrr Sub:1 Status:255 Name:'255'
+31.7.2020 9:49:36 >>> #####CAMERA RECTANGLES#########
+31.7.2020 9:49:36 >>> CamRect0=Enabled:1 Group:0 X1:84 Y1:65 X2:98 Y2:83
+31.7.2020 9:49:36 >>> CamRect1=Enabled:1 Group:0 X1:40 Y1:30 X2:100 Y2:39
+31.7.2020 9:49:36 >>> CamRect2=Enabled:1 Group:0 X1:25 Y1:40 X2:100 Y2:49
+31.7.2020 9:49:36 >>> CamRect3=Enabled:1 Group:0 X1:10 Y1:50 X2:100 Y2:59
+31.7.2020 9:49:36 >>> CamRect4=Enabled:1 Group:0 X1:0 Y1:60 X2:100 Y2:100
+31.7.2020 9:49:36 >>> CamRect5=Enabled:1 Group:0 X1:55 Y1:20 X2:100 Y2:29
+31.7.2020 9:49:36 >>> #####MAILES#########
+31.7.2020 9:49:36 >>> 
+31.7.2020 9:49:36 >>> Init_OMX
+31.7.2020 9:49:36 >>> Init_MEDIA
+31.7.2020 9:49:36 >>> Starting LAN service
+31.7.2020 9:49:36 >>> Starting Eventer service
+31.7.2020 9:49:36 >>> Get Broadcast address not succes
+31.7.2020 9:49:36 >>> Starting file access service
+31.7.2020 9:49:36 >>> INIT SERVICES DONE
+31.7.2020 9:49:36 >>> Now time '2020-07-31 09:49:36'
