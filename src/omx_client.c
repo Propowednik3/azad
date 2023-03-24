@@ -1061,43 +1061,7 @@ unsigned int GetStandartWhiteBalance(unsigned int uiData)
 	return ret;
 }
 
-int GetModeFromResolution(int iW, int iH)
-{
-	switch(iW)
-	{
-		case 160: return RESOLUTION_TYPE_160X120;
-		case 320: return RESOLUTION_TYPE_320X240;
-		case 480: return RESOLUTION_TYPE_480X240;
-		case 640: return RESOLUTION_TYPE_640X480;
-		case 800: return RESOLUTION_TYPE_800X600;
-		case 1024: return RESOLUTION_TYPE_1024X768;
-		case 1280: return RESOLUTION_TYPE_1280X960;
-		case 1400: return RESOLUTION_TYPE_1400X1050;
-		case 1600: return RESOLUTION_TYPE_1600X1200;
-		case 2048: return RESOLUTION_TYPE_2048X1536;
-		case 2592: return RESOLUTION_TYPE_2592X1944;
-		default: break;
-	}
-	switch(iH)
-	{
-		case 120: return RESOLUTION_TYPE_160X120;
-		case 240: 
-			if (iW > 320) return RESOLUTION_TYPE_480X240;
-			return RESOLUTION_TYPE_320X240;		
-		case 480: return RESOLUTION_TYPE_640X480;
-		case 600: return RESOLUTION_TYPE_800X600;
-		case 768: return RESOLUTION_TYPE_1024X768;
-		case 960: return RESOLUTION_TYPE_1280X960;
-		case 1050: return RESOLUTION_TYPE_1400X1050;
-		case 1200: return RESOLUTION_TYPE_1600X1200;
-		case 1536: return RESOLUTION_TYPE_2048X1536;
-		case 1944: return RESOLUTION_TYPE_2592X1944;
-		default: return RESOLUTION_TYPE_160X120;
-	}
-	return RESOLUTION_TYPE_160X120;
-}
-
-void GetResolutionFromMode(int iMode, image_sensor_params *ispCSI, int* pW, int *pH)
+void GetResolutionFromMode(int iMode, int* pW, int *pH)
 {
 	switch(iMode)
 	{
@@ -1150,6 +1114,18 @@ void GetResolutionFromMode(int iMode, image_sensor_params *ispCSI, int* pW, int 
 			*pH = 120;
 			break;
 	}
+}
+
+void GetResolutionFromModule(int iSettings, int* pW, int *pH)
+{
+	if (iSettings < RESOLUTION_TYPE_MAX)
+	{
+		GetResolutionFromMode(iSettings, pW, pH);
+		return;
+	}
+	
+	*pW = (iSettings >> 16) & 0xFFFF;
+	*pH = iSettings & 0xFFFF;	
 }
 
 int omx_ptz_get_focus_position(int iMinPos, int iMaxPos, int iZoom, double coefficient)
@@ -1329,7 +1305,7 @@ int omx_SetFocusFromMap(omx_autofocus_params *autofocus_pm, int iPtzModuleNum, i
 		{
 			if (iPtzFocusMapVal != autofocus_pm->CurrentFocusPos)
 			{
-				dbgprintf(2, "Sett focus from mem zoom:%i focus:%i\n", iZoom, iPtzFocusMapVal);
+				//dbgprintf(4, "Sett focus from mem zoom:%i focus:%i\n", iZoom, iPtzFocusMapVal);
 				if (cForce)
 				{
 					DBG_MUTEX_LOCK(&modulelist_mutex);
@@ -2803,7 +2779,7 @@ void omx_get_image_sensor_module_params(image_sensor_params *ispCSI, MODULE_INFO
 	ispCSI->FrameUpCrop = (miModule->Settings[11] & 0xFF000000) >> 24;
 	ispCSI->FrameDownCrop = (miModule->Settings[11] & 0x00FF0000) >> 16;
 	
-	GetResolutionFromMode(miModule->Settings[1], ispCSI, &ispCSI->MainVideo.video_width, &ispCSI->MainVideo.video_height);
+	GetResolutionFromModule(miModule->Settings[1], &ispCSI->MainVideo.video_width, &ispCSI->MainVideo.video_height);
 	ispCSI->MainVideo.video_frame_rate = miModule->Settings[2];
 	ispCSI->MainVideo.video_intra_frame = miModule->Settings[3];
 	ispCSI->MainVideoAvcProfile = GetOmxProfile(miModule->Settings[19] & 255);
@@ -2814,7 +2790,7 @@ void omx_get_image_sensor_module_params(image_sensor_params *ispCSI, MODULE_INFO
 	ispCSI->PrevVideoConstantBitRate = (miModule->Settings[8] & 512) ? 1 : 0; 
 	ispCSI->PreviewEnabled = (miModule->Settings[8] & 4) ? 1 : 0;
 	ispCSI->PrevVideo.video_bit_rate = miModule->Settings[17]*1000;
-	GetResolutionFromMode(miModule->Settings[37], ispCSI, &ispCSI->PrevVideo.video_width, &ispCSI->PrevVideo.video_height);
+	GetResolutionFromModule(miModule->Settings[37], &ispCSI->PrevVideo.video_width, &ispCSI->PrevVideo.video_height);
 	ispCSI->PrevVideo.video_frame_rate = ispCSI->MainVideo.video_frame_rate;
 	ispCSI->PrevVideo.video_intra_frame = miModule->Settings[21];
 	ispCSI->RecordEnabled = (miModule->Settings[8] & 32) ? 1 : 0;
@@ -2905,7 +2881,7 @@ void omx_set_image_sensor_module_params(image_sensor_params *ispCSI, MODULE_INFO
 	miModule->Settings[28] = ispCSI->ImageFilter;
 	miModule->Settings[26] = (miModule->Settings[26] & 0xFFFFFFFC) | ispCSI->RotateMode;
 	miModule->Settings[4] = ispCSI->MainVideo.video_bit_rate/1000;
-	miModule->Settings[1] = GetModeFromResolution(ispCSI->MainVideo.video_width, ispCSI->MainVideo.video_height);
+	miModule->Settings[1] = ((ispCSI->MainVideo.video_width & 0xFFFF) << 16) | (ispCSI->MainVideo.video_height & 0xFFFF);
 	miModule->Settings[2] = ispCSI->MainVideo.video_frame_rate;
 	miModule->Settings[3] = ispCSI->MainVideo.video_intra_frame;
 	miModule->Settings[19] = (miModule->Settings[19] & 0xFFFFFF00) | GetOmxProfileNum(ispCSI->MainVideoAvcProfile);
@@ -2917,7 +2893,7 @@ void omx_set_image_sensor_module_params(image_sensor_params *ispCSI, MODULE_INFO
 	miModule->Settings[11] = (miModule->Settings[11] & 0x00FFFFFF) | (ispCSI->FrameUpCrop << 24);
 	miModule->Settings[11] = (miModule->Settings[11] & 0xFF00FFFF) | (ispCSI->FrameDownCrop << 16);
 	miModule->Settings[17] = ispCSI->PrevVideo.video_bit_rate / 1000;	
-	miModule->Settings[37] = GetModeFromResolution(ispCSI->PrevVideo.video_width, ispCSI->PrevVideo.video_height);	
+	miModule->Settings[37] = ((ispCSI->PrevVideo.video_width & 0xFFFF) << 16) | (ispCSI->PrevVideo.video_height & 0xFFFF);
 	miModule->Settings[21] = ispCSI->PrevVideo.video_intra_frame;
 	
 	if (miModule->Settings[8] & 4) miModule->Settings[8] ^= 4;
@@ -7593,7 +7569,7 @@ void* thread_omx_video_capture_send(void *pData)
 	memset(&tVideoInfo, 0, sizeof(VideoCodecInfo)); 
 	tVideoInfo.video_codec = AV_CODEC_ID_H264;
 	tVideoInfo.video_bit_rate = miModule->Settings[4]*1000;
-	GetResolutionFromMode(miModule->Settings[1], &ispCurrentCameraParams, &tVideoInfo.video_width, &tVideoInfo.video_height);
+	GetResolutionFromModule(miModule->Settings[1], &tVideoInfo.video_width, &tVideoInfo.video_height);
 	tVideoInfo.video_width32 = ((tVideoInfo.video_width+31)&~31);
 	tVideoInfo.video_height16 = ((tVideoInfo.video_height+15)&~15);
 	tVideoInfo.video_frame_rate = miModule->Settings[2];
@@ -7642,7 +7618,7 @@ void* thread_omx_video_capture_send(void *pData)
 	memset(&tVideoInfoPreview, 0, sizeof(VideoCodecInfo)); 
 	tVideoInfoPreview.video_codec = AV_CODEC_ID_H264;
 	tVideoInfoPreview.video_bit_rate = miModule->Settings[17]*1000;
-	GetResolutionFromMode(miModule->Settings[37], &ispCurrentCameraParams, &tVideoInfoPreview.video_width, &tVideoInfoPreview.video_height);
+	GetResolutionFromModule(miModule->Settings[37], &tVideoInfoPreview.video_width, &tVideoInfoPreview.video_height);
 	tVideoInfoPreview.video_width32 = ((tVideoInfoPreview.video_width+31)&~31);
 	tVideoInfoPreview.video_height16 = ((tVideoInfoPreview.video_height+15)&~15);	
 	tVideoInfoPreview.video_frame_rate = tVideoInfo.video_frame_rate;
@@ -7670,7 +7646,7 @@ void* thread_omx_video_capture_send(void *pData)
 	memset(&tVideoInfoSensor, 0, sizeof(VideoCodecInfo)); 
 	tVideoInfoSensor.video_codec = AV_CODEC_ID_H264;
 	tVideoInfoSensor.video_bit_rate = miModule->Settings[17]*1000;
-	GetResolutionFromMode(miModule->Settings[5], &ispCurrentCameraParams, &tVideoInfoSensor.video_width, &tVideoInfoSensor.video_height);
+	GetResolutionFromModule(miModule->Settings[5], &tVideoInfoSensor.video_width, &tVideoInfoSensor.video_height);
 	tVideoInfoSensor.video_width32 = ((tVideoInfoSensor.video_width+31)&~31);
 	tVideoInfoSensor.video_height16 = ((tVideoInfoSensor.video_height+15)&~15);	
 	tVideoInfoSensor.video_frame_rate = tVideoInfo.video_frame_rate;

@@ -485,6 +485,7 @@ void omx_get_image_sensor_module_params(image_sensor_params *ispCSI, MODULE_INFO
 int omx_set_image_sensor_camera_params(image_sensor_params *ispCSI);
 int omx_dump_data(char *cName, char *cData, int iLen);
 int omx_load_file_size(char *filename, char *buffer, unsigned int uiSize);
+void GetResolutionFromMode(int iMode, int* pW, int *pH);
 
 char cThreadOmxPlayStatus;
 char cThreadOmxImageStatus;

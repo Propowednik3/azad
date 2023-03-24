@@ -12909,6 +12909,16 @@ int LoadModules(char *Buff)
 									miModuleList[iModuleCnt-1].Settings[n] = (unsigned int)Str2Int(Buff4);
 									else break;	
 							}
+						if ((miModuleList[iModuleCnt-1].Type == MODULE_TYPE_CAMERA) && ((n == 1) || (n == 37) || (n == 5)))
+						{
+							if (miModuleList[iModuleCnt-1].Settings[n] < RESOLUTION_TYPE_MAX)
+							{
+								int iW = 160;
+								int iH = 120;
+								GetResolutionFromMode(miModuleList[iModuleCnt-1].Settings[n], &iW, &iH);
+								miModuleList[iModuleCnt-1].Settings[n] = ((iW << 16) & 0xFFFF) | (iH & 0xFFFF);
+							}
+						}
 					}
 				}				
 			}
@@ -25427,6 +25437,7 @@ int main(int argc, char *argv[])
 	
 	unsigned int uiTimeUpdateTimeout = 1000;
 	unsigned int uiTimeSaveTimeout = 0;
+	unsigned int timer_request_datetime = 0;
 	
 	struct tm archive_time;
 	time(&rawtime);
@@ -25454,6 +25465,7 @@ int main(int argc, char *argv[])
 			if (uiTimeUpdateTimeout >= 4)
 			{
 				uiTimeUpdateTimeout = 0;
+				
 				char cTimeDone = 0;
 				ret = 0;
 				DBG_MUTEX_LOCK(&system_mutex);
@@ -25481,8 +25493,11 @@ int main(int argc, char *argv[])
 				
 				if (ret && (uiDeviceType & DEVICE_TYPE_CLOCK)) i2c_write_timedate3231(I2C_ADDRESS_CLOCK);
 			
-				if (cTimeDone != 2)
+				timer_request_datetime++;
+				
+				if ((cTimeDone != 2) || ((ret == 0) && (timer_request_datetime >= 5)))
 				{
+					timer_request_datetime = 0;
 					ret = 0;
 					struct sockaddr_in 	sTimeAddress;
 					DBG_MUTEX_LOCK(&modulelist_mutex);

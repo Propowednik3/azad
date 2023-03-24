@@ -3235,12 +3235,19 @@ int WEB_get_msg_type(char *msg_rx, int iLen, unsigned int *uiType, unsigned int 
 						if (strlen(param_value) > 4) memcpy(&iValue[10], param_value, 4);
 						else memcpy(&iValue[10], param_value, strlen(param_value));
 					} else iValue[10] = 0;
-					if (WEB_get_param_from_url(msg, msg_len, "ResolCamera", param_value, 2048) >= 0) 
+					if (WEB_get_param_from_url(msg, msg_len, "ResolCameraW", param_value, 2048) >= 0) 
 					{
 						WEB_decode_url_to_src(param_value, strlen(param_value));	
 						iValue[11] = Str2Int(param_value);
-						if ((iValue[11] <= RESOLUTION_TYPE_UNKNOWN) || (iValue[11] >= RESOLUTION_TYPE_MAX)) iValue[11] = RESOLUTION_TYPE_160X120;
-					} else iValue[11] = RESOLUTION_TYPE_160X120;
+						if ((iValue[11] < 160) || (iValue[11] > 2048)) iValue[11] = 160;
+						iValue[11] <<= 16;
+					} else iValue[11] = 160 << 16;
+					if (WEB_get_param_from_url(msg, msg_len, "ResolCameraH", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));	
+						iValue[11] |= Str2Int(param_value);
+						if ((iValue[11] < 120) || (iValue[11] > 2048)) iValue[11] |= 120;
+					} else iValue[11] |= 120;
 					if (WEB_get_param_from_url(msg, msg_len, "MainFrameRate", param_value, 2048) >= 0) 
 					{
 						WEB_decode_url_to_src(param_value, strlen(param_value));	
@@ -3259,12 +3266,19 @@ int WEB_get_msg_type(char *msg_rx, int iLen, unsigned int *uiType, unsigned int 
 						iValue[14] = Str2Int(param_value);
 						if ((iValue[14] < 1) || (iValue[14] > 99999)) iValue[14] = 5000;
 					} else iValue[14] = 5000;
-					if (WEB_get_param_from_url(msg, msg_len, "ResolDetect", param_value, 2048) >= 0) 
+					if (WEB_get_param_from_url(msg, msg_len, "ResolDetectW", param_value, 2048) >= 0) 
 					{
 						WEB_decode_url_to_src(param_value, strlen(param_value));	
 						iValue[15] = Str2Int(param_value);
-						if ((iValue[15] <= RESOLUTION_TYPE_UNKNOWN) || (iValue[15] >= RESOLUTION_TYPE_MAX)) iValue[15] = RESOLUTION_TYPE_160X120;
-					} else iValue[15] = RESOLUTION_TYPE_160X120;
+						if ((iValue[15] < 160) || (iValue[15] > 2048)) iValue[15] = 160;
+						iValue[15] <<= 16;
+					} else iValue[15] = 160 << 16;
+					if (WEB_get_param_from_url(msg, msg_len, "ResolDetectW", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));	
+						iValue[15] |= Str2Int(param_value);
+						if ((iValue[15] < 120) || (iValue[15] > 2048)) iValue[15] |= 120;
+					} else iValue[15] |= 120;
 					if (WEB_get_param_from_url(msg, msg_len, "DetectLevel", param_value, 2048) >= 0) 
 					{
 						WEB_decode_url_to_src(param_value, strlen(param_value));	
@@ -3531,12 +3545,19 @@ int WEB_get_msg_type(char *msg_rx, int iLen, unsigned int *uiType, unsigned int 
 						iValue[45] = Str2Int(param_value);	
 						if ((iValue[45] < 0) || (iValue[45] > 255)) iValue[45] = 20;
 					} else iValue[45] = 20;
-					if (WEB_get_param_from_url(msg, msg_len, "ResolPrev", param_value, 2048) >= 0) 
+					if (WEB_get_param_from_url(msg, msg_len, "ResolPrevW", param_value, 2048) >= 0) 
 					{
 						WEB_decode_url_to_src(param_value, strlen(param_value));	
 						iValue[47] = Str2Int(param_value);
-						if ((iValue[47] <= RESOLUTION_TYPE_UNKNOWN) || (iValue[47] >= RESOLUTION_TYPE_MAX)) iValue[47] = RESOLUTION_TYPE_160X120;						
-					} else iValue[47] = RESOLUTION_TYPE_160X120;
+						if ((iValue[47] < 160) || (iValue[47] > 2048)) iValue[47] = 160;	
+						iValue[47] <<= 16;
+					} else iValue[47] = 160 << 16;
+					if (WEB_get_param_from_url(msg, msg_len, "ResolPrevH", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));	
+						iValue[47] |= Str2Int(param_value);
+						if ((iValue[47] <= 120) || (iValue[47] > 2048)) iValue[47] |= 120;						
+					} else iValue[47] |= 120;
 					if (iValue[47] < iValue[15]) iValue[15] = iValue[47];
 					if (WEB_get_param_from_url(msg, msg_len, "LeftCrop", param_value, 2048) >= 0) 
 					{
@@ -14458,19 +14479,10 @@ int WEB_modules_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 										"Режим подсветки:<input type='checkbox' name='HighLight'%s%s><br />\r\n"
 											"&ensp;&ensp;Уровень яркости для активации: <input type='range' name='HLBright' min='1' max='100' step='1' value='%i' style='width: 400px;' %s>(%i)<br />\r\n"
 											"&ensp;&ensp;Уровень усиления: <input type='range' name='HLAmplif' min='1' max='100' step='1' value='%i' style='width: 400px;' %s>(%i)<br />\r\n"
-										"Разрешение:<select name='ResolCamera' style='width: 140px;'%s>\r\n"
-										"		<option %s value='%i'>160x120</option>\r\n"
-										"		<option %s value='%i'>320x240</option>\r\n"
-										"		<option %s value='%i'>480x240</option>\r\n"
-										"		<option %s value='%i'>640x480</option>\r\n"
-										"		<option %s value='%i'>800x600</option>\r\n"
-										"		<option %s value='%i'>1024x768</option>\r\n"
-										"		<option %s value='%i'>1280x960</option>\r\n"
-										"		<option %s value='%i'>1400x1050</option>\r\n"
-										"		<option %s value='%i'>1600x1200</option>\r\n"
-										"		<option %s value='%i'>2048x1536</option>\r\n"
-										"		<option %s value='%i'>2592x1944</option>\r\n"
-										"	</select><br />\r\n"
+										
+										"Разрешение:<input type='number' name='ResolCameraW' min=160 max=2048 value='%i' style='width: 100px;'%s>x\r\n"
+										"		<input type='number' name='ResolCameraH' min=120 max=2048 value='%i' style='width: 100px;'%s><br />\r\n"
+										
 										"Частота кадров:<input type='number' name='MainFrameRate' min=2 max=190 value='%i' style='width: 100px;'%s><br />\r\n"
 										"Интервал ключа:<input type='number' name='MainKeyFrame' min=0 value='%i' maxlength=3 style='width: 100px;'%s><br />\r\n"
 										"Битрэйт (kbt/s):<input type='number' name='MainBitRate' min=1 value='%i' maxlength=5 style='width: 100px;'%s><br />\r\n"
@@ -14507,20 +14519,9 @@ int WEB_modules_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 															"		<option %s value='15'>5</option>\r\n"
 															"		<option %s value='16'>51</option>\r\n"
 															"	</select><br />\r\n"
-										"Разрешение детектора:<select name='ResolDetect' style='width: 140px;'%s>\r\n"
-										"		<option %s value='%i'>160x120</option>\r\n"
-										"		<option %s value='%i'>320x240</option>\r\n"
-										"		<option %s value='%i'>480x240</option>\r\n"
-										"		<option %s value='%i'>640x480</option>\r\n"
-										"		<option %s value='%i'>800x600</option>\r\n"
-										"		<option %s value='%i'>1024x768</option>\r\n"
-										"		<option %s value='%i'>1280x960</option>\r\n"
-										"		<option %s value='%i'>1400x1050</option>\r\n"
-										"		<option %s value='%i'>1600x1200</option>\r\n"
-										"		<option %s value='%i'>2048x1536</option>\r\n"
-										"		<option %s value='%i'>2592x1944</option>\r\n"
-										"	</select><br />\r\n"
-										
+										"Разрешение детектора:<input type='number' name='ResolDetectW' min=160 max=2048 value='%i' style='width: 100px;'%s>x\r\n"
+										"		<input type='number' name='ResolDetectH' min=120 max=2048 value='%i' style='width: 100px;'%s><br />\r\n"
+																				
 										"Основной детектор движения:<input type='checkbox' name='MainSensor'%s disabled><br />\r\n"		
 										"&ensp;&ensp;Шаг проверяемых кадров:<input type='number' name='MainStep' min=0 max=10000 value='%i' style='width: 100px;' disabled><br />\r\n"
 										"&ensp;&ensp;Чувств. яркостного датчика:<input type='number' name='DetectLevel' min=0 max=255 value='%i' style='width: 100px;'%s><br />\r\n"
@@ -14540,19 +14541,8 @@ int WEB_modules_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 										
 										"Быстрое подключение:<input type='checkbox' name='FastConn'%s%s><br />\r\n"
 										"Предпросмотр:<input type='checkbox' name='Preview'%s%s><br />\r\n"
-										"&ensp;&ensp;Разрешение:<select name='ResolPrev' style='width: 140px;'%s>\r\n"
-										"		<option %s value='%i'>160x120</option>\r\n"
-										"		<option %s value='%i'>320x240</option>\r\n"
-										"		<option %s value='%i'>480x240</option>\r\n"
-										"		<option %s value='%i'>640x480</option>\r\n"
-										"		<option %s value='%i'>800x600</option>\r\n"
-										"		<option %s value='%i'>1024x768</option>\r\n"
-										"		<option %s value='%i'>1280x960</option>\r\n"
-										"		<option %s value='%i'>1400x1050</option>\r\n"
-										"		<option %s value='%i'>1600x1200</option>\r\n"
-										"		<option %s value='%i'>2048x1536</option>\r\n"
-										"		<option %s value='%i'>2592x1944</option>\r\n"
-										"	</select><br />\r\n"
+										"&ensp;&ensp;Разрешение:<input type='number' name='ResolPrevW' min=160 max=2048 value='%i' style='width: 100px;'%s>x\r\n"
+										"		<input type='number' name='ResolPrevH' min=120 max=2048 value='%i' style='width: 100px;'%s><br />\r\n"
 										"&ensp;&ensp;Интервал ключа:<input type='number' name='PrevKeyFrame' min=0 value='%i' maxlength=3 style='width: 100px;'%s><br />\r\n"
 										"&ensp;&ensp;Битрэйт (kbt/s):<input type='number' name='PrevBitRate' min=1 value='%i' maxlength=5 style='width: 100px;'%s><br />\r\n"
 										"&ensp;&ensp;Тип битрэйта:<select name='PrevBitType' style='width: 140px;'%s>\r\n"
@@ -14732,18 +14722,10 @@ int WEB_modules_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 										(miModuleList[n].Settings[8] & 16384) ? " checked " : "", pDisableFlag,			//HighLight
 										(miModuleList[n].Settings[8] >> 16) & 255, pDisableFlag, (miModuleList[n].Settings[8] >> 16) & 255,  	//уровень яркости для HighLight
 										(miModuleList[n].Settings[8] >> 24) & 255, pDisableFlag, (miModuleList[n].Settings[8] >> 24) & 255,  	//уровень усиления для HighLight
-										pDisableFlag,
-										(miModuleList[n].Settings[1] == RESOLUTION_TYPE_160X120) ? " selected" : "", RESOLUTION_TYPE_160X120,
-										(miModuleList[n].Settings[1] == RESOLUTION_TYPE_320X240) ? " selected" : "", RESOLUTION_TYPE_320X240,
-										(miModuleList[n].Settings[1] == RESOLUTION_TYPE_480X240) ? " selected" : "", RESOLUTION_TYPE_480X240,
-										(miModuleList[n].Settings[1] == RESOLUTION_TYPE_640X480) ? " selected" : "", RESOLUTION_TYPE_640X480,
-										(miModuleList[n].Settings[1] == RESOLUTION_TYPE_800X600) ? " selected" : "", RESOLUTION_TYPE_800X600,
-										(miModuleList[n].Settings[1] == RESOLUTION_TYPE_1024X768) ? " selected" : "", RESOLUTION_TYPE_1024X768,
-										(miModuleList[n].Settings[1] == RESOLUTION_TYPE_1280X960) ? " selected" : "", RESOLUTION_TYPE_1280X960,
-										(miModuleList[n].Settings[1] == RESOLUTION_TYPE_1400X1050) ? " selected" : "", RESOLUTION_TYPE_1400X1050,
-										(miModuleList[n].Settings[1] == RESOLUTION_TYPE_1600X1200) ? " selected" : "", RESOLUTION_TYPE_1600X1200,
-										(miModuleList[n].Settings[1] == RESOLUTION_TYPE_2048X1536) ? " selected" : "", RESOLUTION_TYPE_2048X1536,
-										(miModuleList[n].Settings[1] == RESOLUTION_TYPE_2592X1944) ? " selected" : "", RESOLUTION_TYPE_2592X1944,
+										
+										(miModuleList[n].Settings[1] << 16) & 0xFFFF, pDisableFlag,				//Разрешение W
+										miModuleList[n].Settings[1] & 0xFFFF, pDisableFlag,						//Разрешение H
+										
 										miModuleList[n].Settings[2], pDisableFlag,
 										miModuleList[n].Settings[3], pDisableFlag,
 										miModuleList[n].Settings[4], pDisableFlag,
@@ -14777,18 +14759,9 @@ int WEB_modules_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 										((miModuleList[n].Settings[20] & 255) == 14) ? " selected " : "",//Уровень кодека
 										((miModuleList[n].Settings[20] & 255) == 15) ? " selected " : "",//Уровень кодека
 										((miModuleList[n].Settings[20] & 255) == 16) ? " selected " : "",//Уровень кодека
-										pDisableFlag,
-										(miModuleList[n].Settings[5] == RESOLUTION_TYPE_160X120) ? " selected" : "", RESOLUTION_TYPE_160X120,
-										(miModuleList[n].Settings[5] == RESOLUTION_TYPE_320X240) ? " selected" : "", RESOLUTION_TYPE_320X240,
-										(miModuleList[n].Settings[5] == RESOLUTION_TYPE_480X240) ? " selected" : "", RESOLUTION_TYPE_480X240,
-										(miModuleList[n].Settings[5] == RESOLUTION_TYPE_640X480) ? " selected" : "", RESOLUTION_TYPE_640X480,
-										(miModuleList[n].Settings[5] == RESOLUTION_TYPE_800X600) ? " selected" : "", RESOLUTION_TYPE_800X600,
-										(miModuleList[n].Settings[5] == RESOLUTION_TYPE_1024X768) ? " selected" : "", RESOLUTION_TYPE_1024X768,
-										(miModuleList[n].Settings[5] == RESOLUTION_TYPE_1280X960) ? " selected" : "", RESOLUTION_TYPE_1280X960,
-										(miModuleList[n].Settings[5] == RESOLUTION_TYPE_1400X1050) ? " selected" : "", RESOLUTION_TYPE_1400X1050,
-										(miModuleList[n].Settings[5] == RESOLUTION_TYPE_1600X1200) ? " selected" : "", RESOLUTION_TYPE_1600X1200,
-										(miModuleList[n].Settings[5] == RESOLUTION_TYPE_2048X1536) ? " selected" : "", RESOLUTION_TYPE_2048X1536,
-										(miModuleList[n].Settings[5] == RESOLUTION_TYPE_2592X1944) ? " selected" : "", RESOLUTION_TYPE_2592X1944,
+										
+										(miModuleList[n].Settings[5] << 16) & 0xFFFF, pDisableFlag,			//Разрешение W
+										miModuleList[n].Settings[5] & 0xFFFF, pDisableFlag,					//Разрешение H
 										
 										miModuleList[n].ScanSet ? " checked " : "",								//Основной детектор движения
 										miModuleList[n].ScanSet,
@@ -14808,18 +14781,9 @@ int WEB_modules_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 										
 										miModuleList[n].Settings[15] ? " checked " : "", pDisableFlag,			//Быстрое подключение
 										(miModuleList[n].Settings[8] & 4) ? " checked " : "", pDisableFlag,		//Предпросмотр
-										pDisableFlag,
-										(miModuleList[n].Settings[37] == RESOLUTION_TYPE_160X120) ? " selected" : "", RESOLUTION_TYPE_160X120,
-										(miModuleList[n].Settings[37] == RESOLUTION_TYPE_320X240) ? " selected" : "", RESOLUTION_TYPE_320X240,
-										(miModuleList[n].Settings[37] == RESOLUTION_TYPE_480X240) ? " selected" : "", RESOLUTION_TYPE_480X240,
-										(miModuleList[n].Settings[37] == RESOLUTION_TYPE_640X480) ? " selected" : "", RESOLUTION_TYPE_640X480,
-										(miModuleList[n].Settings[37] == RESOLUTION_TYPE_800X600) ? " selected" : "", RESOLUTION_TYPE_800X600,
-										(miModuleList[n].Settings[37] == RESOLUTION_TYPE_1024X768) ? " selected" : "", RESOLUTION_TYPE_1024X768,
-										(miModuleList[n].Settings[37] == RESOLUTION_TYPE_1280X960) ? " selected" : "", RESOLUTION_TYPE_1280X960,
-										(miModuleList[n].Settings[37] == RESOLUTION_TYPE_1400X1050) ? " selected" : "", RESOLUTION_TYPE_1400X1050,
-										(miModuleList[n].Settings[37] == RESOLUTION_TYPE_1600X1200) ? " selected" : "", RESOLUTION_TYPE_1600X1200,
-										(miModuleList[n].Settings[37] == RESOLUTION_TYPE_2048X1536) ? " selected" : "", RESOLUTION_TYPE_2048X1536,
-										(miModuleList[n].Settings[37] == RESOLUTION_TYPE_2592X1944) ? " selected" : "", RESOLUTION_TYPE_2592X1944,
+										
+										(miModuleList[n].Settings[37] << 16) & 0xFFFF, pDisableFlag,			//Разрешение W
+										miModuleList[n].Settings[37] & 0xFFFF, pDisableFlag,					//Разрешение H
 										
 										miModuleList[n].Settings[21], pDisableFlag,  							//Интервал ключа
 										miModuleList[n].Settings[17], pDisableFlag,  							//Битрэйт

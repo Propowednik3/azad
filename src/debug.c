@@ -366,7 +366,7 @@ char dbgprintf(unsigned char cLevel, char *Buff, ...)
 	{		
 		if (cFileLogStarted == 0) 
 		{
-			remove(cFileLogName);
+			//remove(cFileLogName); //Начать лог заново
 			cFileLogStarted = 1;
 		}
 		FILE *f;
@@ -457,7 +457,7 @@ char dbgprintfw(unsigned char cLevel, char *Buff, ...)
 	{
 		if (cFileLogStarted == 0) 
 		{
-			remove(cFileLogName);
+			//remove(cFileLogName); //Начать лог заново
 			cFileLogStarted = 1;
 		}
 		FILE *f;
