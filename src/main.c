@@ -12911,13 +12911,22 @@ int LoadModules(char *Buff)
 							}
 						if ((miModuleList[iModuleCnt-1].Type == MODULE_TYPE_CAMERA) && ((n == 1) || (n == 37) || (n == 5)))
 						{
+							int iW = 160;
+							int iH = 120;
 							if (miModuleList[iModuleCnt-1].Settings[n] < RESOLUTION_TYPE_MAX)
 							{
-								int iW = 160;
-								int iH = 120;
 								GetResolutionFromMode(miModuleList[iModuleCnt-1].Settings[n], &iW, &iH);
-								miModuleList[iModuleCnt-1].Settings[n] = ((iW & 0xFFFF) << 16) | (iH & 0xFFFF);
+								miModuleList[iModuleCnt-1].Settings[n] = ((iW & 0xFFFF) << 16) | (iH & 0xFFFF);	
 							}
+							
+							iW = (miModuleList[iModuleCnt-1].Settings[n] >> 16) & 0xFFFF;
+							iH = miModuleList[iModuleCnt-1].Settings[n] & 0xFFFF;
+							if ((iW < 120) || (iW > 2048)) iW = 160;
+							if ((iH < 120) || (iH > 2048)) iH = 120;
+							iW = (iW+31)&~31;
+							iH = (iH+15)&~15;
+							miModuleList[iModuleCnt-1].Settings[n] = (iW & 0xFFFF) << 16;
+							miModuleList[iModuleCnt-1].Settings[n] |= iH & 0xFFFF;
 						}
 					}
 				}				
@@ -13422,11 +13431,11 @@ int TestModules(int iMode)
 			case MODULE_TYPE_DISPLAY:
 				break;
 			case MODULE_TYPE_CAMERA:
-				if ((miModuleList[i].Settings[1] < 0) || (miModuleList[i].Settings[1] > 10))
+				/*if ((miModuleList[i].Settings[1] < 120) || (miModuleList[i].Settings[1] > 2048))
 				{
-					if (iMode == 0) dbgprintf(2, "TestModules: MODULE(%i) CAMERA Settings[1] Resolution not between 0 and 10\n", i);
-					else WEB_AddMessageInList("TestModules: MODULE(%i) CAMERA Settings[1] Resolution not between 0 and 10", i);
-				}
+					if (iMode == 0) dbgprintf(2, "TestModules: MODULE(%i) CAMERA Settings[1] Resolution %i not between 120 and 2048\n", i, miModuleList[i].Settings[1]);
+					else WEB_AddMessageInList("TestModules: MODULE(%i) CAMERA Settings[1] Resolution %i not between 120 and 2048", i, miModuleList[i].Settings[1]);
+				}*/
 				if ((miModuleList[i].Settings[2] < 2) || (miModuleList[i].Settings[2] > 90))
 				{
 					if (iMode == 0) dbgprintf(2, "TestModules: MODULE(%i) CAMERA Settings[2] FrameRate not between 2 and 90\n", i);
@@ -13437,11 +13446,16 @@ int TestModules(int iMode)
 					if (iMode == 0) dbgprintf(2, "TestModules: MODULE(%i) CAMERA Settings[4] BitRate not between 16 and 100000\n", i);
 					else WEB_AddMessageInList("TestModules: MODULE(%i) CAMERA Settings[4] BitRate not between 16 and 100000", i);
 				}
-				if ((miModuleList[i].Settings[5] < 0) || (miModuleList[i].Settings[5] > 10))
+				/*if ((miModuleList[i].Settings[5] < 120) || (miModuleList[i].Settings[5] > 2048))
 				{
-					if (iMode == 0) dbgprintf(2, "TestModules: MODULE(%i) CAMERA Settings[5] MoveSensorResolution not between 0 and 10\n", i);
-					else WEB_AddMessageInList("TestModules: MODULE(%i) CAMERA Settings[5] MoveSensorResolution not between 0 and 10", i);
+					if (iMode == 0) dbgprintf(2, "TestModules: MODULE(%i) CAMERA Settings[5] MoveSensorResolution %i not between 120 and 2048\n", i, miModuleList[i].Settings[5]);
+					else WEB_AddMessageInList("TestModules: MODULE(%i) CAMERA Settings[5] MoveSensorResolution %i not between 120 and 2048", i, miModuleList[i].Settings[5]);
 				}
+				if ((miModuleList[i].Settings[37] < 120) || (miModuleList[i].Settings[37] > 2048))
+				{
+					if (iMode == 0) dbgprintf(2, "TestModules: MODULE(%i) CAMERA Settings[37] Resolution not between 120 and 2048\n", i, miModuleList[i].Settings[37]);
+					else WEB_AddMessageInList("TestModules: MODULE(%i) CAMERA Settings[37] Resolution not between 120 and 2048", i, miModuleList[i].Settings[37]);
+				}*/
 				if ((miModuleList[i].Settings[6] < 0) || (miModuleList[i].Settings[6] > 100))
 				{
 					if (iMode == 0) dbgprintf(2, "TestModules: MODULE(%i) CAMERA Settings[6] MoveDetectLevel not between 0 and 100\n", i);

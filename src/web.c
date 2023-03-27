@@ -3239,14 +3239,15 @@ int WEB_get_msg_type(char *msg_rx, int iLen, unsigned int *uiType, unsigned int 
 					{
 						WEB_decode_url_to_src(param_value, strlen(param_value));	
 						iValue[11] = Str2Int(param_value);
-						if ((iValue[11] < 160) || (iValue[11] > 2048)) iValue[11] = 160;
+						if ((iValue[11] < 120) || (iValue[11] > 2048)) iValue[11] = 160;
 						iValue[11] <<= 16;
 					} else iValue[11] = 160 << 16;
 					if (WEB_get_param_from_url(msg, msg_len, "ResolCameraH", param_value, 2048) >= 0) 
 					{
-						WEB_decode_url_to_src(param_value, strlen(param_value));	
-						iValue[11] |= Str2Int(param_value);
-						if ((iValue[11] < 120) || (iValue[11] > 2048)) iValue[11] |= 120;
+						WEB_decode_url_to_src(param_value, strlen(param_value));
+						int iH = Str2Int(param_value);						
+						if ((iH < 120) || (iH > 2048)) iH = 120;
+						iValue[11] |= iH;
 					} else iValue[11] |= 120;
 					if (WEB_get_param_from_url(msg, msg_len, "MainFrameRate", param_value, 2048) >= 0) 
 					{
@@ -3270,14 +3271,15 @@ int WEB_get_msg_type(char *msg_rx, int iLen, unsigned int *uiType, unsigned int 
 					{
 						WEB_decode_url_to_src(param_value, strlen(param_value));	
 						iValue[15] = Str2Int(param_value);
-						if ((iValue[15] < 160) || (iValue[15] > 2048)) iValue[15] = 160;
+						if ((iValue[15] < 120) || (iValue[15] > 2048)) iValue[15] = 160;
 						iValue[15] <<= 16;
 					} else iValue[15] = 160 << 16;
 					if (WEB_get_param_from_url(msg, msg_len, "ResolDetectW", param_value, 2048) >= 0) 
 					{
 						WEB_decode_url_to_src(param_value, strlen(param_value));	
-						iValue[15] |= Str2Int(param_value);
-						if ((iValue[15] < 120) || (iValue[15] > 2048)) iValue[15] |= 120;
+						int iH = Str2Int(param_value);						
+						if ((iH < 120) || (iH > 2048)) iH = 120;
+						iValue[15] |= iH;
 					} else iValue[15] |= 120;
 					if (WEB_get_param_from_url(msg, msg_len, "DetectLevel", param_value, 2048) >= 0) 
 					{
@@ -3549,14 +3551,15 @@ int WEB_get_msg_type(char *msg_rx, int iLen, unsigned int *uiType, unsigned int 
 					{
 						WEB_decode_url_to_src(param_value, strlen(param_value));	
 						iValue[47] = Str2Int(param_value);
-						if ((iValue[47] < 160) || (iValue[47] > 2048)) iValue[47] = 160;	
+						if ((iValue[47] < 120) || (iValue[47] > 2048)) iValue[47] = 160;	
 						iValue[47] <<= 16;
 					} else iValue[47] = 160 << 16;
 					if (WEB_get_param_from_url(msg, msg_len, "ResolPrevH", param_value, 2048) >= 0) 
 					{
 						WEB_decode_url_to_src(param_value, strlen(param_value));	
-						iValue[47] |= Str2Int(param_value);
-						if ((iValue[47] <= 120) || (iValue[47] > 2048)) iValue[47] |= 120;						
+						int iH = Str2Int(param_value);						
+						if ((iH < 120) || (iH > 2048)) iH = 120;
+						iValue[47] |= iH;					
 					} else iValue[47] |= 120;
 					if (iValue[47] < iValue[15]) iValue[15] = iValue[47];
 					if (WEB_get_param_from_url(msg, msg_len, "LeftCrop", param_value, 2048) >= 0) 
@@ -12472,6 +12475,28 @@ int WEB_module_save(int *pParams, char *strValue)
 		}
 		if (miModuleList[pParams[0]].Type == MODULE_TYPE_CAMERA)
 		{
+			int iW, iH;
+			iW = (miModuleList[pParams[0]].Settings[1] >> 16) & 0xFFFF;
+			iH = miModuleList[pParams[0]].Settings[1] & 0xFFFF;
+			iW = (iW+31)&~31;
+			iH = (iH+15)&~15;
+			miModuleList[pParams[0]].Settings[1] = (iW & 0xFFFF) << 16;
+			miModuleList[pParams[0]].Settings[1] |= iH & 0xFFFF;
+			
+			iW = (miModuleList[pParams[0]].Settings[5] >> 16) & 0xFFFF;
+			iH = miModuleList[pParams[0]].Settings[5] & 0xFFFF;
+			iW = (iW+31)&~31;
+			iH = (iH+15)&~15;
+			miModuleList[pParams[0]].Settings[5] = (iW & 0xFFFF) << 16;
+			miModuleList[pParams[0]].Settings[5] |= iH & 0xFFFF;
+			
+			iW = (miModuleList[pParams[0]].Settings[37] >> 16) & 0xFFFF;
+			iH = miModuleList[pParams[0]].Settings[37] & 0xFFFF;
+			iW = (iW+31)&~31;
+			iH = (iH+15)&~15;
+			miModuleList[pParams[0]].Settings[37] = (iW & 0xFFFF) << 16;
+			miModuleList[pParams[0]].Settings[37] |= iH & 0xFFFF;
+						
 			miModuleList[pParams[0]].Settings[10] |= (pParams[48] & 0xFF) << 24;
 			miModuleList[pParams[0]].Settings[10] |= (pParams[49] & 0xFF) << 16;
 			miModuleList[pParams[0]].Settings[11] |= (pParams[50] & 0xFF) << 24;
@@ -14480,7 +14505,7 @@ int WEB_modules_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 											"&ensp;&ensp;Уровень яркости для активации: <input type='range' name='HLBright' min='1' max='100' step='1' value='%i' style='width: 400px;' %s>(%i)<br />\r\n"
 											"&ensp;&ensp;Уровень усиления: <input type='range' name='HLAmplif' min='1' max='100' step='1' value='%i' style='width: 400px;' %s>(%i)<br />\r\n"
 										
-										"Разрешение:<input type='number' name='ResolCameraW' min=160 max=2048 value='%i' style='width: 100px;'%s>x\r\n"
+										"Разрешение:<input type='number' name='ResolCameraW' min=120 max=2048 value='%i' style='width: 100px;'%s>x\r\n"
 										"		<input type='number' name='ResolCameraH' min=120 max=2048 value='%i' style='width: 100px;'%s><br />\r\n"
 										
 										"Частота кадров:<input type='number' name='MainFrameRate' min=2 max=190 value='%i' style='width: 100px;'%s><br />\r\n"
@@ -14519,7 +14544,7 @@ int WEB_modules_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 															"		<option %s value='15'>5</option>\r\n"
 															"		<option %s value='16'>51</option>\r\n"
 															"	</select><br />\r\n"
-										"Разрешение детектора:<input type='number' name='ResolDetectW' min=160 max=2048 value='%i' style='width: 100px;'%s>x\r\n"
+										"Разрешение детектора:<input type='number' name='ResolDetectW' min=120 max=2048 value='%i' style='width: 100px;'%s>x\r\n"
 										"		<input type='number' name='ResolDetectH' min=120 max=2048 value='%i' style='width: 100px;'%s><br />\r\n"
 																				
 										"Основной детектор движения:<input type='checkbox' name='MainSensor'%s disabled><br />\r\n"		
@@ -14541,7 +14566,7 @@ int WEB_modules_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 										
 										"Быстрое подключение:<input type='checkbox' name='FastConn'%s%s><br />\r\n"
 										"Предпросмотр:<input type='checkbox' name='Preview'%s%s><br />\r\n"
-										"&ensp;&ensp;Разрешение:<input type='number' name='ResolPrevW' min=160 max=2048 value='%i' style='width: 100px;'%s>x\r\n"
+										"&ensp;&ensp;Разрешение:<input type='number' name='ResolPrevW' min=120 max=2048 value='%i' style='width: 100px;'%s>x\r\n"
 										"		<input type='number' name='ResolPrevH' min=120 max=2048 value='%i' style='width: 100px;'%s><br />\r\n"
 										"&ensp;&ensp;Интервал ключа:<input type='number' name='PrevKeyFrame' min=0 value='%i' maxlength=3 style='width: 100px;'%s><br />\r\n"
 										"&ensp;&ensp;Битрэйт (kbt/s):<input type='number' name='PrevBitRate' min=1 value='%i' maxlength=5 style='width: 100px;'%s><br />\r\n"
