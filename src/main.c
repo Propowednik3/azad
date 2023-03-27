@@ -12916,7 +12916,7 @@ int LoadModules(char *Buff)
 								int iW = 160;
 								int iH = 120;
 								GetResolutionFromMode(miModuleList[iModuleCnt-1].Settings[n], &iW, &iH);
-								miModuleList[iModuleCnt-1].Settings[n] = ((iW << 16) & 0xFFFF) | (iH & 0xFFFF);
+								miModuleList[iModuleCnt-1].Settings[n] = ((iW & 0xFFFF) << 16) | (iH & 0xFFFF);
 							}
 						}
 					}

@@ -14723,7 +14723,7 @@ int WEB_modules_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 										(miModuleList[n].Settings[8] >> 16) & 255, pDisableFlag, (miModuleList[n].Settings[8] >> 16) & 255,  	//уровень яркости для HighLight
 										(miModuleList[n].Settings[8] >> 24) & 255, pDisableFlag, (miModuleList[n].Settings[8] >> 24) & 255,  	//уровень усиления для HighLight
 										
-										(miModuleList[n].Settings[1] << 16) & 0xFFFF, pDisableFlag,				//Разрешение W
+										(miModuleList[n].Settings[1] >> 16) & 0xFFFF, pDisableFlag,				//Разрешение W
 										miModuleList[n].Settings[1] & 0xFFFF, pDisableFlag,						//Разрешение H
 										
 										miModuleList[n].Settings[2], pDisableFlag,
@@ -14760,7 +14760,7 @@ int WEB_modules_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 										((miModuleList[n].Settings[20] & 255) == 15) ? " selected " : "",//Уровень кодека
 										((miModuleList[n].Settings[20] & 255) == 16) ? " selected " : "",//Уровень кодека
 										
-										(miModuleList[n].Settings[5] << 16) & 0xFFFF, pDisableFlag,			//Разрешение W
+										(miModuleList[n].Settings[5] >> 16) & 0xFFFF, pDisableFlag,			//Разрешение W
 										miModuleList[n].Settings[5] & 0xFFFF, pDisableFlag,					//Разрешение H
 										
 										miModuleList[n].ScanSet ? " checked " : "",								//Основной детектор движения
@@ -14782,7 +14782,7 @@ int WEB_modules_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 										miModuleList[n].Settings[15] ? " checked " : "", pDisableFlag,			//Быстрое подключение
 										(miModuleList[n].Settings[8] & 4) ? " checked " : "", pDisableFlag,		//Предпросмотр
 										
-										(miModuleList[n].Settings[37] << 16) & 0xFFFF, pDisableFlag,			//Разрешение W
+										(miModuleList[n].Settings[37] >> 16) & 0xFFFF, pDisableFlag,			//Разрешение W
 										miModuleList[n].Settings[37] & 0xFFFF, pDisableFlag,					//Разрешение H
 										
 										miModuleList[n].Settings[21], pDisableFlag,  							//Интервал ключа
