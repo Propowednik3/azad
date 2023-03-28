@@ -472,9 +472,11 @@ char dbgprintfw(unsigned char cLevel, char *Buff, ...)
 		{
 			if ((ftell(f)/1000000) > 10)
 			{
-				fputs("SIZE FILE LOG BIG: EXIT\n", f);
+				fputs("SIZE FILE LOG BIG: restart log\n", f);
 				fclose(f);
-				exit(0);
+				f = NULL;
+				remove(cFileLogName);
+				//exit(0);
 			}
 		}
 		fclose(f);
