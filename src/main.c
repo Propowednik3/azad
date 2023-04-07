@@ -1105,6 +1105,7 @@ void UpdateModuleStatus(MODULE_INFO *pModule, char cAll)
 			if (cAll || (pModule->SaveChanges & 0x00040000)
 					 || (pModule->GenEvents & 0x00040000)
 					 || (pModule->Global & 0x00040000))	pModule->Status[18] = get_sys_core() & 1;
+			pModule->Status[19] = pModule->ID;
 			//pModule->Status[10] = EVENTS
 			DBG_MUTEX_UNLOCK(&system_mutex);			
 			break;
@@ -8468,6 +8469,7 @@ char *GetModuleStatusName(unsigned int uiType, unsigned int uiStatusNum, char*Ou
 					case 16: strcpy(Buffer, "Текущия минута"); break;
 					case 17: strcpy(Buffer, "Текущая секунда"); break;
 					case 18: strcpy(Buffer, "Пониженное питание"); break;
+					case 19: strcpy(Buffer, "ID"); break;
 					default: ret = NULL; break;
 				}
 			}
@@ -8494,6 +8496,7 @@ char *GetModuleStatusName(unsigned int uiType, unsigned int uiStatusNum, char*Ou
 					case 16: strcpy(Buffer, "Current minute"); break;
 					case 17: strcpy(Buffer, "Current second"); break;
 					case 18: strcpy(Buffer, "Low power"); break;
+					case 19: strcpy(Buffer, "ID"); break;
 					default: ret = NULL; break;
 				}
 			}
@@ -8679,6 +8682,7 @@ char *GetModuleStatusValue(unsigned int uiType, unsigned int uiStatusNum, int iS
 				case 16: sprintf(Buffer, "%i", iStatus); break;
 				case 17: sprintf(Buffer, "%i", iStatus); break;
 				case 18: sprintf(Buffer, "%i", iStatus); break;
+				case 19: sprintf(Buffer, "%.4s", (char*)&iStatus); break;
 				default: break;
 			}
 			break;	
@@ -8804,6 +8808,7 @@ char *GetModuleStatusValueType(unsigned int uiType, unsigned int uiStatusNum, ch
 				case 16: strcpy(Buffer, "min"); break;
 				case 17: strcpy(Buffer, "sec"); break;
 				case 18: break;
+				case 19: break;
 				default: break;
 			}
 			break;	
@@ -8883,7 +8888,7 @@ char GetModuleStatusEn(unsigned int uiType, unsigned int uiStatusNum)
 			if (uiStatusNum < 6) ret = 1;
 			break;
 		case MODULE_TYPE_SYSTEM:
-			if (uiStatusNum < 19) ret = 1;
+			if (uiStatusNum < 20) ret = 1;
 			break;	
 		case MODULE_TYPE_CAMERA:
 			if (uiStatusNum < 22) ret = 1;
@@ -19150,7 +19155,9 @@ char ClearSpace(FS_GROUP *fs_group, unsigned int fsCount)
 						result = -1;
 						break;
 					}
-					dbgprintf(3, "no file for delete in %s (need space %i Mb) now: %i\n", fs_group[i].Paths[m], fs_group[i].MinFree, get_fs_free_mbytes(fs_group[i].Paths[m]));
+					dbgprintf(3, "no file for delete (need space %i Mb) now: %i\n", fs_group[i].MinFree, get_fs_free_mbytes(fs_group[i].Paths[m]));
+					dbgprintf(3, "\t\tPath:%s\n", fs_group[i].Paths[m]);
+					dbgprintf(3, "\t\tSubPath:%s\n", cSubPath);
 					cStatus = 0;
 				} 
 				else 
@@ -24387,7 +24394,6 @@ int main(int argc, char *argv[])
 	if (n >= 0)
 	{
 		miModuleList[n].Enabled = 1;
-		miModuleList[n].Status[1] = iAccessLevel;
 		miSystemList[0].ID = miModuleList[n].ID;
 		memcpy(miSystemList[0].Name, miModuleList[n].Name, 64);
 		sprintf(cLogMlList.MainText, "%.30s(%.4s) Log message", miSystemList[0].Name, (char*)&miSystemList[0].ID);	
@@ -24399,7 +24405,6 @@ int main(int argc, char *argv[])
 		memset(&miModuleList[iModuleCnt-1], 0, sizeof(MODULE_INFO));
 		miModuleList[iModuleCnt-1].Enabled = 1;
 		miModuleList[iModuleCnt-1].ID = miSystemList[0].ID;	
-		miModuleList[iModuleCnt-1].Status[1] = iAccessLevel;		
 		memcpy(miModuleList[iModuleCnt-1].Name, miSystemList[0].Name, 64);
 		miModuleList[iModuleCnt-1].Type = MODULE_TYPE_SYSTEM;
 		/*if ((strlen((char*)miModuleList[iModuleCnt-1].Name) + strlen(miSystemList[0].Version + 3)) < 64)
@@ -24419,12 +24424,14 @@ int main(int argc, char *argv[])
 	miModuleList[n].Settings[4] = cCaptureFilesView | cBackUpFilesView;
 	miModuleList[n].Settings[5] = cCaptureFilesLevel;
 	miModuleList[n].Settings[6] = cBackUpFilesLevel;
+	miModuleList[n].Status[1] = iAccessLevel;	
 	miModuleList[n].Status[7] = get_mem_gpu_mb();
 	miModuleList[n].Status[9] = get_mem_cpu_mb();
 	miModuleList[n].Status[10] = (int)(get_sys_volt(0) * 1000);
 	miModuleList[n].Status[11] = (int)(get_sys_volt(1) * 1000);
 	miModuleList[n].Status[12] = (int)(get_sys_volt(2) * 1000);
 	miModuleList[n].Status[13] = (int)(get_sys_volt(3) * 1000);
+	miModuleList[n].Status[19] = miModuleList[n].ID;
 	miModuleList[n].Version[0] = version[0];
 	miModuleList[n].Version[1] = version[1];
 	miModuleList[n].Version[2] = version[2];
