@@ -19047,7 +19047,7 @@ int FindFirstFile(char *cDir, char *cAddPath, char *cFile, char cDeleteEmptyDir)
 		
 	int result = GetFirstFile(cCurrentPath, cResultPath, cDeleteEmptyDir);
 	//printf("GetFirstFile done: %i %s\n", result, cCurrentPath);
-	if (result >= 0)
+	if (result > 0)
 	{		
 		memset(cAddPath, 0, MAX_FILE_LEN);
 		memset(cFile, 0, MAX_FILE_LEN);
@@ -19125,56 +19125,38 @@ char ClearSpace(FS_GROUP *fs_group, unsigned int fsCount)
 	char cResSubPath[MAX_FILE_LEN];
 	memset(cResSubPath, 0, MAX_FILE_LEN);
 	unsigned int uiPathPos = 0;
-	//unsigned int uiPrevPos = 0;
-	char cStatus = 0;
-	char result = 0;
-	int i, m, n, k, clk, finded_clk;
+		
+	char clean_result = 0;
+	int i, m, n, k, clk;
 	for (i = 0; i < fsCount; i++)
 	{
 		//printf("Space %i\n", i);
 		if (fs_group[i].Count == 0) continue;
-		clk = MAX_FILE_DELETE;		
+		clk = MAX_FILE_DELETE;	
+		int deleted_count = 0;
+		
 		while(clk &&(fs_group[i].MinFree > get_fs_free_mbytes(fs_group[i].Paths[0])))
 		{
 			memset(cPrev, 0, MAX_FILE_LEN);
 			cPrev[0] = 255;
-			cStatus = 0;
+			int finded_clk = 0;
 			uiPathPos = 0;
-			//uiPrevPos = 0;
-			finded_clk = 0;
 			for (m = 0; m < fs_group[i].Count; m++)
 			{
-				//printf("Path %i\n", m);
-				//printf("Path %s\n", fs_group[i].Paths[m]);
 				n = FindFirstFile(fs_group[i].Paths[m], cSubPath, cCurr, 1);
-				//printf("FindFirstFile done %i\n", n);
 				if (n <= 0) 
 				{
-					if (n == -1) 
-					{
-						result = -1;
-						break;
-					}
 					dbgprintf(3, "no file for delete (need space %i Mb) now: %i\n", fs_group[i].MinFree, get_fs_free_mbytes(fs_group[i].Paths[m]));
+					dbgprintf(3, "\t\tGroup:%i\n", i);
 					dbgprintf(3, "\t\tPath:%s\n", fs_group[i].Paths[m]);
 					dbgprintf(3, "\t\tSubPath:%s\n", cSubPath);
-					cStatus = 0;
+					dbgprintf(3, "\t\tResult:%i\n", n);
+					dbgprintf(3, "\t\ttry num:%i\n", clk);
 				} 
 				else 
 				{	
 					finded_clk++;
-					//printf("FindFirstFile %s\n", fs_group[i].Paths[m]);
-					//printf("FindFirstFile %s\n", cSubPath);
-					//printf("FindFirstFile %s\n", cCurr);
 					dbgprintf(5, "finded for delete %s\n", cCurr);
-					/*if (n > uiPrevPos)
-					{
-						memcpy(cPrev, cCurr, MAX_FILE_LEN);
-						uiPrevPos = n;
-						uiPathPos = m;
-						cStatus = 1;
-					}
-					if (n == uiPrevPos)*/
 					{
 						dbgprintf(5, "CompareStr with %s\n", cPrev);
 						k = CompareStr(cPrev, cCurr);
@@ -19182,54 +19164,47 @@ char ClearSpace(FS_GROUP *fs_group, unsigned int fsCount)
 						{
 							memcpy(cPrev, cCurr, MAX_FILE_LEN);
 							memcpy(cResSubPath, cSubPath, MAX_FILE_LEN);
-							//uiPrevPos = n;
-							uiPathPos = m;
-							cStatus = 1;
+							uiPathPos = m;							
 						}
 					}
 					dbgprintf(5, "result for delete %s\n", cPrev);					
 				}
 			}
-			if (finded_clk == 0)
+			if (finded_clk == 0) break; //Not find in all paths, get to next group				
+			
+			dbgprintf(3, "Delete '%s'\n", cPrev);
+			int iLen = strlen(fs_group[i].Paths[uiPathPos]) + strlen(cResSubPath)+strlen(cPrev) + 1;
+			char *cFullPath = (char*)DBG_MALLOC(iLen + 1);
+			memset(cFullPath, 0, iLen + 1);
+			strcpy(cFullPath, fs_group[i].Paths[uiPathPos]);
+			strcat(cFullPath, cResSubPath);
+			strcat(cFullPath, "/");
+			strcat(cFullPath, cPrev);
+			dbgprintf(3, "Delete '%s'\n", cFullPath);
+			if (remove(cFullPath) != 0)
 			{
-				clk = 0;	
-				break;
-			}
-			if (cStatus)
-			{		
-				dbgprintf(3, "Delete '%s'\n", cPrev);
-				int iLen = strlen(fs_group[i].Paths[uiPathPos]) + strlen(cResSubPath)+strlen(cPrev) + 1;
-				char *cFullPath = (char*)DBG_MALLOC(iLen + 1);
-				memset(cFullPath, 0, iLen + 1);
-				strcpy(cFullPath, fs_group[i].Paths[uiPathPos]);
-				strcat(cFullPath, cResSubPath);
-				strcat(cFullPath, "/");
-				strcat(cFullPath, cPrev);
-				dbgprintf(3, "Delete '%s'\n", cFullPath);
-				if (remove(cFullPath) != 0)
-				{
-					dbgprintf(2, "Error delete %s '%s'\n", (errno == ENOENT) ? "not found" : "no access", cFullPath);
-					result = -2;
-					DBG_FREE(cFullPath);					
-					break;
-				}
-				DBG_FREE(cFullPath);				
-			}
+				dbgprintf(2, "Error delete %s '%s'\n", (errno == ENOENT) ? "not found" : "no access", cFullPath);
+				//result = -2;
+				//DBG_FREE(cFullPath);					
+				//break;
+			} else deleted_count++;
+			DBG_FREE(cFullPath);				
+			
 			clk--;
 		}
-		if (result >= 0)
+		
+		if (deleted_count > 0)
 		{
-			if (!clk && (fs_group[i].MinFree > get_fs_free_mbytes(fs_group[i].Paths[0])))
+			if (fs_group[i].MinFree > get_fs_free_mbytes(fs_group[i].Paths[0]))
 			{
-				dbgprintf(2, "Error clean disk, need more space '%i>%i'\n", fs_group[i].MinFree, get_fs_free_mbytes(fs_group[i].Paths[0]));
-				for (m = 0; m < fs_group[i].Count; m++)
-					dbgprintf(3, "\tfrom path: '%s'\n", fs_group[i].Paths[m]);
+				dbgprintf(2, "Error clean disk in group %i, need more space '%i>%i'\n", i, fs_group[i].MinFree, get_fs_free_mbytes(fs_group[i].Paths[0]));
+					for (m = 0; m < fs_group[i].Count; m++)
+						dbgprintf(3, "\tfrom path: '%s'\n", fs_group[i].Paths[m]);				
 			}
-			else
-				result++;
+			else clean_result++;
 		}
 	}
-	return result;
+	return clean_result;
 }
 
 int SmartCardModuleInit(MODULE_INFO * pModule)
