@@ -17512,9 +17512,11 @@ void SendFilesToArchive(STREAM_INFO *siArchive, struct tm *prev_time)
 	time(&rawtime);
 	localtime_r(&rawtime, &now_time);
 	
-	if ((now_time.tm_year - prev_time->tm_year) > 1) memcpy(prev_time, &now_time, sizeof(struct tm));
+	int date_difference = abs(now_time.tm_yday - prev_time->tm_yday);
 	
-	if ((now_time.tm_mday != prev_time->tm_mday) && now_time.tm_hour)
+	if (date_difference > 2) memcpy(prev_time, &now_time, sizeof(struct tm));
+	
+	if ((date_difference && (date_difference <= 2)) && now_time.tm_hour)
 	{
 		DBG_MUTEX_LOCK(&system_mutex);
 		if (ucBackUpModeArchive != 0)
