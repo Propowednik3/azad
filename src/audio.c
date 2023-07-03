@@ -5302,6 +5302,11 @@ void* thread_SaveFLVFile(void* pvData)
 	int SpsPpsLen = 0;
 	char cDateChanged = 0;
 	
+	char cFileWriteError = 0;
+	char cFileWritePrevError = 0;
+	int64_t iFileWriteErrorTimer = 0;
+	get_ms(&iFileWriteErrorTimer);
+	
 	time_t tLastDate;
 	time(&tLastDate);
 	
@@ -5324,7 +5329,17 @@ void* thread_SaveFLVFile(void* pvData)
 		//if (ret != 0)
 		{
 			//iIdle = 1;
-			if (((iLevelLoadVideo == 1) || (iLevelLoadVideo == 0)) && ((iLevelLoadAudio == 1) || (iLevelLoadAudio == 0)))
+			if (cFileWriteError && (((iLevelLoadVideo == 1) || (iLevelLoadVideo == 0)) && ((iLevelLoadAudio == 1) || (iLevelLoadAudio == 0))))
+			{
+				if (get_ms(&iFileWriteErrorTimer) > 30000)	//30sec.
+				{
+					dbgprintf(3,"Repeat create new file after %i sec\n", get_ms(&iFileWriteErrorTimer) / 1000);
+					cFileWriteError = 0;
+					cFileWritePrevError = 1;					
+				}
+			}
+			
+			if ((cFileWriteError == 0) && (((iLevelLoadVideo == 1) || (iLevelLoadVideo == 0)) && ((iLevelLoadAudio == 1) || (iLevelLoadAudio == 0))))
 			{
 				//printf("GET open file\n");			
 				if ((iLevelLoadVideo == 0) && (iLevelLoadAudio == 0)) 
@@ -5389,16 +5404,29 @@ void* thread_SaveFLVFile(void* pvData)
 				ret = flv_file_open(&flvfile, cFileName, ffs);
 				if (ret == 0) 
 				{
-					dbgprintf(1,"thread_SaveFLVFile: Could not open '%s' (%i)\n", mBuff->data, errno);
-					dbgprintf(3,"Error open file '%s'\n", cFileName);
+					if (!cFileWritePrevError) 
+						dbgprintf(1,"thread_SaveFLVFile: Could not create '%s' (%i)\n", mBuff->data, errno);
+					dbgprintf(3,"Error create file '%s'\n", cFileName);
 					dbgprintf(3,"Error info (%i) %s\n", errno, strerror(errno));
-					break;
-				} else dbgprintf(5,"Create file '%s'\n", cFileName);
+					cFileWriteError = 2;
+					iFileWriteErrorTimer = 0;
+					get_ms(&iFileWriteErrorTimer);
+				} 
+				else 
+				{
+					dbgprintf(5,"Create file '%s'\n", cFileName);
 
-				flv_write_header(flvfile, have_audio, have_video, ffs, cAudioCodecNum);	
-				iSpsPpsWrited = 0;
-				if (iLevelLoadVideo) iLevelLoadVideo++;	else iLevelLoadAudio++;		
-				//iIdle = 0;
+					if (!flv_write_header(flvfile, have_audio, have_video, ffs, cAudioCodecNum))
+						cFileWriteError = 1;
+					else
+					{
+						cFileWritePrevError = 0;
+						iSpsPpsWrited = 0;
+						omx_videobuff.nFilledLen = 0;
+						if (iLevelLoadVideo) iLevelLoadVideo++;	else iLevelLoadAudio++;	
+					}
+					//iIdle = 0;
+				}
 			}
 			if (iLevelLoadVideo == 2)
 			{
@@ -5486,7 +5514,8 @@ void* thread_SaveFLVFile(void* pvData)
 						{
 							audio_pts = 0;
 							video_pts = 0;
-							flv_write_avc_spspps(flvfile, (uint8_t*)SpsPpsBuffer, SpsPpsLen, 0, ffs);	
+							if (!flv_write_avc_spspps(flvfile, (uint8_t*)SpsPpsBuffer, SpsPpsLen, 0, ffs))
+								cFileWriteError = 1;
 							//printf("spspps\n");
 							iSpsPpsWrited = 1;
 							//printf("flv_write_avc_spspps\n");
@@ -5499,7 +5528,8 @@ void* thread_SaveFLVFile(void* pvData)
 								
 							if (iSpsPpsWrited == 1)
 							{
-								flv_write_avc_first_frame(flvfile, (uint8_t*)SpsPpsBuffer, SpsPpsLen, (uint8_t*)omx_buff.pBuffer, omx_buff.nFilledLen, (uint32_t)(video_pts), ffs);
+								if (!flv_write_avc_first_frame(flvfile, (uint8_t*)SpsPpsBuffer, SpsPpsLen, (uint8_t*)omx_buff.pBuffer, omx_buff.nFilledLen, (uint32_t)(video_pts), ffs))
+									cFileWriteError = 1;
 								//printf("first_frame\n");
 								iSpsPpsWrited = 2;
 								//printf("flv_write_avc_first_frame\n");
@@ -5511,9 +5541,15 @@ void* thread_SaveFLVFile(void* pvData)
 									//printf("flv_write_avc_frame\n");
 									//if (ret == 0) printf("S;(%i)", tVideoInfo.FrameNum);						
 									if (ret == 0) 
-										flv_write_avc_frame(flvfile, (uint8_t*)omx_buff.pBuffer, omx_buff.nFilledLen, (uint32_t)(video_pts), 1, ffs);
-										else 
-										flv_write_avc_frame(flvfile, (uint8_t*)omx_buff.pBuffer, omx_buff.nFilledLen, (uint32_t)(video_pts), 0, ffs);
+									{
+										if (!flv_write_avc_frame(flvfile, (uint8_t*)omx_buff.pBuffer, omx_buff.nFilledLen, (uint32_t)(video_pts), 1, ffs))
+											cFileWriteError = 1;
+									}
+									else 
+									{	
+										if (!flv_write_avc_frame(flvfile, (uint8_t*)omx_buff.pBuffer, omx_buff.nFilledLen, (uint32_t)(video_pts), 0, ffs))
+											cFileWriteError = 1;
+									}
 								}
 								else
 								{
@@ -5533,7 +5569,8 @@ void* thread_SaveFLVFile(void* pvData)
 							while (iLevelLoadAudio && (audio_pts < video_pts))
 							{
 								//printf("audio frame0 empty:%i size:%i, ptsv: %i, ptsa: %i\n",tAudioInfo.FrameNum, tAudioInfo.size_empty_frame, (uint32_t)video_pts, (uint32_t)audio_pts);
-								flv_write_audio_frame(flvfile, &tAudioInfo, (uint8_t*)tAudioInfo.empty_frame, tAudioInfo.size_empty_frame, (uint32_t)(audio_pts), ffs);
+								if (!flv_write_audio_frame(flvfile, &tAudioInfo, (uint8_t*)tAudioInfo.empty_frame, tAudioInfo.size_empty_frame, (uint32_t)(audio_pts), ffs))
+									cFileWriteError = 1;
 								tAudioInfo.FrameNum++;
 								iFileSize += tAudioInfo.size_empty_frame;	
 								audio_pts += 1000 / tAudioInfo.audio_frame_rate;							
@@ -5568,7 +5605,8 @@ void* thread_SaveFLVFile(void* pvData)
 						while (iLevelLoadAudio && (audio_pts < video_pts))
 						{
 							//printf("audio frame0 empty:%i size:%i, ptsv: %i, ptsa: %i\n",tAudioInfo.FrameNum, tAudioInfo.size_empty_frame, (uint32_t)video_pts, (uint32_t)audio_pts);
-							flv_write_audio_frame(flvfile, &tAudioInfo, (uint8_t*)tAudioInfo.empty_frame, tAudioInfo.size_empty_frame, (uint32_t)(audio_pts), ffs);
+							if (!flv_write_audio_frame(flvfile, &tAudioInfo, (uint8_t*)tAudioInfo.empty_frame, tAudioInfo.size_empty_frame, (uint32_t)(audio_pts), ffs))
+								cFileWriteError = 1;
 							tAudioInfo.FrameNum++;
 							iFileSize += tAudioInfo.size_empty_frame;	
 							audio_pts += 1000 / tAudioInfo.audio_frame_rate;							
@@ -5591,9 +5629,15 @@ void* thread_SaveFLVFile(void* pvData)
 									if (omx_videobuff.nFilledLen == 0) 
 									{
 										if (p_omx_buff->nFlags & OMX_BUFFERFLAG_SYNCFRAME) 
-											flv_write_avc_frame(flvfile, (uint8_t*)p_omx_buff->pBuffer, p_omx_buff->nFilledLen, (uint32_t)(video_pts), 1, ffs);
-											else 
-											flv_write_avc_frame(flvfile, (uint8_t*)p_omx_buff->pBuffer, p_omx_buff->nFilledLen, (uint32_t)(video_pts), 0, ffs);
+										{
+											if (!flv_write_avc_frame(flvfile, (uint8_t*)p_omx_buff->pBuffer, p_omx_buff->nFilledLen, (uint32_t)(video_pts), 1, ffs))
+												cFileWriteError = 1;
+										}	
+										else 
+										{
+											if (!flv_write_avc_frame(flvfile, (uint8_t*)p_omx_buff->pBuffer, p_omx_buff->nFilledLen, (uint32_t)(video_pts), 0, ffs))
+												cFileWriteError = 1;
+										}
 										iFileSize += p_omx_buff->nFilledLen;
 									}
 									else
@@ -5601,9 +5645,15 @@ void* thread_SaveFLVFile(void* pvData)
 										memcpy(&omx_videobuff.pBuffer[omx_videobuff.nFilledLen], p_omx_buff->pBuffer, p_omx_buff->nFilledLen);
 										omx_videobuff.nFilledLen += p_omx_buff->nFilledLen;
 										if (p_omx_buff->nFlags & OMX_BUFFERFLAG_SYNCFRAME)
-											flv_write_avc_frame(flvfile, (uint8_t*)omx_videobuff.pBuffer, omx_videobuff.nFilledLen, (uint32_t)(video_pts), 1, ffs);
-											else 
-											flv_write_avc_frame(flvfile, (uint8_t*)omx_videobuff.pBuffer, omx_videobuff.nFilledLen, (uint32_t)(video_pts), 0, ffs);
+										{
+											if (!flv_write_avc_frame(flvfile, (uint8_t*)omx_videobuff.pBuffer, omx_videobuff.nFilledLen, (uint32_t)(video_pts), 1, ffs))
+												cFileWriteError = 1;
+										}
+										else 
+										{
+											if (!flv_write_avc_frame(flvfile, (uint8_t*)omx_videobuff.pBuffer, omx_videobuff.nFilledLen, (uint32_t)(video_pts), 0, ffs))
+												cFileWriteError = 1;
+										}
 										iFileSize += omx_videobuff.nFilledLen;		
 									}				
 									//printf("video frame1\n");
@@ -5656,7 +5706,8 @@ void* thread_SaveFLVFile(void* pvData)
 								if (uiDataSize != 0)
 								{
 									//printf("audio frame1 %i, ptsv: %i, ptsa: %i\n",tAudioInfo.FrameNum, (uint32_t)video_pts, (uint32_t)audio_pts);												
-									flv_write_audio_frame(flvfile, &tAudioInfo, (uint8_t*)pData, uiDataSize, (uint32_t)(audio_pts), ffs);
+									if (!flv_write_audio_frame(flvfile, &tAudioInfo, (uint8_t*)pData, uiDataSize, (uint32_t)(audio_pts), ffs))
+										cFileWriteError = 1;
 									iFileSize += uiDataSize;
 									tAudioInfo.FrameNum++;
 									audio_pts += 1000 / tAudioInfo.audio_frame_rate;	
@@ -5678,8 +5729,17 @@ void* thread_SaveFLVFile(void* pvData)
 				|| (tx_eventer_test_event(&pStream->run, MEDIA_EVENT_STOP_REC) == 0)
 				|| (tx_eventer_test_event(&pStream->run, MEDIA_EVENT_NEXT_REC) == 0)
 				|| (tx_eventer_test_event(&pStream->run, MEDIA_EVENT_NEXT_REC + CMD_SAVE_COPY_OFFSET) == 0)
-				|| cDateChanged))
+				|| cDateChanged
+				|| (cFileWriteError == 1)))
 			{
+				if (cFileWriteError)
+				{
+					dbgprintf(2, "Close file after error:'%s'\n", cFileName);
+					iFileWriteErrorTimer = 0;
+					get_ms(&iFileWriteErrorTimer);
+					cFileWriteError = 2;
+				}
+				
 				if (cDateChanged) 
 				{
 					dbgprintf(3, "DateTime changed, file split:'%s'\n", cFileName);
@@ -5713,6 +5773,7 @@ void* thread_SaveFLVFile(void* pvData)
 				}
 					
 				flv_file_close(flvfile, ffs);
+				flvfile = NULL;
 				dbgprintf(5,"Close file '%s'\n", cFileName);
 				
 				ret = 1;

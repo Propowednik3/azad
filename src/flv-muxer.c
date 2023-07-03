@@ -94,8 +94,18 @@ void* thread_flv_fast_writer(void* pData)
 			}
 			if (ret != *idatasize)
 			{
-				*idatasize -= ret;
-				memmove(buffer, &buffer[ret], *idatasize);				
+				dbgprintf(3,"ERROR WRITE FILE with errno =  %d %s \n", errno, strerror(errno));
+				/**idatasize -= ret;
+				memmove(buffer, &buffer[ret], *idatasize);	*/
+				DBG_MUTEX_LOCK(&flv_fast->buffmutex);
+				if (flv_fast->flagstop != 2) 
+				{
+					flv_fast->flagstop = 4;
+					flv_fast->freebuffer = 0;
+					flv_fast->datasize1 = 0;
+					flv_fast->datasize2 = 0;
+				}
+				DBG_MUTEX_UNLOCK(&flv_fast->buffmutex);
 			} 
 			else *idatasize = 0; 
 		}
@@ -179,6 +189,7 @@ unsigned int flv_write(uint8_t *data, unsigned int datalen, FILE* f, flv_fast_st
 {
 	DBG_LOG_IN();
 	
+	int stopped = 0;
 	int ret = 0;
 	unsigned int uiWaited;
 	
@@ -199,6 +210,12 @@ unsigned int flv_write(uint8_t *data, unsigned int datalen, FILE* f, flv_fast_st
 			uiWaited++;
 		}
 		DBG_MUTEX_LOCK(&flv_fast->buffmutex);
+		if (flv_fast->flagstop == 4)
+		{
+			stopped = 1;
+			DBG_MUTEX_UNLOCK(&flv_fast->buffmutex);
+			break;
+		}
 		if (flv_fast->freebuffer == 0)
 		{
 			if ((flv_fast->datasize1 + datalen) > flv_fast->buffersize) ret = 1;
@@ -219,9 +236,16 @@ unsigned int flv_write(uint8_t *data, unsigned int datalen, FILE* f, flv_fast_st
 		}
 		DBG_MUTEX_UNLOCK(&flv_fast->buffmutex);	
 	} while(ret);
+	
+	if (stopped)
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
+	
 	if (uiWaited > 1) dbgprintf(2,"buffer overfull: waited %ims\n", uiWaited * 100);
 	flv_send_signal_write(flv_fast);
-	
+		
 	DBG_LOG_OUT();
 	return datalen;
 }
@@ -272,7 +296,7 @@ int flv_file_close(FILE *g_file_handle, flv_fast_struct* flv_fast)
 		flv_send_signal_write(flv_fast);	
 		tx_eventer_recv_event(&flv_fast->evnt_close, 220, TX_WAIT_FOREVER);
 	}
-    fclose(g_file_handle);
+	fclose(g_file_handle);
 	//printf("closed\n");
 	if (flv_fast) 
 	{
@@ -280,15 +304,15 @@ int flv_file_close(FILE *g_file_handle, flv_fast_struct* flv_fast)
 		flv_fast->filehandle = NULL;
 		DBG_MUTEX_UNLOCK(&flv_fast->buffmutex);
 	}
-	
 	DBG_LOG_OUT();
 	return 1;
 }
 
-void flv_write_header(FILE *g_file_handle, bool is_have_audio, bool is_have_video, flv_fast_struct* flv_fast, char cAudioCodecNum) 
+int flv_write_header(FILE *g_file_handle, bool is_have_audio, bool is_have_video, flv_fast_struct* flv_fast, char cAudioCodecNum) 
 {
 	DBG_LOG_IN();
 	
+	int res;
 	if (is_have_video || (cAudioCodecNum < 6))
 	{
 		char flv_file_header[] = "FLV\x1\x5\0\0\0\x9\0\0\0\0"; // have audio and have video
@@ -311,17 +335,23 @@ void flv_write_header(FILE *g_file_handle, bool is_have_audio, bool is_have_vide
 		}
 
 		//fwrite(flv_file_header, 1, 13, g_file_handle);
-		flv_write((uint8_t*)flv_file_header, 13, g_file_handle, flv_fast);
+		res = flv_write((uint8_t*)flv_file_header, 13, g_file_handle, flv_fast);
+		if (res != 13)
+		{
+			DBG_LOG_OUT();
+			return 0;
+		}
 	}
 	
 	DBG_LOG_OUT();
-    return;
+    return 1;
 }
 
-void flv_write_audio_frame(FILE *g_file_handle, AudioCodecInfo *CodecInfo, uint8_t *framedata, uint32_t framedata_len, uint32_t timestamp, flv_fast_struct* flv_fast) 
+int flv_write_audio_frame(FILE *g_file_handle, AudioCodecInfo *CodecInfo, uint8_t *framedata, uint32_t framedata_len, uint32_t timestamp, flv_fast_struct* flv_fast) 
 {
 	DBG_LOG_IN();
 	
+	int res;
     char cFlv = 1;
 	uint8_t buff[5];
 	flv_tag_t flvtag;	
@@ -372,7 +402,12 @@ void flv_write_audio_frame(FILE *g_file_handle, AudioCodecInfo *CodecInfo, uint8
 		flvtag.timestamp[1] = (uint8_t) ((timestamp >> 8) & 0xff);
 		flvtag.timestamp[2] = (uint8_t) ((timestamp) & 0xff);
 		//fwrite(&flvtag, 1, sizeof(flvtag), g_file_handle);	
-		flv_write((uint8_t*)&flvtag, sizeof(flvtag), g_file_handle, flv_fast);
+		res = flv_write((uint8_t*)&flvtag, sizeof(flvtag), g_file_handle, flv_fast);
+		if (res != sizeof(flvtag))
+		{
+			DBG_LOG_OUT();
+			return 0;
+		}
 		
 		if (CodecInfo->audio_sample_rate == 44100) buff[0] |= 3 << 2;
 		if (CodecInfo->audio_sample_rate == 22050) buff[0] |= 2 << 2;
@@ -381,13 +416,23 @@ void flv_write_audio_frame(FILE *g_file_handle, AudioCodecInfo *CodecInfo, uint8
 		if (CodecInfo->audio_channels == 2) buff[0] |= 1;  //MONO - STEREO
 		
 		//fwrite(buff, 1, 2, g_file_handle);	
-		flv_write(buff, 2, g_file_handle, flv_fast);
+		res = flv_write(buff, 2, g_file_handle, flv_fast);
+		if (res != 2)
+		{
+			DBG_LOG_OUT();
+			return 0;
+		}
 	}
 	
 	//MAIN FRAME DATA
 	//fwrite(framedata, 1, framedata_len, g_file_handle);
-	flv_write(framedata, framedata_len, g_file_handle, flv_fast);
-	
+	res = flv_write(framedata, framedata_len, g_file_handle, flv_fast);
+	if (res != framedata_len)
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
+		
     if (cFlv)
 	{
 		pack_len = sizeof(flvtag) + framedata_len + 2;
@@ -397,18 +442,25 @@ void flv_write_audio_frame(FILE *g_file_handle, AudioCodecInfo *CodecInfo, uint8
 		data_size[3] = (uint8_t) ((pack_len) & 0xff);
 		//memset(data_size,0,4);
 		//fwrite(data_size, 1, 4, g_file_handle);
-		flv_write(data_size, 4, g_file_handle, flv_fast);
+		res = flv_write(data_size, 4, g_file_handle, flv_fast);
+		if (res != 4)
+		{
+			DBG_LOG_OUT();
+			return 0;
+		}
+
 	}
 	
 	DBG_LOG_OUT();
-    return;
+    return 1;
 }
 
-void flv_write_video_tag(FILE *g_file_handle, uint8_t *tag, uint8_t *buf, uint32_t buf_len, uint32_t timestamp, flv_fast_struct* flv_fast) 
+int flv_write_video_tag(FILE *g_file_handle, uint8_t *tag, uint8_t *buf, uint32_t buf_len, uint32_t timestamp, flv_fast_struct* flv_fast) 
 {
 	DBG_LOG_IN();
 	
-    uint8_t prev_size[4] = {0};
+    int res;
+	uint8_t prev_size[4] = {0};
 	
     flv_tag_t flvtag;
 	uint32_t uiSize =  buf_len + (uint32_t) sizeof(flvtag);
@@ -427,12 +479,22 @@ void flv_write_video_tag(FILE *g_file_handle, uint8_t *tag, uint8_t *buf, uint32
     flvtag.timestamp[2] = (uint8_t) ((timestamp) & 0xff);
 
     //fwrite(&flvtag, 1, sizeof(flvtag), g_file_handle);    
-	flv_write((uint8_t*)&flvtag, sizeof(flvtag), g_file_handle, flv_fast);
+	res = flv_write((uint8_t*)&flvtag, sizeof(flvtag), g_file_handle, flv_fast);
+	if (res != sizeof(flvtag))
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
 	
 	if (tag) 
 	{
 		//fwrite(tag, 1, 5, g_file_handle);
-		flv_write(tag, 5, g_file_handle, flv_fast);
+		res = flv_write(tag, 5, g_file_handle, flv_fast);
+		if (res != 5)
+		{
+			DBG_LOG_OUT();
+			return 0;
+		}
 	}
 	
 	prev_size[0] = (uint8_t) ((buf_len >> 24) & 0xff);
@@ -440,25 +502,42 @@ void flv_write_video_tag(FILE *g_file_handle, uint8_t *tag, uint8_t *buf, uint32
     prev_size[2] = (uint8_t) ((buf_len >> 8) & 0xff);
     prev_size[3] = (uint8_t) ((buf_len) & 0xff);
 	//fwrite(prev_size, 1, 4, g_file_handle);
-	flv_write(prev_size, 4, g_file_handle, flv_fast);
+	res = flv_write(prev_size, 4, g_file_handle, flv_fast);
+	if (res != 4)
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
+		
     //fwrite(buf + 4, 1, buf_len - 9, g_file_handle);
-	flv_write(buf + 4, buf_len - 9, g_file_handle, flv_fast);
-
+	res = flv_write(buf + 4, buf_len - 9, g_file_handle, flv_fast);
+	if (res != (buf_len - 9))
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
+	
     prev_size[0] = (uint8_t) ((uiSize >> 24) & 0xff);
     prev_size[1] = (uint8_t) ((uiSize >> 16) & 0xff);
     prev_size[2] = (uint8_t) ((uiSize >> 8) & 0xff);
     prev_size[3] = (uint8_t) ((uiSize) & 0xff);
 	//fwrite(prev_size, 1, 4, g_file_handle);
-	flv_write(prev_size, 4, g_file_handle, flv_fast);
+	res = flv_write(prev_size, 4, g_file_handle, flv_fast);
+	if (res != 4)
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
 	
 	DBG_LOG_OUT();
-    return;
+    return 1;
 }
 
-void flv_write_avc_frame(FILE *g_file_handle, uint8_t *framedata, uint32_t framedata_len, uint32_t timestamp, int is_keyframe, flv_fast_struct* flv_fast) 
+int flv_write_avc_frame(FILE *g_file_handle, uint8_t *framedata, uint32_t framedata_len, uint32_t timestamp, int is_keyframe, flv_fast_struct* flv_fast) 
 {
 	DBG_LOG_IN();
 	
+	int res;
     uint8_t buff[5];
 	flv_tag_t flvtag;	
     uint8_t data_size[4] = {0};
@@ -475,7 +554,12 @@ void flv_write_avc_frame(FILE *g_file_handle, uint8_t *framedata, uint32_t frame
     flvtag.timestamp[1] = (uint8_t) ((timestamp >> 8) & 0xff);
     flvtag.timestamp[2] = (uint8_t) ((timestamp) & 0xff);
     //fwrite(&flvtag, 1, sizeof(flvtag), g_file_handle);
-	flv_write((uint8_t*)&flvtag, sizeof(flvtag), g_file_handle, flv_fast);
+	res = flv_write((uint8_t*)&flvtag, sizeof(flvtag), g_file_handle, flv_fast);
+	if (res != sizeof(flvtag))
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
 	
 	//AVC TAG
 	if (is_keyframe) buff[0] = 0x17; else buff[0] = 0x27;
@@ -485,7 +569,12 @@ void flv_write_avc_frame(FILE *g_file_handle, uint8_t *framedata, uint32_t frame
 	buff[4] = 0;
 	
 	//fwrite(buff, 1, 5, g_file_handle);
-	flv_write(buff, 5, g_file_handle, flv_fast);
+	res = flv_write(buff, 5, g_file_handle, flv_fast);
+	if (res != 5)
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
 	
 	//MAIN FRAME DATA
 	data_size[0] = (uint8_t) (((framedata_len - 4) >> 24) & 0xff);
@@ -493,9 +582,20 @@ void flv_write_avc_frame(FILE *g_file_handle, uint8_t *framedata, uint32_t frame
     data_size[2] = (uint8_t) (((framedata_len - 4) >> 8) & 0xff);
     data_size[3] = (uint8_t) (((framedata_len - 4)) & 0xff);
 	//fwrite(data_size, 1, 4, g_file_handle);
-	flv_write(data_size, 4, g_file_handle, flv_fast);
+	res = flv_write(data_size, 4, g_file_handle, flv_fast);
+	if (res != 4)
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
+	
     //fwrite(framedata + 4, 1, framedata_len - 4, g_file_handle);
-	flv_write(framedata + 4, framedata_len - 4, g_file_handle, flv_fast);
+	res = flv_write(framedata + 4, framedata_len - 4, g_file_handle, flv_fast);
+	if (res != (framedata_len - 4))
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
 	
     pack_len = sizeof(flvtag) + framedata_len + 5;
 	data_size[0] = (uint8_t) ((pack_len >> 24) & 0xff);
@@ -504,16 +604,22 @@ void flv_write_avc_frame(FILE *g_file_handle, uint8_t *framedata, uint32_t frame
     data_size[3] = (uint8_t) ((pack_len) & 0xff);
 	//memset(data_size,0,4);
 	//fwrite(data_size, 1, 4, g_file_handle);
-	flv_write(data_size, 4, g_file_handle, flv_fast);
+	res = flv_write(data_size, 4, g_file_handle, flv_fast);
+	if (res != 4)
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
 	
 	DBG_LOG_OUT();
-    return;
+    return 1;
 }
 
-void flv_write_avc_spspps(FILE *g_file_handle, uint8_t *codecinfo, uint32_t codecinfo_len, uint32_t timestamp, flv_fast_struct* flv_fast)
+int flv_write_avc_spspps(FILE *g_file_handle, uint8_t *codecinfo, uint32_t codecinfo_len, uint32_t timestamp, flv_fast_struct* flv_fast)
 {
 	DBG_LOG_IN();
 	
+	int res;
     uint8_t buff[5];
 	flv_tag_t flvtag;	
     uint8_t data_size[4] = {0};
@@ -530,7 +636,13 @@ void flv_write_avc_spspps(FILE *g_file_handle, uint8_t *codecinfo, uint32_t code
     flvtag.timestamp[1] = (uint8_t) ((timestamp >> 8) & 0xff);
     flvtag.timestamp[2] = (uint8_t) ((timestamp) & 0xff);
     //fwrite(&flvtag, 1, sizeof(flvtag), g_file_handle);
-	flv_write((uint8_t*)&flvtag, sizeof(flvtag), g_file_handle, flv_fast);
+	res = flv_write((uint8_t*)&flvtag, sizeof(flvtag), g_file_handle, flv_fast);
+	if (res != sizeof(flvtag))
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
+	
 	//SPS PPS DATA
 	uint8_t *avc_seq_buf = (uint8_t*)DBG_MALLOC(codecinfo_len + 16);
 	uint32_t sps_len = 0;
@@ -570,7 +682,12 @@ void flv_write_avc_spspps(FILE *g_file_handle, uint8_t *codecinfo, uint32_t code
     memcpy(&avc_seq_buf[16 + sps_len], &codecinfo[sps_len + 8], pps_len);    
 	
 	//fwrite(avc_seq_buf, 1, pack_len, g_file_handle);
-	flv_write(avc_seq_buf, pack_len, g_file_handle, flv_fast);
+	res = flv_write(avc_seq_buf, pack_len, g_file_handle, flv_fast);
+	if (res != pack_len)
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
 	
     pack_len = (sizeof(flvtag) + codecinfo_len + 16) - 8;
 	data_size[0] = (uint8_t) ((pack_len >> 24) & 0xff);
@@ -578,18 +695,24 @@ void flv_write_avc_spspps(FILE *g_file_handle, uint8_t *codecinfo, uint32_t code
     data_size[2] = (uint8_t) ((pack_len >> 8) & 0xff);
     data_size[3] = (uint8_t) ((pack_len) & 0xff);
 	//fwrite(data_size, 1, 4, g_file_handle);
-	flv_write(data_size, 4, g_file_handle, flv_fast);
+	res = flv_write(data_size, 4, g_file_handle, flv_fast);
+	if (res != 4)
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
 	
 	DBG_FREE(avc_seq_buf);
 	
 	DBG_LOG_OUT();
-    return;
+    return 1;
 }
 
-void flv_write_avc_first_frame(FILE *g_file_handle, uint8_t *codecinfo, uint32_t codecinfo_len, uint8_t *framedata, uint32_t framedata_len, uint32_t timestamp, flv_fast_struct* flv_fast) 
+int flv_write_avc_first_frame(FILE *g_file_handle, uint8_t *codecinfo, uint32_t codecinfo_len, uint8_t *framedata, uint32_t framedata_len, uint32_t timestamp, flv_fast_struct* flv_fast) 
 {
 	DBG_LOG_IN();
 	
+	int res;
 	uint8_t buff[5];
 	uint32_t sps_len = 0;
 	uint32_t pps_len = 0;
@@ -609,7 +732,12 @@ void flv_write_avc_first_frame(FILE *g_file_handle, uint8_t *codecinfo, uint32_t
     flvtag.timestamp[1] = (uint8_t) ((timestamp >> 8) & 0xff);
     flvtag.timestamp[2] = (uint8_t) ((timestamp) & 0xff);
     //fwrite(&flvtag, 1, sizeof(flvtag), g_file_handle);
-	flv_write((uint8_t*)&flvtag, sizeof(flvtag), g_file_handle, flv_fast);
+	res = flv_write((uint8_t*)&flvtag, sizeof(flvtag), g_file_handle, flv_fast);
+	if (res != sizeof(flvtag))
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
 	
 	//AVC TAG	
 	buff[0] = 0x17; // 1 << 4 (keyframe) | 7 (AVC )
@@ -618,7 +746,12 @@ void flv_write_avc_first_frame(FILE *g_file_handle, uint8_t *codecinfo, uint32_t
 	buff[3] = 0; // composition time	
 	buff[4] = 0; // composition time		
 	//fwrite(buff, 1, 5, g_file_handle);
-	flv_write(buff, 5, g_file_handle, flv_fast);
+	res = flv_write(buff, 5, g_file_handle, flv_fast);
+	if (res != 5)
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
 	
 	//SPS PPS DATA
 	spspps = (uint8_t*)DBG_MALLOC(codecinfo_len);
@@ -638,7 +771,12 @@ void flv_write_avc_first_frame(FILE *g_file_handle, uint8_t *codecinfo, uint32_t
     spspps[sps_len+2] = (uint8_t) (((pps_len - 4) >> 8) & 0xff);
     spspps[sps_len+3] = (uint8_t) (((pps_len - 4)) & 0xff);  
 	//fwrite(spspps, 1, codecinfo_len, g_file_handle);
-	flv_write(spspps, codecinfo_len, g_file_handle, flv_fast);
+	res = flv_write(spspps, codecinfo_len, g_file_handle, flv_fast);
+	if (res != codecinfo_len)
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
 	
 	//MAIN FRAME DATA
 	data_size[0] = (uint8_t) (((framedata_len - 4) >> 24) & 0xff);
@@ -646,9 +784,19 @@ void flv_write_avc_first_frame(FILE *g_file_handle, uint8_t *codecinfo, uint32_t
     data_size[2] = (uint8_t) (((framedata_len - 4) >> 8) & 0xff);
     data_size[3] = (uint8_t) (((framedata_len - 4)) & 0xff);
 	//fwrite(data_size, 1, 4, g_file_handle);
-    flv_write(data_size, 4, g_file_handle, flv_fast);
+    res = flv_write(data_size, 4, g_file_handle, flv_fast);
+	if (res != 4)
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
 	//fwrite(framedata + 4, 1, framedata_len - 4, g_file_handle);
-	flv_write(framedata + 4, framedata_len - 4, g_file_handle, flv_fast);
+	res = flv_write(framedata + 4, framedata_len - 4, g_file_handle, flv_fast);
+	if (res != (framedata_len - 4))
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
 	
 	pack_len = sizeof(flvtag) + 5 + codecinfo_len + framedata_len;
     data_size[0] = (uint8_t) ((pack_len >> 24) & 0xff);
@@ -657,12 +805,17 @@ void flv_write_avc_first_frame(FILE *g_file_handle, uint8_t *codecinfo, uint32_t
     data_size[3] = (uint8_t) ((pack_len) & 0xff);
 	//memset(data_size,0,4);
 	//fwrite(data_size, 1, 4, g_file_handle);
-    flv_write(data_size, 4, g_file_handle, flv_fast);
+    res = flv_write(data_size, 4, g_file_handle, flv_fast);
+	if (res != 4)
+	{
+		DBG_LOG_OUT();
+		return 0;
+	}
 	
     DBG_FREE(spspps);
 	
 	DBG_LOG_OUT();	
-    return;
+    return 1;
 }
 
 

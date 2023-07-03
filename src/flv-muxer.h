@@ -49,11 +49,11 @@ typedef struct flv_tag flv_tag_t;
 int SearchData(char *FindData, int FindDataLen, char *InData, int InDataLen, int Pos);
 int flv_file_open(FILE **g_file_handle, char *filename, flv_fast_struct* flv_fast);
 int flv_file_close(FILE *g_file_handle, flv_fast_struct* flv_fast);
-void flv_write_header(FILE *g_file_handle, bool is_have_audio, bool is_have_video, flv_fast_struct* flv_fast, char cAudioCodecNum);
-void flv_write_avc_spspps(FILE *g_file_handle, uint8_t *codecinfo, uint32_t codecinfo_len, uint32_t timestamp, flv_fast_struct* flv_fast);
-void flv_write_avc_first_frame(FILE *g_file_handle, uint8_t *codecinfo, uint32_t codecinfo_len, uint8_t *framedata, uint32_t framedata_len, uint32_t timestamp, flv_fast_struct* flv_fast);
-void flv_write_avc_frame(FILE *g_file_handle, uint8_t *framedata, uint32_t framedata_len, uint32_t timestamp, int is_keyframe, flv_fast_struct* flv_fast);
-void flv_write_audio_frame(FILE *g_file_handle, AudioCodecInfo *CodecInfo, uint8_t *framedata, uint32_t framedata_len, uint32_t timestamp, flv_fast_struct* flv_fast);
+int flv_write_header(FILE *g_file_handle, bool is_have_audio, bool is_have_video, flv_fast_struct* flv_fast, char cAudioCodecNum);
+int flv_write_avc_spspps(FILE *g_file_handle, uint8_t *codecinfo, uint32_t codecinfo_len, uint32_t timestamp, flv_fast_struct* flv_fast);
+int flv_write_avc_first_frame(FILE *g_file_handle, uint8_t *codecinfo, uint32_t codecinfo_len, uint8_t *framedata, uint32_t framedata_len, uint32_t timestamp, flv_fast_struct* flv_fast);
+int flv_write_avc_frame(FILE *g_file_handle, uint8_t *framedata, uint32_t framedata_len, uint32_t timestamp, int is_keyframe, flv_fast_struct* flv_fast);
+int flv_write_audio_frame(FILE *g_file_handle, AudioCodecInfo *CodecInfo, uint8_t *framedata, uint32_t framedata_len, uint32_t timestamp, flv_fast_struct* flv_fast);
 
 void flv_write_aac_sequence_header_tag(FILE *g_file_handle, int sample_rate, int channel);
 void flv_write_aac_data_tag(FILE *g_file_handle, uint8_t *data, uint32_t data_len, uint32_t timestamp);
