@@ -85,7 +85,7 @@ typedef struct
 typedef struct
 {
    int		Number;    
-   int		Delay;
+   unsigned int		Delay;
    char 	Set;
 } GPIO_LIST;
 

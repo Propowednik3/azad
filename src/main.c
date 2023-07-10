@@ -17513,14 +17513,22 @@ void SendFilesToArchive(STREAM_INFO *siArchive, struct tm *prev_time)
 	localtime_r(&rawtime, &now_time);
 	
 	int date_difference = abs(now_time.tm_yday - prev_time->tm_yday);
+	int year_difference = abs(now_time.tm_year - prev_time->tm_year);
 	
-	if (date_difference > 2) memcpy(prev_time, &now_time, sizeof(struct tm));
+	if ((date_difference > 2) || (year_difference > 1)) memcpy(prev_time, &now_time, sizeof(struct tm));
 	
 	if ((date_difference && (date_difference <= 2)) && now_time.tm_hour)
 	{
 		DBG_MUTEX_LOCK(&system_mutex);
 		if (ucBackUpModeArchive != 0)
 		{
+			dbgprintf(3, "Start send files to archive:\n");
+			dbgprintf(3, "\tPrevious date: %04i_%02i_%02i__%02i_%02i_%02i\n", now_time.tm_year+1900,now_time.tm_mon+1,now_time.tm_mday,
+											now_time.tm_hour,now_time.tm_min,now_time.tm_sec);
+			dbgprintf(3, "\tNow date: %04i_%02i_%02i__%02i_%02i_%02i\n", prev_time->tm_year+1900,prev_time->tm_mon+1,prev_time->tm_mday,
+											prev_time->tm_hour,prev_time->tm_min,prev_time->tm_sec);
+			dbgprintf(3, "\t\tdate_difference:%i, year_difference:%i\n", date_difference, year_difference);
+			
 			SendToArchive(siArchive, prev_time, ucMediaArchiveModeFull, ucMediaArchiveTimeFromFull, 
 							ucMediaArchiveTimeToFull, cMediaCapturePathFull, ucCaptureStartPathFull, 
 							cMediaArchivePathFull, WRT_TYPE_ARCHIVE_FULL);

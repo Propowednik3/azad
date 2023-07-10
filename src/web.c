@@ -3750,7 +3750,7 @@ int WEB_get_msg_type(char *msg_rx, int iLen, unsigned int *uiType, unsigned int 
 					{
 						WEB_decode_url_to_src(param_value, strlen(param_value));	
 						iValue[12] = Str2Int(param_value);
-						if ((iValue[12] < 0) || (iValue[12] > 99999)) iValue[12] = 0;
+						if ((iValue[12] < 0) || (iValue[12] > 20000000)) iValue[12] = 0;
 					} else iValue[12] = 0;
 					break;
 				case MODULE_TYPE_SYSTEM:
@@ -4685,12 +4685,23 @@ int WEB_main_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session)
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 					
 	strcat(msg_tx, session->head);
-	
+	//printf(msg_tx);
 	strcat(msg_tx,	"<br />\r\n"
 					"</body>\r\n"
 					"</html>\r\n");	
@@ -4735,7 +4746,19 @@ int WEB_control_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session)
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
+
 					"</head>"
 					"<body>\r\n");
 					
@@ -5033,6 +5056,17 @@ int WEB_youtube_load(char *msg_rx, char *msg_tx, WEB_SESSION *session)
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
 					"<meta charset='utf-8'"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");					
 	strcat(msg_tx, session->head);
@@ -5073,7 +5107,18 @@ int WEB_youtube_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session)
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");					
 	strcat(msg_tx, session->head);
@@ -5146,7 +5191,18 @@ int WEB_media_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session)
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");					
 	strcat(msg_tx, session->head);
@@ -5263,7 +5319,18 @@ int WEB_menu_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session)
 	memset(msg_body, 0, 2048);
 	strcpy(msg_body,"<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n"
 					"%s"
@@ -5327,7 +5394,18 @@ int WEB_skipevents_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -5471,7 +5549,18 @@ int WEB_alienkeys_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int 
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -5618,7 +5707,18 @@ int WEB_skipircodes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -5821,7 +5921,18 @@ int WEB_ircodes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -6195,7 +6306,18 @@ int WEB_keys_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPage
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -6642,7 +6764,18 @@ int WEB_evntactions_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -7278,7 +7411,18 @@ int WEB_mnlactions_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -7609,7 +7753,18 @@ int WEB_camrects_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int i
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -7878,7 +8033,18 @@ int WEB_camera_respond(char *msg_tx, WEB_SESSION *session)
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -8192,7 +8358,18 @@ int WEB_mic_respond(char *msg_tx, WEB_SESSION *session)
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -8347,7 +8524,18 @@ int WEB_system_respond(char *msg_tx, WEB_SESSION *session)
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -8574,7 +8762,18 @@ int WEB_directories_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -8867,7 +9066,18 @@ int WEB_widgets_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -9387,7 +9597,18 @@ int WEB_streams_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -9684,7 +9905,18 @@ int WEB_streamtypes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -9865,7 +10097,18 @@ int WEB_mails_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPag
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -10047,7 +10290,18 @@ int WEB_sounds_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPa
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -10429,7 +10683,18 @@ int WEB_explorer_work_request(char *msg_tx, WEB_SESSION *session, int *pParams, 
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -10662,7 +10927,18 @@ int WEB_explorer_busy_test(char *msg_tx, WEB_SESSION *session)
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -10706,7 +10982,18 @@ int WEB_explorer_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int i
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -11006,7 +11293,18 @@ int WEB_messages_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int i
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -11114,7 +11412,18 @@ int WEB_viewer_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPa
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -11212,7 +11521,18 @@ int WEB_manual_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPa
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -11294,7 +11614,18 @@ int WEB_log_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPage,
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -11423,7 +11754,18 @@ int WEB_users_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPag
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -11691,7 +12033,18 @@ int WEB_radios_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPa
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -11867,7 +12220,18 @@ int WEB_alarms_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPa
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -12022,7 +12386,18 @@ int WEB_history_respond(char *msg_tx, WEB_SESSION *session, int iPage)
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -12150,7 +12525,18 @@ int WEB_connects_respond(char *msg_tx, WEB_SESSION *session, int iPage, int iPag
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -12868,7 +13254,18 @@ int WEB_modules_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -14305,7 +14702,7 @@ int WEB_modules_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 												"	</select>\r\n"
 										"<br />Инверсный:<input type='checkbox' name='Inverse'%s%s>\r\n"
 										"Номер контакта:<input type='number' name='PinNum' min=0 max=80 value='%i' maxlength=2 style='width: 60px;'%s><br />\r\n"
-										"Время вкл.(мс) (0=пост.):<input type='number' name='Time' min=0 max=99999 value='%i' maxlength=5 style='width: 100px;'%s></td>\r\n",
+										"Время вкл.(мс) (0=пост.):<input type='number' name='Time' min=0 max=20000000 value='%i' maxlength=5 style='width: 100px;'%s></td>\r\n",
 										pDisableFlag,
 										((miModuleList[n].Settings[0] & MODULE_SECSET_OUTPUT) == 0) ? " selected" : "", 
 										(miModuleList[n].Settings[0] & MODULE_SECSET_OUTPUT) ? " selected" : "", 
@@ -15212,7 +15609,18 @@ int WEB_modstatuses_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -16350,7 +16758,18 @@ int WEB_settings_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int i
 	int iHeadLen = strlen(msg_tx);				
 	strcat(msg_tx, "<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
@@ -17518,7 +17937,18 @@ static char WEB_describe_respond_401(WEB_SESSION *session, char *msg_rx, char *m
 	memset(msg_body, 0, 2048);
 	strcpy(msg_body,"<html>\r\n"					
 					"<head>\r\n"
-					"<meta charset=\"cp866\""
+					"<meta charset=\"cp866\">"
+					"<style>"
+					"input[type=button], input[type=submit], input[type=reset], button[type=submit] {"
+					"  background-color: #f4AA6D;"
+					"  border: none;"
+					"  color: white;"
+					"  padding: 16px 32px;"
+					"  text-decoration: none;"
+					"  margin: 4px 2px;"
+					"  cursor: pointer;"
+					"}"
+					"</style>"
 					"</head>"
 					"<body><a href=\"/\"><h1>401 Unauthorized.</h1></a></body>"
 					"</html>\r\n");

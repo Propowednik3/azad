@@ -693,15 +693,15 @@ int TFP625A_AutoIdentify(MODULE_INFO *miModule)
 	{
 		miModule->Status[0] = 2;
 		miModule->Status[1] = 0;
-		miModule->Status[2] = 0;
-		status_flag = 0b001;	
+		miModule->Status[2] = *(int*)&"#Unk";
+		status_flag = 0b101;	
 	}
 	if (result < 0)//error
 	{
 		miModule->Status[0] = -1;
 		miModule->Status[1] = 0;
-		miModule->Status[2] = 0;
-		status_flag = 0b001;	
+		miModule->Status[2] = *(int*)&"#Err";
+		status_flag = 0b101;	
 	}
 	
 	if ((miModule->Settings[0] != 0) && (miModule->SubModule >= 0))

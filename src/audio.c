@@ -1687,7 +1687,7 @@ void audio_loop_poll_mmap(snd_pcm_t **ach, struct pollfd *poll_fds, int audio_fd
 	int avail_flags;
 	int is_first_audio = 1;
 	int iNumFrame = START_AUDIO_FRAME_NUMBER;
-	int ret, n, offs;	
+	int ret, n;	
 	char cReinitCnt = 0;
 	int iBufferSize = buffer_size;
 	unsigned char *ucBuffer=DBG_MALLOC(iBufferSize);
@@ -1717,8 +1717,8 @@ void audio_loop_poll_mmap(snd_pcm_t **ach, struct pollfd *poll_fds, int audio_fd
 	unsigned int uiSaveFramesCnt = 0;
 	
 	unsigned int uiDigConvertMode = miModule->Settings[17];
-	unsigned int uiDigLevel = miModule->Settings[18];
-	
+	unsigned int uiDigLevel = 1 << miModule->Settings[18];
+
 	if ((miModule->ScanSet != 0) && 
 		((miModule->Global & 1) || (miModule->GenEvents & 1) || (miModule->SaveChanges & 1))) cNeedControl = 1;
 	
@@ -1797,8 +1797,7 @@ void audio_loop_poll_mmap(snd_pcm_t **ach, struct pollfd *poll_fds, int audio_fd
 	//printf(">>> %i %i %i\n", f_link->codec_info.audio_frame_size, period_size, f_link->codec_info.audio_frame_size);
 	
 	unsigned int uiUpdateCounter = 0;
-	unsigned int uiDigAutoLevel = 0;
-	int iDigLevelDelay = 0;
+	float amplifCoefficient = 1.0f;
 	int uiCalc;
 	char cCriticalError = 0;
 	
@@ -1810,7 +1809,7 @@ void audio_loop_poll_mmap(snd_pcm_t **ach, struct pollfd *poll_fds, int audio_fd
 			uiUpdateCounter = 0;
 			DBG_MUTEX_LOCK(&modulelist_mutex);	
 			uiDigConvertMode = miModuleList[iMicModuleNum].Settings[17];
-			uiDigLevel = miModuleList[iMicModuleNum].Settings[18];			
+			uiDigLevel = 1 << miModuleList[iMicModuleNum].Settings[18];
 			DBG_MUTEX_UNLOCK(&modulelist_mutex);
 		}
 		
@@ -1847,10 +1846,9 @@ void audio_loop_poll_mmap(snd_pcm_t **ach, struct pollfd *poll_fds, int audio_fd
 				//////////BeforeFilter/////////
 				if (uiDigConvertMode == 1)
 				{
-					ret = 1 << uiDigLevel;
 					for (n = 0; n < f_link->codec_info.audio_frame_size; n++) 
 					{
-						uiCalc = piCaptureBuffer[n] * ret;
+						uiCalc = piCaptureBuffer[n] * uiDigLevel;
 						if (uiCalc < -32768) uiCalc = -32768;
 						if (uiCalc > 32768) uiCalc = 32768;
 						piCaptureBuffer[n] = uiCalc;
@@ -1867,43 +1865,19 @@ void audio_loop_poll_mmap(snd_pcm_t **ach, struct pollfd *poll_fds, int audio_fd
 						if ((piCaptureBuffer[n] < 0) && (ret < (-piCaptureBuffer[n]))) ret = -piCaptureBuffer[n];
 					}
 					if (ret)
-					{
-						n = 1 << uiDigLevel;
-						offs = 0;						
-						while((ret < n) || (offs >= 14))
+					{	
+						//printf("%i\t%i\t%i\t%i\t%f\n", ret, uiDigLevel, (int)(ret* amplifCoefficient), (int)(ret* amplifCoefficient) - uiDigLevel, amplifCoefficient);							
+												
+						ret *= amplifCoefficient;						
+						ret = ret - uiDigLevel;
+						if (ret < 1000) amplifCoefficient += 3;
+						if (ret > 1000) amplifCoefficient -= 3;						
+						if (amplifCoefficient != 1.0f)
 						{
-							ret <<= 1;
-							offs++;
-						}
-						
-						if (uiDigAutoLevel > offs) 
-						{
-							uiDigAutoLevel = offs;
-							iDigLevelDelay = 0;
-							
-							/*iDigLevelDelay--;
-							if (iDigLevelDelay <= -10) 
-							{
-								iDigLevelDelay = 0;
-								uiDigAutoLevel--;
-							}*/
-						}
-						if (uiDigAutoLevel < offs) 
-						{
-							iDigLevelDelay++;
-							if (iDigLevelDelay >= 10) 
-							{
-								iDigLevelDelay = 0;
-								uiDigAutoLevel++;
-							}
-						}
-						
-						if (uiDigAutoLevel)
-						{
-							ret = 1 << uiDigAutoLevel;
+							///printf("%f\n", uiDigLevel, amplifCoefficient);							
 							for (n = 0; n < f_link->codec_info.audio_frame_size; n ++) 
 							{
-								uiCalc = piCaptureBuffer[n] * ret;
+								uiCalc = piCaptureBuffer[n] * amplifCoefficient;
 								if (uiCalc < -32768) uiCalc = -32768;
 								if (uiCalc > 32768) uiCalc = 32768;
 								piCaptureBuffer[n] = uiCalc;
@@ -5415,11 +5389,12 @@ void* thread_SaveFLVFile(void* pvData)
 				else 
 				{
 					dbgprintf(5,"Create file '%s'\n", cFileName);
-
+					
 					if (!flv_write_header(flvfile, have_audio, have_video, ffs, cAudioCodecNum))
 						cFileWriteError = 1;
 					else
 					{
+						if (cFileWritePrevError) dbgprintf(2,"Success restore to create file\n");
 						cFileWritePrevError = 0;
 						iSpsPpsWrited = 0;
 						omx_videobuff.nFilledLen = 0;
