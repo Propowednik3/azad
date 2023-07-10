@@ -1268,7 +1268,7 @@ int GetModuleStatus(unsigned int iID, unsigned int uiSubNumber);
 unsigned int GetModuleSettings(char *Buff, int iLen, char iInt);
 char* GetActionCodeName(int iCode, char* cBuff, int iBufflen, int iMode);
 int PlaySound(unsigned int iNum);
-int Action_PlaySound(unsigned int iNum, int iRepeats);
+int Action_PlaySound(unsigned int iNum, int iRepeats, int iVolumePercent);
 int StreamOn(int iNum);
 int CopyFile(char *cFrom, char *cTo, char *cToError, char cWait, char cRemoveAfter, STREAM_INFO *pStream, unsigned char ucOrderLmt, char* cAddrOrderer, 
 			unsigned int uiMaxWaitTime, unsigned int uiMessWaitTime, unsigned int uiDestType);

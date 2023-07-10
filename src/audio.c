@@ -1849,8 +1849,8 @@ void audio_loop_poll_mmap(snd_pcm_t **ach, struct pollfd *poll_fds, int audio_fd
 					for (n = 0; n < f_link->codec_info.audio_frame_size; n++) 
 					{
 						uiCalc = piCaptureBuffer[n] * uiDigLevel;
-						if (uiCalc < -32768) uiCalc = -32768;
-						if (uiCalc > 32768) uiCalc = 32768;
+						if (uiCalc < -32767) uiCalc = -32767;
+						if (uiCalc > 32767) uiCalc = 32767;
 						piCaptureBuffer[n] = uiCalc;
 					}
 				}
@@ -1878,8 +1878,8 @@ void audio_loop_poll_mmap(snd_pcm_t **ach, struct pollfd *poll_fds, int audio_fd
 							for (n = 0; n < f_link->codec_info.audio_frame_size; n ++) 
 							{
 								uiCalc = piCaptureBuffer[n] * amplifCoefficient;
-								if (uiCalc < -32768) uiCalc = -32768;
-								if (uiCalc > 32768) uiCalc = 32768;
+								if (uiCalc < -32767) uiCalc = -32767;
+								if (uiCalc > 32767) uiCalc = 32767;
 								piCaptureBuffer[n] = uiCalc;
 							}
 						}
@@ -3158,6 +3158,23 @@ int PlayAudioSound(func_link *f_link)
 		{
 			f_link->mbuffer.void_data2 = (char*)DBG_MALLOC(f_link->mbuffer.data_size);
 			memcpy(f_link->mbuffer.void_data2, f_link->mbuffer.void_data, f_link->mbuffer.data_size);
+			int iVolumePercent = f_link->mbuffer.uidata[0];
+			if ((iVolumePercent <= 0) || (iVolumePercent > 500)) iVolumePercent = 100;
+			if (iVolumePercent != 100)
+			{
+				float fVolume = (float)iVolumePercent / 100;
+				int16_t *pSoundData = (int16_t *)f_link->mbuffer.void_data2;
+				unsigned int uiDataLen = f_link->mbuffer.data_size / 2;			
+				int i;
+				int temp;
+				for (i = 0; i < uiDataLen; i++) 
+				{
+					temp = pSoundData[i] * fVolume;
+					if (temp > 32767) temp = 32767;
+					if (temp < -32767) temp = -32767;
+					pSoundData[i] = temp;
+				}
+			}
 		}
 		pthread_create(&thread_play_audio, &tattr_play_audio, thread_PlayAudioSound, (void*)f_link);
 	} 

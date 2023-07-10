@@ -928,7 +928,7 @@ void emergency_stop()
 	close_keyboard();
 }
 
-int Action_PlaySound(unsigned int iNum, int iRepeats)
+int Action_PlaySound(unsigned int iNum, int iRepeats, int iVolumePercent)
 {
 	DBG_LOG_IN();
 	
@@ -962,6 +962,7 @@ int Action_PlaySound(unsigned int iNum, int iRepeats)
 			}
 			f_link->mbuffer.void_data = mSoundList[iSnd].Data;		
 			f_link->mbuffer.data_size = mSoundList[iSnd].Len;
+			f_link->mbuffer.uidata[0] = iVolumePercent;
 			//audio_set_playback_volume(iAlarmVolume);	
 			res = PlayAudioSound(f_link);			
 		}
@@ -4527,7 +4528,7 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 							 else dbgprintf(2, "Module not found for connect to %.4s\n", (char*)&iActionCode);
 						}
 						DBG_MUTEX_UNLOCK(&modulelist_mutex);		
-						if (res) Action_PlaySound(iActionCode, iSubModuleNum); 
+						if (res) Action_PlaySound(iActionCode, iSubModuleNum, Str2Int(cActionName)); 
 						else 
 						{
 							if (pModuleList2)
@@ -4920,7 +4921,7 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 								for (i = 0; i < iSoundListCnt; i++)
 									if (mSoundList[i].ID == iSubModuleNum) {res = 1;break;}								
 								DBG_MUTEX_UNLOCK(&modulelist_mutex);		
-								if (res) Action_PlaySound(iSubModuleNum, 0); 
+								if (res) Action_PlaySound(iSubModuleNum, 0, 100); 
 									else dbgprintf(2, "ModuleAction: not found SYS Sound ID: %.4s\n", (char*)&iSubModuleNum);
 							}
 							break;						
@@ -5770,7 +5771,7 @@ void PlayAlarmSound()
 	if ((uiID == 0) && iSoundListCnt) uiID = mSoundList[0].ID;
 	n = uiDefAlarmRepeats;
 	DBG_MUTEX_UNLOCK(&modulelist_mutex);
-	if (uiID) Action_PlaySound(uiID, n); 
+	if (uiID) Action_PlaySound(uiID, n, 100); 
 	else 
 	{
 		dbgprintf(1, "Error play alarm, no files and no sounds\n");
@@ -17970,7 +17971,7 @@ void AddMessageInList(char *cMessage, int iMessageLen, unsigned int cAddr)
 	//log_print(cTempBuffer2);
 	DBG_FREE(cTempBuffer1);
 	DBG_FREE(cTempBuffer2);
-	if ((uiSoundID != 0) && iPlaySound) Action_PlaySound(uiSoundID, 0);
+	if ((uiSoundID != 0) && iPlaySound) Action_PlaySound(uiSoundID, 0, 100);
 	ShowNewMessage(cMessage);
 }
 

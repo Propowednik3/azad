@@ -10206,7 +10206,7 @@ int WEB_mails_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPag
 
 int WEB_sound_play(int *pParams)
 {
-	Action_PlaySound(pParams[1], 0);
+	Action_PlaySound(pParams[1], 0, 100);
 	return 1;
 }
 
