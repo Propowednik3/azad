@@ -23929,7 +23929,7 @@ int main(int argc, char *argv[])
 	iEmailLog = 0;
 	uiLogEmailPauseSize = 300000;
 	memset(cLogIP, 0, 256);
-	memset(&cLogMlList, 0, sizeof(MAIL_INFO));
+	memset(&cLogMlList, 0, sizeof(MAIL_INFO));	
 	iLogEmailTimer = 0;
 	get_ms(&iLogEmailTimer);
 	

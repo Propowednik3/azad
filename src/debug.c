@@ -334,19 +334,29 @@ char dbg_printf_ms(char *Buff, ...)
 
 char dbgprintf(unsigned char cLevel, char *Buff, ...)
 {
+	char tmsbuffer[32];
 	char timebuffer[256];
 	char textbuffer[256];
 	unsigned char cLevel2 = cLevel & 127;
 	
+	struct timespec ts;
+	clock_gettime(CLOCK_MONOTONIC, &ts);
+	int64_t tms = (ts.tv_sec * INT64_C(1000000000) + ts.tv_nsec) / 1000000;
+	memset(tmsbuffer, 0 , 32);
+	snprintf(tmsbuffer, 32, "%i", (unsigned int)tms);		
+	
+	time_t rawtime;
+	struct tm timeinfo;
+	time(&rawtime);
+	localtime_r(&rawtime, &timeinfo);
+	memset(timebuffer, 0 , 256);
+	snprintf(timebuffer, 255, " <<< %i.%i.%i %i:%i:%i >>> ", timeinfo.tm_mday,timeinfo.tm_mon+1,timeinfo.tm_year+1900,timeinfo.tm_hour,timeinfo.tm_min,timeinfo.tm_sec);		
+	
+
 	DBG_LOCK(&dbg_mutex);
 	//if (ret != 0) DBG_UNLOCK(&dbg_mutex);
 	if ((iFileLog >= cLevel2) || (iScreenLog >= cLevel2) || (iMessageLog >= cLevel2) || (iLocalMessageLog >= cLevel2) || (iEmailLog >= cLevel2))
-	{
-		time_t rawtime;
-		struct tm timeinfo;
-		time(&rawtime);
-		localtime_r(&rawtime, &timeinfo);
-		memset(timebuffer, 0 , 256);
+	{		
 		memset(textbuffer, 0 , 256);
 		if (strlen(Buff) < 150)
 		{
@@ -360,7 +370,6 @@ char dbgprintf(unsigned char cLevel, char *Buff, ...)
 			memcpy(textbuffer, Buff, 150);
 			strcat(textbuffer, " ... VERY BIG LEN STRING\n");
 		}
-		snprintf(timebuffer, 255, "%i.%i.%i %i:%i:%i >>> ",timeinfo.tm_mday,timeinfo.tm_mon+1,timeinfo.tm_year+1900,timeinfo.tm_hour,timeinfo.tm_min,timeinfo.tm_sec);		
 	}
 	if (iFileLog >= cLevel2)
 	{		
@@ -394,39 +403,62 @@ char dbgprintf(unsigned char cLevel, char *Buff, ...)
 	}
 	if (iScreenLog >= cLevel2) 
 	{
-		struct timespec ts;
-		clock_gettime(CLOCK_MONOTONIC, &ts);
-		int64_t tms = (ts.tv_sec * INT64_C(1000000000) + ts.tv_nsec) / 1000000;
-		if (cLevel2 == 1) printf("\033[31m%i: %s\033[0m", (unsigned int)tms, textbuffer); 
-		if (cLevel2 == 2) printf("\033[33m%i: %s\033[0m", (unsigned int)tms, textbuffer); 
-		if (cLevel2 == 3) printf("%i: %s", (unsigned int)tms, textbuffer);
-		if (cLevel2 == 4) printf("\033[32m%i: %s\033[0m", (unsigned int)tms, textbuffer); 
-		if (cLevel2 > 4) printf("\033[36m%i: %s\033[0m", (unsigned int)tms, textbuffer); 
-		
+		if (cLevel2 == 1) printf("\033[31m%i%s %s\033[0m", (unsigned int)tms, timebuffer, textbuffer); 
+		if (cLevel2 == 2) printf("\033[33m%i%s %s\033[0m", (unsigned int)tms, timebuffer, textbuffer); 
+		if (cLevel2 == 3) printf("%i%s %s", (unsigned int)tms, timebuffer, textbuffer);
+		if (cLevel2 == 4) printf("\033[32m%i%s %s\033[0m", (unsigned int)tms, timebuffer, textbuffer); 
+		if (cLevel2 > 4) printf("\033[36m%i%s %s\033[0m", (unsigned int)tms, timebuffer, textbuffer); 		
 	}	
 	if (iMessageLog >= cLevel2)
 	{
 		SendDbgUDPMessage(TYPE_MESSAGE_TEXT, textbuffer, strlen(textbuffer), cLogIP);		
 	}	
+
 	if (iLocalMessageLog >= cLevel2)
 	{
 		SendDbgUDPMessage(TYPE_MESSAGE_TEXT, textbuffer, strlen(textbuffer), "127.0.0.1");		
 	}
+
 	if (iEmailLog >= cLevel2)
 	{
+		int textLength = strlen(textbuffer) + strlen(tmsbuffer) + strlen(timebuffer) + 2;		
+		if ((cLogMlList.ExtraTextSize + textLength) < 1000000)
+			cLogMlList.ExtraText = (char*)realloc(cLogMlList.ExtraText, cLogMlList.ExtraTextSize + textLength);
+			else
+			{
+				memmove(cLogMlList.ExtraText, &cLogMlList.ExtraText[textLength], textLength);
+				cLogMlList.ExtraTextSize -= textLength;
+			}
+		memset(&cLogMlList.ExtraText[cLogMlList.ExtraTextSize], 0, textLength);
+		
+		memcpy(&cLogMlList.ExtraText[cLogMlList.ExtraTextSize], tmsbuffer, strlen(tmsbuffer));
+		cLogMlList.ExtraTextSize += strlen(tmsbuffer);
+		memcpy(&cLogMlList.ExtraText[cLogMlList.ExtraTextSize], timebuffer, strlen(timebuffer));
+		cLogMlList.ExtraTextSize += strlen(timebuffer);
+		memcpy(&cLogMlList.ExtraText[cLogMlList.ExtraTextSize], textbuffer, strlen(textbuffer));
+		cLogMlList.ExtraTextSize += strlen(textbuffer);
+		memcpy(&cLogMlList.ExtraText[cLogMlList.ExtraTextSize], "\r\n", strlen("\r\n"));
+		cLogMlList.ExtraTextSize += strlen("\r\n");
+		
 		if ((unsigned int)get_ms(&iLogEmailTimer) > uiLogEmailPauseSize)
 		{
-			memset(cLogMlList.BodyText, 0, 64);
+			/*memset(cLogMlList.BodyText, 0, 64);
 			if (strlen(textbuffer) >= 64) 
 				memcpy(cLogMlList.BodyText, textbuffer, 63);
 			else
 				strcpy(cLogMlList.BodyText, textbuffer);
+			cLogMlList.ExtraTextSize = 0;*/ 
 			iLogEmailTimer = 0;
 			get_ms(&iLogEmailTimer);
 			DBG_UNLOCK(&dbg_mutex);
 			SendMailFile(cLogMailLogin, cLogMailPassword, cLogMailServer, cLogMailAddress, cLogMailAuth, &cLogMlList);
+			DBG_LOCK(&dbg_mutex);
+			cLogMlList.ExtraTextSize = 0;
+			free(cLogMlList.ExtraText);
+			cLogMlList.ExtraText = NULL;
+			DBG_UNLOCK(&dbg_mutex);
 			return 1;	
-		} //else printf("Timer EMAIL LOG %i\n", (unsigned int)get_ms(&iLogEmailTimer));
+		} //printf("Timer EMAIL LOG %i\n", (unsigned int)get_ms(&iLogEmailTimer));
 	}
 	
 	DBG_UNLOCK(&dbg_mutex);

@@ -4954,7 +4954,6 @@ int SendMailFile(char *cLogin, char *cPassword, char *cServer, char *cFromAddres
 	CURL *curl;
 	CURLcode res = CURLE_OK;
 	struct curl_slist *recipients = NULL;
-	char cBuff[128];
 	struct upload_status upload_ctx;
 	time_t rawtime;
 	time(&rawtime);	
@@ -4999,7 +4998,7 @@ int SendMailFile(char *cLogin, char *cPassword, char *cServer, char *cFromAddres
 	
 	upload_ctx.cMailBody[upload_ctx.lines_count] = (char*)DBG_MALLOC(128);
 	memset(upload_ctx.cMailBody[upload_ctx.lines_count], 0, 128);	
-	sprintf(upload_ctx.cMailBody[upload_ctx.lines_count], "Subject: %s\r\n", cMlList->MainText);
+	sprintf(upload_ctx.cMailBody[upload_ctx.lines_count], "Subject: %s\r\n", cMlList->MainText);	
 	upload_ctx.lines_count++;
 	
 	upload_ctx.cMailBody[upload_ctx.lines_count] = (char*)DBG_MALLOC(128);
@@ -5031,16 +5030,20 @@ int SendMailFile(char *cLogin, char *cPassword, char *cServer, char *cFromAddres
 	sprintf(upload_ctx.cMailBody[upload_ctx.lines_count], "Content-transfer-encoding:base64\r\n\r\n");
 	upload_ctx.lines_count++;
 	
-	upload_ctx.cMailBody[upload_ctx.lines_count] = (char*)DBG_MALLOC(128);
-	memset(upload_ctx.cMailBody[upload_ctx.lines_count], 0, 128);	
-	
-	memset(cBuff, 0, 128);
-	//if (strlen(cMlList->BodyText) >= 128) memcpy(cBuff, cMlList->BodyText, 127);
-		//else strcpy(cBuff, cMlList->BodyText);
-	//strcpy(cBuff, "Абракадабра");
-	//AnsiToKoi((unsigned char*)cBuff, strlen(cBuff));	
-	base64_encode((unsigned char*)cMlList->BodyText, strlen(cMlList->BodyText), (unsigned char*)upload_ctx.cMailBody[upload_ctx.lines_count], 128);			
-	strcat(upload_ctx.cMailBody[upload_ctx.lines_count], "\r\n\r\n");
+	if (cMlList->ExtraTextSize == 0)
+	{
+		upload_ctx.cMailBody[upload_ctx.lines_count] = (char*)DBG_MALLOC(128);
+		memset(upload_ctx.cMailBody[upload_ctx.lines_count], 0, 128);	
+		base64_encode((unsigned char*)cMlList->BodyText, strlen(cMlList->BodyText), (unsigned char*)upload_ctx.cMailBody[upload_ctx.lines_count], 128);			
+		strcat(upload_ctx.cMailBody[upload_ctx.lines_count], "\r\n\r\n");	
+	}
+	else
+	{
+		upload_ctx.cMailBody[upload_ctx.lines_count] = (char*)DBG_MALLOC(cMlList->ExtraTextSize*2);
+		memset(upload_ctx.cMailBody[upload_ctx.lines_count], 0, cMlList->ExtraTextSize*2);	
+		base64_encode((unsigned char*)cMlList->ExtraText, cMlList->ExtraTextSize, (unsigned char*)upload_ctx.cMailBody[upload_ctx.lines_count], cMlList->ExtraTextSize*2);			
+		strcat(upload_ctx.cMailBody[upload_ctx.lines_count], "\r\n");	
+	}
 	upload_ctx.lines_count++;
 	
 	upload_ctx.cMailBody[upload_ctx.lines_count] = (char*)DBG_MALLOC(128);
@@ -5124,6 +5127,7 @@ int SendMailFile(char *cLogin, char *cPassword, char *cServer, char *cFromAddres
 		curl_easy_setopt(curl, CURLOPT_USERNAME, cLogin);
 		curl_easy_setopt(curl, CURLOPT_PASSWORD, cPassword);
 		
+		char cBuff[128];	
 		memset(cBuff, 0, 128);
 		sprintf(cBuff, "%s", cServer);
 		curl_easy_setopt(curl, CURLOPT_URL, cBuff);
@@ -5162,7 +5166,7 @@ int SendMailFile(char *cLogin, char *cPassword, char *cServer, char *cFromAddres
 		curl_easy_setopt(curl, CURLOPT_READDATA, &upload_ctx);
 		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 		
-		curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
+		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 		
 		if ((cAuth) && (strlen(cAuth)))
 		{

@@ -638,6 +638,8 @@ typedef struct
 	char					BodyText[64];
 	char					FilePath[64];
 	char					FilePath2[64];
+	char					*ExtraText;
+	unsigned int			ExtraTextSize;
 } MAIL_INFO;
 
 typedef struct 
