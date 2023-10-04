@@ -1,0 +1,1 @@
+gcc -lm updater.c -o ../updater

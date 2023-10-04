@@ -1,0 +1,43 @@
+MAJOR = 10
+MINOR = $(shell cat build-number.txt)
+BUILD = $(shell date +"%Y%m%d.%H%M%S")
+BUILDDATE = $(shell date +"%Y%m%d")
+BUILDTIME = $(shell date +"%H%M%S")
+VERSION = "\"$(MAJOR).$(MINOR).$(BUILDDATE).$(BUILDTIME)\""
+
+SHELL:=/bin/bash
+#$(if ! test -f build-number.txt; then echo 0 > build-number.txt; fi)
+#$(shell echo $(MINOR2) > build-number.txt)
+	
+CC=cc
+#CFLAGS=-DVERSION=$(VERSION) -DSTANDALONE -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS -DTARGET_POSIX -D_LINUX -fPIC -DPIC -D_REENTRANT -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -U_FORTIFY_SOURCE -Wall -g -DHAVE_LIBOPENMAX=2 -DOMX -DOMX_SKIP64BIT -ftree-vectorize -pipe -DUSE_EXTERNAL_OMX -DHAVE_LIBBCM_HOST -DUSE_EXTERNAL_LIBBCM_HOST -DUSE_VCHIQ_ARM -Wno-psabi -I/opt/vc/include/  -Iinclude/ -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux -Wno-deprecated-declarations -O0 -march=armv6zk -mfpu=vfp -mfloat-abi=hard -lm
+CFLAGS=-DVERSION=$(VERSION) -DSTANDALONE -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS -DTARGET_POSIX -D_LINUX -fPIC -DPIC -D_REENTRANT -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -U_FORTIFY_SOURCE -Wall -g -DHAVE_LIBOPENMAX=2 -DOMX -DOMX_SKIP64BIT -ftree-vectorize -pipe -DUSE_EXTERNAL_OMX -DHAVE_LIBBCM_HOST -DUSE_EXTERNAL_LIBBCM_HOST -DUSE_VCHIQ -Wno-psabi -I/opt/vc/include/  -Iinclude/ -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux -Wno-deprecated-declarations -O0 -lm
+LDFLAGS=-g -Wl,--whole-archive -L/usr/lib/arm-linux-gnueabihf -lcurl -ludev -L/opt/vc/lib -L/usr/lib -lGLESv2 -lEGL -lopenmaxil -lbcm_host -lvcos -lvchiq_arm -lpthread -lrt -Wl,--no-whole-archive -lavformat -lavcodec -lasound -lavutil -lm -lcrypto -lswresample -lz -pipe -lssl -lfdk-aac -pthread -Wl,-rpath=/usr/local/lib
+#DEP_LIBS=/opt/vc/src/hello_pi/libs/ilclient/libilclient.a
+SOURCES=main.c nfc.c gpio.c audio.c network.c pthread2threadx.c omx_client.c widgets.c text_func.c weather_func.c weather.c bcm2835.c flv-muxer.c rc522.c debug.c rtsp.c nal_to_rtp.c web.c streamer.c flv-demuxer.c writer.c system.c ir_control.c onvif.c tfp625a.c
+HEADERS=main.h nfc.h gpio.h audio.h network.h pthread2threadx.h omx_client.h widgets.h text_func.h weather_func.h weather.h bcm2835.h flv-muxer.h rc522.h debug.h rtsp.h nal_to_rtp.h web.h streamer.h flv-demuxer.h writer.h system.h ir_control.h onvif.h tfp625a.h
+
+OBJECTS=$(SOURCES:.c=.o)
+EXECUTABLE=../azad
+
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS) $(DEP_LIBS)
+	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
+
+%.o: %.c $(HEADERS)
+	$(CC) -c $< -o $@ $(CFLAGS)
+
+#versinc:
+#	if ! test -f build-number.txt; then echo 0 > build-number.txt; fi
+#	echo $(($(cat build-number.txt) + 1)) > build-number.txt
+	
+#.PHONY: clean
+
+clean:	
+	rm -f $(EXECUTABLE) $(OBJECTS)
+	
+all:
+	@n=$(MINOR);let n+=1;echo $$n > build-number.txt;
+	
+
