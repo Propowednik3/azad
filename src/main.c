@@ -17038,7 +17038,10 @@ void* thread_CopyFile(void *pData)
 	
 	char threadName[16];
 	memset(threadName, 0, 16);
-	snprintf(threadName, 15, "Copy_%.4s_%.4s", (char*)&pStream->VidID, (char*)&pStream->AudID);
+	if (pStream)
+		snprintf(threadName, 15, "Copy_%.4s_%.4s", (char*)&pStream->VidID, (char*)&pStream->AudID);
+		else 
+		strcpy(threadName, "Copy_X_X");
 	pthread_setname_np(pthread_self(), threadName);
 	
 	unsigned int iStreamID;
