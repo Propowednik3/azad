@@ -17006,9 +17006,14 @@ void SendFilesToArchive(STREAM_INFO *siArchive, struct tm *prev_time, DIRECTORY_
 	int date_difference = abs(now_time.tm_yday - prev_time->tm_yday);
 	int year_difference = abs(now_time.tm_year - prev_time->tm_year);
 	
-	if ((date_difference > 2) || (year_difference > 1)) memcpy(prev_time, &now_time, sizeof(struct tm));
+	if ((date_difference > 2) || (year_difference > 1)) 
+	{
+		memcpy(prev_time, &now_time, sizeof(struct tm));
+		date_difference = 0;
+		year_difference = 0;
+	}
 	
-	if ((date_difference && (date_difference <= 2)) && now_time.tm_hour)
+	if (date_difference || year_difference)
 	{
 		DBG_MUTEX_LOCK(&system_mutex);
 		int i;
