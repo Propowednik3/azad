@@ -18138,6 +18138,16 @@ long get_fs_free_mbytes(const char *anyfile)
 	return buf.f_bavail * buf.f_bsize / 1048576;
 }
 
+long get_fs_free_KB(const char *anyfile)
+{
+	struct statfs buf;
+ // struct stat st;
+ // stat(anyfile, &st);
+	statfs(anyfile, &buf);
+ // printf("get_fs_free_mbytes %s, %i, %i, %i, %i, %i\n", anyfile, (unsigned int)buf.f_bfree, (unsigned int)st.st_blksize, (unsigned int)buf.f_bavail, (unsigned int)buf.f_blocks, (unsigned int)buf.f_bsize);
+	return buf.f_bavail * buf.f_bsize / 1024;
+}
+
 void FreeFsGroup(FS_GROUP *fs_group, unsigned int fsCount)
 {
 	int i, n;
@@ -18613,13 +18623,15 @@ char ClearSpace(FS_GROUP *fs_group, unsigned int fsCount)
 		
 	char clean_result = 0;
 	int i, m, n, k, clk;
+	// Перебираем диски       
 	for (i = 0; i < fsCount; i++)
 	{
 		//printf("Space %i\n", i);
 		if (fs_group[i].Count == 0) continue;
 		clk = MAX_FILE_DELETE;	
+		long fs_free_size_val = get_fs_free_KB(get_fs_free_mbytes(fs_group[i].Paths[0]));
 		int deleted_count = 0;
-		
+		//Чистим текущий путь
 		while(clk &&(fs_group[i].MinFree > get_fs_free_mbytes(fs_group[i].Paths[0])))
 		{
 			memset(cPrev, 0, MAX_FILE_LEN);
@@ -18676,6 +18688,17 @@ char ClearSpace(FS_GROUP *fs_group, unsigned int fsCount)
 			DBG_FREE(cFullPath);				
 			
 			clk--;
+			// Если место освободили но мало, то продолжаем
+			if (clk == 0)
+			{
+				long fs_free_size_cur = get_fs_free_KB(get_fs_free_mbytes(fs_group[i].Paths[0]));
+				if (fs_free_size_cur != fs_free_size_val)
+				{
+					clk = MAX_FILE_DELETE;
+					fs_free_size_val = fs_free_size_cur;
+				}
+				
+			}
 		}
 		
 		if (deleted_count > 0)
