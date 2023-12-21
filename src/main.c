@@ -18320,6 +18320,8 @@ int GetFirstFile(char *cCurrDir, char *cFindedDir, char cDeleteEmptyDir)
 	}
 	else
 	{
+		if (errno != ENOTDIR) {DBG_LOG_OUT();return 0;}
+			
 		int res = 0;
 		DBG_MUTEX_LOCK(&system_mutex);
 		int cnt = iStreamCnt;
@@ -18542,7 +18544,7 @@ int FindFirstFile(char *cDir, char *cAddPath, char *cFile, char cDeleteEmptyDir)
 		{
 			int iAddLen = iSpltPos - iLen;
 			int iFileLen = iResLen - iSpltPos - 1;
-			if ((iAddLen >= MAX_FILE_LEN) || (iFileLen >= MAX_FILE_LEN))
+			if ((iAddLen >= MAX_FILE_LEN) || (iFileLen >= MAX_FILE_LEN) || (iAddLen <= 0) || (iFileLen <= 0))
 			{
 				dbgprintf(2,"GetFirstFile: error fill result\n");
 				DBG_FREE(cResultPath);
