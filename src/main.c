@@ -1625,6 +1625,14 @@ int Menu_MusicVolumeMute(void *pData, int iMenuNum)
 	return 0;
 }
 
+int MusicVolumeTempMute(int iMute)
+{
+	DBG_LOG_IN();
+	if (iMute) audio_set_playback_volume(0); else audio_set_playback_volume(iCurrentVolume);	
+	DBG_LOG_OUT();
+	return 0;
+}
+
 int Menu_MusicVolumeMiddle(void *pData, int iMenuNum)
 {
 	DBG_LOG_IN();
@@ -5106,6 +5114,12 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 						case SYSTEM_CMD_SOUND_VOLUME_MUTE:
 							add_sys_cmd_in_list(SYSTEM_CMD_SOUND_VOLUME_MUTE, iSubModuleNum);
 							break;
+						case SYSTEM_CMD_SOUND_VOLUME_TEMP_MUTE:
+							add_sys_cmd_in_list(SYSTEM_CMD_SOUND_VOLUME_TEMP_MUTE, iSubModuleNum);
+							break;
+						case SYSTEM_CMD_SOUND_VOLUME_TEMP_UNMUTE:
+							add_sys_cmd_in_list(SYSTEM_CMD_SOUND_VOLUME_TEMP_UNMUTE, iSubModuleNum);
+							break;
 						case SYSTEM_CMD_SOUND_VOLUME_SET:
 							if (GetCurShowType() & SHOW_TYPE_OFF)
 							{
@@ -7732,6 +7746,8 @@ char* GetActionCodeName(int iCode, char* cBuff, int iBufflen, int iMode)
 		case SYSTEM_CMD_SOUND_VOLUME_DOWN:	return "SYS_SOUND_VOLUME_DOWN";
 		case SYSTEM_CMD_SOUND_VOLUME_UP:	return "SYS_SOUND_VOLUME_UP";
 		case SYSTEM_CMD_SOUND_VOLUME_MUTE:	return "SYS_SOUND_VOLUME_MUTE";
+		case SYSTEM_CMD_SOUND_VOLUME_TEMP_MUTE:		return "SYS_SOUND_VOLUME_TEMP_MUTE";
+		case SYSTEM_CMD_SOUND_VOLUME_TEMP_UNMUTE:	return "SYS_SOUND_VOLUME_TEMP_UNMUTE";
 		case SYSTEM_CMD_SOUND_VOLUME_SET:	return "SYS_SOUND_VOLUME_SET";
 		case SYSTEM_CMD_MIC_VOLUME_SET:		return "SYS_MIC_VOLUME_SET";
 		case SYSTEM_CMD_MIC_VOLUME_DEC:		return "SYS_MIC_VOLUME_DEC";
@@ -8519,6 +8535,8 @@ unsigned int GetModuleSettings(char *Buff, int iLen, char iInt)
 	if (SearchStrInData(Buff, iLen, 0, "SYS_RESET_TIMER") != 0) 		ret = SYSTEM_CMD_RESET_TIMER;	
 	if (SearchStrInData(Buff, iLen, 0, "SYS_SOUND_VOLUME_SET") != 0) 	ret = SYSTEM_CMD_SOUND_VOLUME_SET;
 	if (SearchStrInData(Buff, iLen, 0, "SYS_SOUND_VOLUME_MUTE") != 0) 	ret = SYSTEM_CMD_SOUND_VOLUME_MUTE;
+	if (SearchStrInData(Buff, iLen, 0, "SYS_SOUND_VOLUME_TEMP_MUTE") != 0) 		ret = SYSTEM_CMD_SOUND_VOLUME_TEMP_MUTE;
+	if (SearchStrInData(Buff, iLen, 0, "SYS_SOUND_VOLUME_TEMP_UNMUTE") != 0) 	ret = SYSTEM_CMD_SOUND_VOLUME_TEMP_UNMUTE;
 	if (SearchStrInData(Buff, iLen, 0, "SYS_SOUND_VOLUME_INC") != 0) 	ret = SYSTEM_CMD_SOUND_VOLUME_INC;
 	if (SearchStrInData(Buff, iLen, 0, "SYS_SOUND_VOLUME_DEC") != 0) 	ret = SYSTEM_CMD_SOUND_VOLUME_DEC;
 	if (SearchStrInData(Buff, iLen, 0, "SYS_SOUND_VOLUME_UP") != 0) 	ret = SYSTEM_CMD_SOUND_VOLUME_UP;
@@ -22581,6 +22599,8 @@ void * Shower()
 			if (ret == SYSTEM_CMD_SOUND_VOLUME_DOWN) {Menu_MusicVolumeDown(pScreenMenu, 0); iChangeVolumeSoft = 0;}
 			if (ret == SYSTEM_CMD_SOUND_VOLUME_UP) {Menu_MusicVolumeUp(pScreenMenu, 0); iChangeVolumeSoft = 0;}
 			if (ret == SYSTEM_CMD_SOUND_VOLUME_MUTE) {Menu_MusicVolumeMute(pScreenMenu, 0); iChangeVolumeSoft = 0;}
+			if (ret == SYSTEM_CMD_SOUND_VOLUME_TEMP_MUTE) MusicVolumeTempMute(1);
+			if (ret == SYSTEM_CMD_SOUND_VOLUME_TEMP_UNMUTE) MusicVolumeTempMute(0);
 			if (ret == SYSTEM_CMD_SOUND_VOLUME_SET) {MusicVolumeSet(ret4); iChangeVolumeSoft = 0;}
 			if (ret == SYSTEM_CMD_ALARM_VOLUME_DEC) Menu_AlarmVolumeDec(pScreenMenu, ret4);
 			if (ret == SYSTEM_CMD_ALARM_VOLUME_INC) Menu_AlarmVolumeInc(pScreenMenu, ret4);
