@@ -3995,7 +3995,7 @@ int System_Shutdown(void *pData, int iNum)
 	DBG_MUTEX_UNLOCK(&system_mutex);
 	if (iSafe == 0) SendUDPMessage(TYPE_MESSAGE_DEVICE_STOPED, (char*)&iID, sizeof(iID), NULL, 0, NULL);
 	
-	dbgprintf(3, "ShutdownSystem\n");
+	dbgprintf(2, "ShutdownSystem\n");
 	//system("shutdown -h now");
 	dbgprintf(4, "Closing Main thread\n");
 	tx_eventer_send_event(&main_thread_evnt, EVENT_STOP);
@@ -4005,7 +4005,8 @@ int System_Shutdown(void *pData, int iNum)
 int System_Reboot(void *pData, int iNum)
 {
 	DBG_MUTEX_LOCK(&systemlist_mutex);	
-	cThreadMainStatus = 2;
+//	cThreadMainStatus = 2;	//Soft reboot
+	cThreadMainStatus = 8;	//Fast reboot
 	unsigned int iID = GetLocalSysID();
 	DBG_MUTEX_UNLOCK(&systemlist_mutex);	
 	
@@ -4014,7 +4015,7 @@ int System_Reboot(void *pData, int iNum)
 	DBG_MUTEX_UNLOCK(&system_mutex);
 	if (iSafe == 0) SendUDPMessage(TYPE_MESSAGE_DEVICE_STOPED, (char*)&iID, sizeof(iID), NULL, 0, NULL);
 	
-	dbgprintf(3, "RebootSystem\n");
+	dbgprintf(2, "RebootSystem\n");
 	//system("reboot");
 	dbgprintf(4, "Closing Main thread\n");
 	tx_eventer_send_event(&main_thread_evnt, EVENT_STOP);
@@ -4094,7 +4095,7 @@ int System_Restart(void *pData, int iNum)
 	DBG_MUTEX_UNLOCK(&system_mutex);
 	if (iSafe == 0) SendUDPMessage(TYPE_MESSAGE_DEVICE_STOPED, (char*)&iID, sizeof(iID), NULL, 0, NULL);
 	
-	dbgprintf(3, "RestartSystem\n");
+	dbgprintf(2, "RestartSystem\n");
 	dbgprintf(4, "Closing Main thread\n");
 	tx_eventer_send_event(&main_thread_evnt, EVENT_STOP);//exit(1);
 	return 0;
@@ -25009,6 +25010,7 @@ int main(int argc, char *argv[])
 	}
 	
 	dbgprintf(3,"Shutdown AZAD (main)\n");	
+	if (cThreadMainStatus == 8) {system("reboot &"); exit(8);}
 	/*if (cThreadMainStatus == 6)
 	{
 		dbgprintf(3, "Closing WEB threads\n");
