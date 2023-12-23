@@ -18317,6 +18317,7 @@ int CompareStr(char *cStr1, char *cStr2)
 
 int GetFirstFile(char *cCurrDir, char *cFindedDir, char cDeleteEmptyDir)
 {
+	DBG_LOG_IN();
 	//printf("GetFirstFile %s %s\n", cCurrDir, cFindedDir);
 	int iStatus = 0;
 	char cCurrDir2[MAX_FILE_LEN];
@@ -18324,7 +18325,7 @@ int GetFirstFile(char *cCurrDir, char *cFindedDir, char cDeleteEmptyDir)
 	struct dirent *dp;	
 	int iCnt = 0;
 	int iLen = strlen(cCurrDir);
-	if (iLen == 0) return 0;
+	if (iLen == 0) {DBG_LOG_OUT();return 0;}
 	
 	dir = opendir(cCurrDir);
 	if (dir != NULL)
@@ -18375,6 +18376,7 @@ int GetFirstFile(char *cCurrDir, char *cFindedDir, char cDeleteEmptyDir)
 		if (res)
 		{
 			//dbgprintf(4,"file %s find, in work\n",cCurrDir);
+			DBG_LOG_OUT();
 			return -2;
 		}
 		int k;
@@ -18390,6 +18392,7 @@ int GetFirstFile(char *cCurrDir, char *cFindedDir, char cDeleteEmptyDir)
 		//printf("GetFirstFile result %i\n", k);
 		iStatus = 1;
 	}
+	DBG_LOG_OUT();
 	return iStatus;
 }
 
