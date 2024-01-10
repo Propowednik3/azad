@@ -18655,7 +18655,7 @@ char ClearSpace(FS_GROUP *fs_group, unsigned int fsCount)
 		//printf("Space %i\n", i);
 		if (fs_group[i].Count == 0) continue;
 		clk = MAX_FILE_DELETE;	
-		long fs_free_size_val = get_fs_free_KB(get_fs_free_mbytes(fs_group[i].Paths[0]));
+		long fs_free_size_val = get_fs_free_KB(fs_group[i].Paths[0]);
 		int deleted_count = 0;
 		//Чистим текущий путь
 		while(clk &&(fs_group[i].MinFree > get_fs_free_mbytes(fs_group[i].Paths[0])))
@@ -18717,7 +18717,7 @@ char ClearSpace(FS_GROUP *fs_group, unsigned int fsCount)
 			// Если место освободили но мало, то продолжаем
 			if (clk == 0)
 			{
-				long fs_free_size_cur = get_fs_free_KB(get_fs_free_mbytes(fs_group[i].Paths[0]));
+				long fs_free_size_cur = get_fs_free_KB(fs_group[i].Paths[0]);
 				if (fs_free_size_cur != fs_free_size_val)
 				{
 					clk = MAX_FILE_DELETE;
