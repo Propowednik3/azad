@@ -6432,11 +6432,16 @@ int RenderMenu(MENU_PAGE *pMenu, GL_STATE_T *state, char cKeyStatus, unsigned in
 	if (GetShowMenu() != 0)
 	{		
 		k = pMenu[iCurrentMenuPage].SelectedOption;
+		if ((pMenu[iCurrentMenuPage].SelectedOption >= pMenu[iCurrentMenuPage].CountOptions) ||
+			(pMenu[iCurrentMenuPage].SelectedOption < 0))
+			pMenu[iCurrentMenuPage].SelectedOption = 0;		
+			
 		while ((pMenu[iCurrentMenuPage].Options[pMenu[iCurrentMenuPage].SelectedOption].Show != 1) 
 			|| (pMenu[iCurrentMenuPage].Options[pMenu[iCurrentMenuPage].SelectedOption].ViewLevel > iAccessLevelCopy))
 		{
-			pMenu[iCurrentMenuPage].SelectedOption--;		
-			if (pMenu[iCurrentMenuPage].SelectedOption == pMenu[iCurrentMenuPage].CountOptions) pMenu[iCurrentMenuPage].SelectedOption = 0;		
+			pMenu[iCurrentMenuPage].SelectedOption++;		
+			if ((pMenu[iCurrentMenuPage].SelectedOption >= pMenu[iCurrentMenuPage].CountOptions) ||
+				(pMenu[iCurrentMenuPage].SelectedOption < 0)) pMenu[iCurrentMenuPage].SelectedOption = 0;		
 			if (k == pMenu[iCurrentMenuPage].SelectedOption) 
 			{
 				SetShowMenu(0);
