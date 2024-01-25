@@ -54,6 +54,7 @@ void* Accept_Server(void *pData);
 void* TrafWorker(void *pData);
 char* getnametraffic(int TypeTraffic);
 char* getnamemessage(int TypeMessage);
+struct sockaddr_in aUDPTargetAddress;
 
 int PrintIf()
 {
@@ -422,6 +423,13 @@ int InitLAN()
 	Accept_Pair[1] = 0;	
 	
 	pthread_mutex_init(&Network_Mutex, NULL);
+	
+	aUDPTargetAddress.sin_family 	= AF_INET;
+	aUDPTargetAddress.sin_port 		= htons(UDP_PORT);
+	if (cUdpTargetAddress[0]) 
+		aUDPTargetAddress.sin_addr.s_addr = inet_addr(cUdpTargetAddress);
+		else 
+		aUDPTargetAddress.sin_addr.s_addr = 0;
 	
 	int ret = Init_Servers();
 	DBG_LOG_OUT();	
@@ -3707,8 +3715,12 @@ int SendMessage(unsigned int ConnNum, unsigned int Type, void *InfoBuffer, int I
 		trOutHeaderData->Address.sin_family = AF_INET;
 		trOutHeaderData->Address.sin_port = htons(UDP_PORT);
 		//printf("%i, %i\n",htonl(INADDR_BROADCAST),(int)Address);
-		if (Address == NULL) trOutHeaderData->Address.sin_addr.s_addr = 0; //htonl(INADDR_BROADCAST); 
-			else trOutHeaderData->Address.sin_addr.s_addr = Address->sin_addr.s_addr;	
+		if (Address == NULL)
+		{
+			if (cUdpTargetAddress[0]) trOutHeaderData->Address.sin_addr.s_addr = aUDPTargetAddress.sin_addr.s_addr;
+				else trOutHeaderData->Address.sin_addr.s_addr = 0; //htonl(INADDR_BROADCAST); 
+		}
+		else trOutHeaderData->Address.sin_addr.s_addr = Address->sin_addr.s_addr;	
 //if (Type == TYPE_MESSAGE_MODULE_SET) omx_dump_data("packet.bin", trOutBuffer, trOutHeaderData->SizeMessage);			
 		Connects_Info[ConnNum].OutDataSize += trOutHeaderData->SizeMessage;
 		//printf("To send : %i/%i\n",trOutHeaderData->SizeMessage, ConnInfo->OutDataSize);		

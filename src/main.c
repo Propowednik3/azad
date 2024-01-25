@@ -9684,6 +9684,7 @@ int InitSettings()
 	cRebootAfterUpdate = 1;
 	
 	memset(cNTPServer, 0, 64);
+	memset(cUdpTargetAddress, 0, 64);
 	
 	memset(&ispCameraImageSettings, 0, sizeof(image_sensor_params));
 	
@@ -10310,6 +10311,13 @@ int LoadSettings(char *Buff)
 					strcpy(cNTPServer, Buff4);
 				}
 				
+				if ((SearchStrInDataCaseIgn(Buff2, len2, 0, "UdpTargetAddress=") == 1)
+					&& (GetParamSetting(0, 59, Buff3, len3, Buff4, 64) == 1))
+				{
+					memset(cUdpTargetAddress, 0, 64);
+					strcpy(cUdpTargetAddress, Buff4);
+				}
+				
 				if ((SearchStrInDataCaseIgn(Buff2, len2, 0, "NewSourcePath=") == 1)
 					&& (GetParamSetting(0, 59, Buff3, len3, Buff4, 256) == 1))
 				{
@@ -10547,6 +10555,7 @@ int SaveSettings()
 	memset(Buff1, 0, 1024);	sprintf(Buff1, "Zoom=%i\n", cZoom); fputs(Buff1, f);
 	memset(Buff1, 0, 1024);	sprintf(Buff1, "DateTimeReference=%i\n", cDateTimeReference); fputs(Buff1, f);	
 	memset(Buff1, 0, 1024);	sprintf(Buff1, "NTPServer=%s\n", cNTPServer); fputs(Buff1, f);
+	memset(Buff1, 0, 1024);	sprintf(Buff1, "UdpTargetAddress=%s\n", cUdpTargetAddress); fputs(Buff1, f);
 	memset(Buff1, 0, 1024);	sprintf(Buff1, "NewSourcePath=%s\n", cNewSourcePath); fputs(Buff1, f);
 	memset(Buff1, 0, 1024);	sprintf(Buff1, "NewSourceFile=%s\n", cNewSourceFile); fputs(Buff1, f);
 	memset(Buff1, 0, 1024);	sprintf(Buff1, "NewSourceLogin=%s\n", cNewSourceLogin); fputs(Buff1, f);
@@ -14340,6 +14349,7 @@ void PrintSettings(void)
 	dbgprintf(4,"Zoom=%s\n", (cZoom == 1) ? "Yes" : "No");
 	dbgprintf(4,"DateTimeReference=%s\n", (cDateTimeReference == 1) ? "Yes" : "No");	
 	dbgprintf(4,"NTPServer=%s\n", cNTPServer);	
+	dbgprintf(4,"UdpTargetAddress=%s\n", cUdpTargetAddress);	
 	dbgprintf(4,"NewSourcePath=%s\n", cNewSourcePath);
 	dbgprintf(4,"NewSourceFile=%s\n", cNewSourceFile);
 	dbgprintf(4,"NewSourceLogin=%s\n", cNewSourceLogin);
@@ -17418,7 +17428,8 @@ void AddMessageInList(char *cMessage, int iMessageLen, unsigned int cAddr)
 	unsigned int uiSoundID = 0;
 	unsigned int uiSoundVolume = 0;
 	int iPlaySound = 0;
-	int iAddressNum = cAddr >> 24;
+	int iAddressNum1 = (cAddr >> 16) & 255;
+	int iAddressNum2 = (cAddr >> 24) & 255;
 	time_t rawtime;
 	struct tm timeinfo;
 	time(&rawtime);
@@ -17427,7 +17438,7 @@ void AddMessageInList(char *cMessage, int iMessageLen, unsigned int cAddr)
 	
 	//sprintf(cTempBuffer2, "%s", cTempBuffer1);
 	if (cAddr != 0) 
-		sprintf(cTempBuffer2, "[%i:%i](%i) %s", timeinfo.tm_hour,timeinfo.tm_min, iAddressNum, cTempBuffer1);
+		sprintf(cTempBuffer2, "[%i:%i](%i.%i) %s", timeinfo.tm_hour,timeinfo.tm_min, iAddressNum1, iAddressNum2, cTempBuffer1);
 		else sprintf(cTempBuffer2, "[%i:%i] %s", timeinfo.tm_hour,timeinfo.tm_min, cTempBuffer1);
 /*	}
 	else

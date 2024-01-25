@@ -1865,6 +1865,7 @@ char cMailPassword[64];
 char cMailAuth[64];
 char cExternalApp[256];
 char cNTPServer[64];
+char cUdpTargetAddress[64];
 char cNewSourcePath[256];
 char cNewSourceFile[256];
 char cNewSourceLogin[256];

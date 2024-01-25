@@ -16477,16 +16477,20 @@ int WEB_settings_save(int *pParams, char *strParams)
 			if ((iBasicVolume < 0) || (iBasicVolume > 100)) iBasicVolume = 0;
 			uiMediaIoTimeout = Str2Int(&strParams[512]);
 			if ((uiMediaIoTimeout < 0) || (uiMediaIoTimeout > 100)) uiMediaIoTimeout = 60;
-			iAlarmVolume = Str2Int(&strParams[1024]);
+			iAlarmVolume = Str2Int(&strParams[768]);
 			if ((iAlarmVolume < 0) || (iAlarmVolume > 100)) iAlarmVolume = 0;
-			iIntervalRescanCard = Str2Int(&strParams[1280]);
-			ucBroadCastTCP = SearchStrInDataCaseIgn(&strParams[1536], 10, 0, "ON") ? 1 : 0;			
+			iIntervalRescanCard = Str2Int(&strParams[1024]);
+			ucBroadCastTCP = SearchStrInDataCaseIgn(&strParams[1280], 10, 0, "ON") ? 1 : 0;			
 			DBG_MUTEX_UNLOCK(&system_mutex);			
 			
 			DBG_MUTEX_LOCK(&modulelist_mutex);
 			iRadioVolume = Str2Int(&strParams[0]);
 			if ((iRadioVolume < 0) || (iRadioVolume > 15)) iRadioVolume = 0;
-			DBG_MUTEX_UNLOCK(&modulelist_mutex);			
+			DBG_MUTEX_UNLOCK(&modulelist_mutex);
+			
+			DBG_MUTEX_LOCK(&Connects_Info[0].Socket_Mutex);				
+			memcpy(cUdpTargetAddress, &strParams[1536], 15);
+			DBG_MUTEX_UNLOCK(&Connects_Info[0].Socket_Mutex);		
 			break;
 		case 8:
 			DBG_MUTEX_LOCK(&system_mutex);			
@@ -16699,6 +16703,11 @@ int WEB_settings_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int i
 	unsigned int Copy_uiPaddingSize	= uiPaddingSize;
 	int Copy_iTimeCor = iTimeCor;
 	DBG_MUTEX_UNLOCK(&widget_mutex);
+	
+	DBG_MUTEX_LOCK(&Connects_Info[0].Socket_Mutex);
+	char Copy_cUdpTargetAddress[64];
+	memcpy(Copy_cUdpTargetAddress, cUdpTargetAddress, 64);
+	DBG_MUTEX_UNLOCK(&Connects_Info[0].Socket_Mutex);
 	
 	strcpy(msg_tx, "HTTP/1.1 200 OK\r\n"
 					"Server: nginx/1.2.1\r\n"
@@ -16946,12 +16955,15 @@ int WEB_settings_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int i
 				"<td><button type='submit'>Сохранить</button></td></tr>\r\n"
 				"<tr><td>* Гарантированная рассылка служебных сообщений (протокол TCP):</td><td><input type='checkbox' name='Val6'%s></td>\r\n"
 				"<td><button type='submit'>Сохранить</button></td></tr>\r\n"
+				"<tr><td>* IP адрес связи точка-точка:</td><td><input type='text' name='Val7' maxlength=15 value='%s' style='width: 300px;'></td>\r\n"
+				"<td><button type='submit'>Сохранить</button></td></tr>"
 				"</form>\r\n",
 				session->request_id,
 				cnt,
 				Copy_iRadioVolume, iBasicVolume, uiMediaIoTimeout,
 				iAlarmVolume, iIntervalRescanCard,
-				ucBroadCastTCP ? " checked " : "");
+				ucBroadCastTCP ? " checked " : "",
+				Copy_cUdpTargetAddress);
 	strcat(msg_tx, msg_subbody);
 	cnt++;
 	memset(msg_subbody, 0, 3072);
