@@ -1358,6 +1358,27 @@ void UpdateModuleStatus(MODULE_INFO *pModule, char cAll)
 			pLockModules = ModuleIdToPoint(pModule->ID, 1);
 			if (pLockModules != NULL)
 			{
+				int64_t *pIO_data = (int64_t *)pModule->IO_data;
+				int i;
+				for (i = 0; i != MAX_MODULE_STATUSES; i++) 
+				{					
+					if ((pModule->Settings[i] >> 24) == 1)
+					{ 
+						if ((pModule->Status[i] != pLockModules->Status[i]) && pLockModules->Status[i])
+						{
+							//printf("reset cnt %i\n", i);
+							pIO_data[i] = 0;
+							get_ms(&pIO_data[i]);
+						}
+						
+						if (pLockModules->Status[i] &&
+							((unsigned int)(get_ms(&pIO_data[i])) >= (pModule->Settings[i] & 0x00FFFFFF))) 
+						{
+							//printf("restrt cnt %i %i %i\n", i, pLockModules->Status[i], (unsigned int)(get_ms(&pIO_data[i])));
+							pLockModules->Status[i] = 0; //reset if timeout
+						}						
+					}
+				}
 				memcpy(pModule->Status, pLockModules->Status, MAX_MODULE_STATUSES*sizeof(pModule->Status[0]));
 			} else dbgprintf(1, "UpdateModuleStatus, not finded local COUNTER module\n");			
 			DBG_MUTEX_UNLOCK(&modulelist_mutex);
@@ -9306,9 +9327,11 @@ char *GetModuleStatusValue(unsigned int uiType, unsigned int uiStatusNum, int iS
 		case MODULE_TYPE_PN532:
 			GetActionCodeName(iStatus, Buffer, 64, 2);
 			break;
+		case MODULE_TYPE_COUNTER:
+			sprintf(Buffer, "%i", iStatus & 0x00FFFFFF);
+			break;
 		case MODULE_TYPE_EXTERNAL:
 		case MODULE_TYPE_USB_GPIO:
-		case MODULE_TYPE_COUNTER:
 		case MODULE_TYPE_MEMORY:
 			//GetActionCodeName(iStatus, Buffer, 64, 2);
 			sprintf(Buffer, "%i", iStatus);
@@ -12380,7 +12403,7 @@ int LoadModules(char *Buff)
 					iModuleCnt++;
 					miModuleList = (MODULE_INFO*)DBG_REALLOC(miModuleList, sizeof(MODULE_INFO)*iModuleCnt);
 					memset(&miModuleList[iModuleCnt-1], 0, sizeof(MODULE_INFO));
-					
+					miModuleList[iModuleCnt-1].Local = 1;
 					if (GetParamSetting(0, 59, Buff3, len3, Buff4, 32) == 1)
 						miModuleList[iModuleCnt-1].Enabled = (unsigned int)Str2Int(Buff4);
 					if (GetParamSetting(1, 59, Buff3, len3, Buff4, 32) == 1)
@@ -12455,13 +12478,12 @@ int LoadModules(char *Buff)
 							miModuleList[iModuleCnt-1].Settings[n] |= iH & 0xFFFF;
 						}
 					}
-				}				
+				}
 			}
 		}
 	}
 	fclose(f);
 	UpdateDeviceType();
-	
 	DBG_LOG_OUT();
 	return 1;
 }
@@ -20116,6 +20138,14 @@ void * thread_Scaner(void *pData)
 				uiScanTimer[n] = 0; //pModules[n].ScanSet;
 				uiScanFirst[n] = 1;
 				if (pModules[n].Type == MODULE_TYPE_KEYBOARD) keyboard_exist = 1;
+				if (pModules[n].Type == MODULE_TYPE_COUNTER) 
+				{
+					pModules[n].IO_data = DBG_MALLOC(MAX_MODULE_STATUSES*sizeof(int64_t));
+					memset(pModules[n].IO_data, 0, MAX_MODULE_STATUSES*sizeof(int64_t));
+					int64_t *pIO_data = (int64_t *)pModules[n].IO_data;
+					for (i = 0; i != MAX_MODULE_STATUSES; i++) 
+						if ((pModules[n].Settings[i] >> 24) == 1) get_ms(&pIO_data[i]); //enable reset timeout
+				}
 				
 				if ((pModules[n].SaveChanges != 0) && cCaptStatEnabled)
 				{
@@ -20458,14 +20488,21 @@ void * thread_Scaner(void *pData)
 	if (keyboard_exist) close_keyboard_scan();	
 	
 	for (n = 0; n != iModulesCount; n++)
-		if ((pModules[n].Enabled & 1) && (pModules[n].ScanSet != 0) && (pModules[n].SaveChanges != 0) && cCaptStatEnabled)
+	{
+		if ((pModules[n].Enabled & 1) && (pModules[n].ScanSet != 0))
 		{
-			if (capt_set[n].FileData->opened == 1)
-				SaveCapturedData(2, &capt_set[n], cCapturePath, cBackUpPath, uiCaptureSizeLimit, uiCaptureTimeLimit, ucCaptOrderLmt, 
-									ucBackUpCaptured, cCaptOrderAddr, cCaptPrePath, DIR_STAT, pModules[n].ID, SaveModuleStatuses, &pModules[n],
-									uiMaxWaitCopyTime, uiMessWaitCopyTime, WRT_TYPE_BACKUP_STATUSES);
-			file_deinit(capt_set[n].FileData);			
+			if (pModules[n].Type == MODULE_TYPE_COUNTER) DBG_FREE(pModules[n].IO_data);
+				
+			if ((pModules[n].SaveChanges != 0) && cCaptStatEnabled)
+			{
+				if (capt_set[n].FileData->opened == 1)
+					SaveCapturedData(2, &capt_set[n], cCapturePath, cBackUpPath, uiCaptureSizeLimit, uiCaptureTimeLimit, ucCaptOrderLmt, 
+										ucBackUpCaptured, cCaptOrderAddr, cCaptPrePath, DIR_STAT, pModules[n].ID, SaveModuleStatuses, &pModules[n],
+										uiMaxWaitCopyTime, uiMessWaitCopyTime, WRT_TYPE_BACKUP_STATUSES);
+				file_deinit(capt_set[n].FileData);			
+			}
 		}
+	}
 	
 	DBG_FREE(cCaptPrePath);
 	if (cCaptOrderAddr) DBG_FREE(cCaptOrderAddr);
@@ -23948,8 +23985,15 @@ int main(int argc, char *argv[])
 		miModuleList[n].Address.sin_addr.s_addr = inet_addr("127.0.0.1");
 		miModuleList[n].Address.sin_port = htons(TCP_PORT);
 		miModuleList[n].Address.sin_family = AF_INET;
-		if ((miModuleList[n].Type == MODULE_TYPE_COUNTER) ||
-			(miModuleList[n].Type == MODULE_TYPE_MEMORY))
+		if (miModuleList[n].Type == MODULE_TYPE_COUNTER)
+		{
+			for (i = 0; i < MAX_MODULE_SETTINGS; i++)
+				if (i < MAX_MODULE_STATUSES)
+				{ 
+					if ((miModuleList[n].Settings[i] >> 24) == 0) miModuleList[n].Status[i] = miModuleList[n].Settings[i];
+				} else break;
+		}
+		if (miModuleList[n].Type == MODULE_TYPE_MEMORY)
 		{
 			for (i = 0; i < MAX_MODULE_SETTINGS; i++)
 				if (i < MAX_MODULE_STATUSES) miModuleList[n].Status[i] = miModuleList[n].Settings[i];

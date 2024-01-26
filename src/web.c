@@ -3882,10 +3882,100 @@ int WEB_get_msg_type(char *msg_rx, int iLen, unsigned int *uiType, unsigned int 
 						if ((iValue[12] < 0) || (iValue[12] > 20000000)) iValue[12] = 0;
 					} else iValue[12] = 0;
 					break;
+				case MODULE_TYPE_COUNTER:
+					if (WEB_get_param_from_url(msg, msg_len, "Res1", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));	
+						if (SearchStrInDataCaseIgn(param_value, strlen(param_value), 0, "ON")) iValue[10] = 0x01000000;
+					} else iValue[10] = 0;
+					if (WEB_get_param_from_url(msg, msg_len, "Res2", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));	
+						if (SearchStrInDataCaseIgn(param_value, strlen(param_value), 0, "ON")) iValue[11] = 0x01000000;
+					} else iValue[11] = 0;
+					if (WEB_get_param_from_url(msg, msg_len, "Res3", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));
+						if (SearchStrInDataCaseIgn(param_value, strlen(param_value), 0, "ON")) iValue[12] = 0x01000000;							
+					} else iValue[12] = 0;
+					if (WEB_get_param_from_url(msg, msg_len, "Res4", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));
+						if (SearchStrInDataCaseIgn(param_value, strlen(param_value), 0, "ON")) iValue[13] = 0x01000000;		
+					} else iValue[13] = 0;
+					if (WEB_get_param_from_url(msg, msg_len, "Res5", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));	
+						if (SearchStrInDataCaseIgn(param_value, strlen(param_value), 0, "ON")) iValue[14] = 0x01000000;		
+					} else iValue[14] = 0;
+					if (WEB_get_param_from_url(msg, msg_len, "Res6", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));	
+						if (SearchStrInDataCaseIgn(param_value, strlen(param_value), 0, "ON")) iValue[15] = 0x01000000;		
+					} else iValue[15] = 0;
+					if (WEB_get_param_from_url(msg, msg_len, "Res7", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));
+						if (SearchStrInDataCaseIgn(param_value, strlen(param_value), 0, "ON")) iValue[16] = 0x01000000;		
+					} else iValue[16] = 0;
+					if (WEB_get_param_from_url(msg, msg_len, "Res8", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));
+						if (SearchStrInDataCaseIgn(param_value, strlen(param_value), 0, "ON")) iValue[17] = 0x01000000;		
+					} else iValue[17] = 0;	
+					
+					if (WEB_get_param_from_url(msg, msg_len, "Set1", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));	
+						iValue[10] |= Str2Int(param_value) & 0x00FFFFFF;
+						if ((iValue[10] & 0x00FFFFFF) == 0) iValue[10] = 0;
+					} else iValue[10] = 0;
+					if (WEB_get_param_from_url(msg, msg_len, "Set2", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));	
+						iValue[11] |= Str2Int(param_value) & 0x00FFFFFF;
+						if ((iValue[11] & 0x00FFFFFF) == 0) iValue[11] = 0;
+					} else iValue[11] = 0;
+					if (WEB_get_param_from_url(msg, msg_len, "Set3", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));	
+						iValue[12] |= Str2Int(param_value) & 0x00FFFFFF;
+						if ((iValue[12] & 0x00FFFFFF) == 0) iValue[12] = 0;
+					} else iValue[12] = 0;
+					if (WEB_get_param_from_url(msg, msg_len, "Set4", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));	
+						iValue[13] |= Str2Int(param_value) & 0x00FFFFFF;
+						if ((iValue[13] & 0x00FFFFFF) == 0) iValue[13] = 0;
+					} else iValue[13] = 0;
+					if (WEB_get_param_from_url(msg, msg_len, "Set5", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));	
+						iValue[14] |= Str2Int(param_value) & 0x00FFFFFF;
+						if ((iValue[14] & 0x00FFFFFF) == 0) iValue[14] = 0;
+					} else iValue[14] = 0;
+					if (WEB_get_param_from_url(msg, msg_len, "Set6", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));	
+						iValue[15] |= Str2Int(param_value) & 0x00FFFFFF;
+						if ((iValue[15] & 0x00FFFFFF) == 0) iValue[15] = 0;
+					} else iValue[15] = 0;
+					if (WEB_get_param_from_url(msg, msg_len, "Set7", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));	
+						iValue[16] |= Str2Int(param_value) & 0x00FFFFFF;
+						if ((iValue[16] & 0x00FFFFFF) == 0) iValue[16] = 0;
+					} else iValue[16] = 0;
+					if (WEB_get_param_from_url(msg, msg_len, "Set8", param_value, 2048) >= 0) 
+					{
+						WEB_decode_url_to_src(param_value, strlen(param_value));	
+						iValue[17] |= Str2Int(param_value) & 0x00FFFFFF;
+						if ((iValue[17] & 0x00FFFFFF) == 0) iValue[17] = 0;
+					} else iValue[17] = 0;					
+					break;
 				case MODULE_TYPE_SYSTEM:
 				case MODULE_TYPE_DISPLAY:
-				case MODULE_TYPE_COUNTER:
-				case MODULE_TYPE_MEMORY:
+				case MODULE_TYPE_MEMORY:					
 					if (WEB_get_param_from_url(msg, msg_len, "Set1", param_value, 2048) >= 0) 
 					{
 						WEB_decode_url_to_src(param_value, strlen(param_value));	
@@ -15019,22 +15109,39 @@ int WEB_modules_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 				case MODULE_TYPE_DISPLAY:
 				case MODULE_TYPE_COUNTER:
 				case MODULE_TYPE_MEMORY:
-					sprintf(msg_subbody, "<td><input type='number' name='Set1' value='%i' style='width: 100px;'%s><br />\r\n"
-											"<input type='number' name='Set2' value='%i' style='width: 100px;'%s><br />\r\n"
-											"<input type='number' name='Set3' value='%i' style='width: 100px;'%s><br />\r\n"
-											"<input type='number' name='Set4' value='%i' style='width: 100px;'%s><br />\r\n"
-											"<input type='number' name='Set5' value='%i' style='width: 100px;'%s><br />\r\n"
-											"<input type='number' name='Set6' value='%i' style='width: 100px;'%s><br />\r\n"
-											"<input type='number' name='Set7' value='%i' style='width: 100px;'%s><br />\r\n"
-											"<input type='number' name='Set8' value='%i' style='width: 100px;'%s></td>\r\n",
-										miModuleList[n].Settings[0], pDisableFlag,
-										miModuleList[n].Settings[1], pDisableFlag,
-										miModuleList[n].Settings[2], pDisableFlag,
-										miModuleList[n].Settings[3], pDisableFlag,
-										miModuleList[n].Settings[4], pDisableFlag,
-										miModuleList[n].Settings[5], pDisableFlag,
-										miModuleList[n].Settings[6], pDisableFlag,
-										miModuleList[n].Settings[7], pDisableFlag);
+					sprintf(msg_subbody, "<td>Сбрасывать через время (ms)<br />\r\n"
+											"<input type='checkbox' name='Res1'%s%s>\r\n"
+												"<input type='number' name='Set1' value='%i' style='width: 100px;'%s><br />\r\n"
+											"<input type='checkbox' name='Res2'%s%s>\r\n"
+												"<input type='number' name='Set2' value='%i' style='width: 100px;'%s><br />\r\n"
+											"<input type='checkbox' name='Res3'%s%s>\r\n"
+												"<input type='number' name='Set3' value='%i' style='width: 100px;'%s><br />\r\n"
+											"<input type='checkbox' name='Res4'%s%s>\r\n"
+												"<input type='number' name='Set4' value='%i' style='width: 100px;'%s><br />\r\n"
+											"<input type='checkbox' name='Res5'%s%s>\r\n"
+												"<input type='number' name='Set5' value='%i' style='width: 100px;'%s><br />\r\n"
+											"<input type='checkbox' name='Res6'%s%s>\r\n"
+												"<input type='number' name='Set6' value='%i' style='width: 100px;'%s><br />\r\n"
+											"<input type='checkbox' name='Res7'%s%s>\r\n"
+												"<input type='number' name='Set7' value='%i' style='width: 100px;'%s><br />\r\n"
+											"<input type='checkbox' name='Res8'%s%s>\r\n"
+												"<input type='number' name='Set8' value='%i' style='width: 100px;'%s></td>\r\n",
+										((miModuleList[n].Settings[0] >> 24) == 1) ? " checked" : "", pDisableFlag,
+										miModuleList[n].Settings[0] & 0x00FFFFFF, pDisableFlag,
+										((miModuleList[n].Settings[1] >> 24) == 1) ? " checked" : "", pDisableFlag,
+										miModuleList[n].Settings[1] & 0x00FFFFFF, pDisableFlag,
+										((miModuleList[n].Settings[2] >> 24) == 1) ? " checked" : "", pDisableFlag,
+										miModuleList[n].Settings[2] & 0x00FFFFFF, pDisableFlag,
+										((miModuleList[n].Settings[3] >> 24) == 1) ? " checked" : "", pDisableFlag,
+										miModuleList[n].Settings[3] & 0x00FFFFFF, pDisableFlag,
+										((miModuleList[n].Settings[4] >> 24) == 1) ? " checked" : "", pDisableFlag,
+										miModuleList[n].Settings[4] & 0x00FFFFFF, pDisableFlag,
+										((miModuleList[n].Settings[5] >> 24) == 1) ? " checked" : "", pDisableFlag,
+										miModuleList[n].Settings[5] & 0x00FFFFFF, pDisableFlag,
+										((miModuleList[n].Settings[6] >> 24) == 1) ? " checked" : "", pDisableFlag,
+										miModuleList[n].Settings[6] & 0x00FFFFFF, pDisableFlag,
+										((miModuleList[n].Settings[7] >> 24) == 1) ? " checked" : "", pDisableFlag,
+										miModuleList[n].Settings[7] & 0x00FFFFFF, pDisableFlag);
 					break;
 				case MODULE_TYPE_GPIO:
 					sprintf(msg_subbody, "<td>Режим:<select name='Mode' style='width: 140px;'%s>\r\n"
@@ -15909,8 +16016,19 @@ int WEB_modstatus_load(int *pParams)
 	DBG_MUTEX_LOCK(&modulelist_mutex);
 	if ((pParams[0] >= 0) && (pParams[0] < iModuleCnt) && iModuleCnt)
 	{
-		if ((miModuleList[pParams[0]].Type == MODULE_TYPE_COUNTER) ||
-			(miModuleList[pParams[0]].Type == MODULE_TYPE_MEMORY))
+		if (miModuleList[pParams[0]].Type == MODULE_TYPE_COUNTER)
+		{
+			int i;
+			for (i = 0; i < MAX_MODULE_SETTINGS; i++)
+				if (i < MAX_MODULE_STATUSES) 
+				{
+					if ((miModuleList[pParams[0]].Settings[i] >> 24) == 0) 
+						miModuleList[pParams[0]].Status[i] = miModuleList[pParams[0]].Settings[i];
+				}
+				else break;
+		}
+		
+		if	(miModuleList[pParams[0]].Type == MODULE_TYPE_MEMORY)
 		{
 			int i;
 			for (i = 0; i < MAX_MODULE_SETTINGS; i++)
