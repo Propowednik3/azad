@@ -231,7 +231,7 @@ char TestDataChanged(time_t *tLastDate)
 {
 	char result = 0;
 	time_t currtime;
-	time(&currtime);	
+	time(&currtime);
 		
 	if (abs(tLastDate[0] - currtime) > 3600) result = 1;
 	memcpy(tLastDate, &currtime, sizeof(time_t));
@@ -859,13 +859,22 @@ static int selems(int level)
 	return 0;
 }
 */
-void audio_set_playback_volume(int iVolume)
+void audio_set_playback_volume(int iDev, int iVolume)
 {
 	char cDevName[16];
-	DBG_MUTEX_LOCK(&Play_Mutex);
-	//uiWebVolume = iVolume;
-	memcpy(cDevName, cPlayCTLname, 16);
-	DBG_MUTEX_UNLOCK(&Play_Mutex);
+		
+	if (iDev == -1)
+	{
+		DBG_MUTEX_LOCK(&Play_Mutex);
+		//uiWebVolume = iVolume;
+		memcpy(cDevName, cPlayCTLname, 16);
+		DBG_MUTEX_UNLOCK(&Play_Mutex);
+	}
+	else
+	{
+		memset(cDevName, 0, 16);
+		sprintf(cDevName, "hw:%i",iDev);
+	}
 	
 	// ALSA mixer handle
 	snd_mixer_t *m_handle;

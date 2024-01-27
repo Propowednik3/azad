@@ -83,7 +83,7 @@ int Audio_StopCapture(int iWaitStop);
 int Media_Forward(unsigned int iDiffPos);
 int Media_Backward(unsigned int iDiffPos);
 int Media_SetNewPos(unsigned int uiPos);
-void audio_set_playback_volume(int iVolume);
+void audio_set_playback_volume(int iDev, int iVolume);
 void audio_set_capture_volume(int iDev, int iVolume);
 int audio_get_playback_volume();
 int audio_get_capture_volume(int iDev);

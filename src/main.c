@@ -1086,7 +1086,7 @@ int Action_PlaySound(unsigned int iNum, int iRepeats, int iVolumePercent)
 			f_link->mbuffer.void_data = mSoundList[iSnd].Data;		
 			f_link->mbuffer.data_size = mSoundList[iSnd].Len;
 			f_link->mbuffer.uidata[0] = iVolumePercent;
-			//audio_set_playback_volume(iAlarmVolume);	
+			//audio_set_playback_volume(-1, iAlarmVolume);	
 			res = PlayAudioSound(f_link);			
 		}
 	} else dbgprintf(2, "Action_PlaySound: not found SYS Sound ID: %.4s\n", (char*)&iNum);
@@ -1151,7 +1151,7 @@ int Action_PlayTestSound()
 			}
 		}			
 		
-		//audio_set_playback_volume(iAlarmVolume);	
+		//audio_set_playback_volume(-1, iAlarmVolume);	
 		res = PlayAudioSound(f_link);			
 	}
 	DBG_MUTEX_UNLOCK(&modulelist_mutex);
@@ -1566,7 +1566,7 @@ int Menu_MusicVolumeInc(void *pData, int iPos)
 	DBG_LOG_IN();
 	iCurrentVolume += iPos;
 	if (iCurrentVolume > 100) iCurrentVolume = 100;
-		else audio_set_playback_volume(iCurrentVolume);
+		else audio_set_playback_volume(-1, iCurrentVolume);
 	DBG_MUTEX_LOCK(&system_mutex);	
 	iBasicVolume = iCurrentVolume;
 	DBG_MUTEX_UNLOCK(&system_mutex);	
@@ -1580,7 +1580,7 @@ int Menu_MusicVolumeUp(void *pData, int iMenuNum)
 	DBG_LOG_IN();
 	iCurrentVolume += 5;
 	if (iCurrentVolume > 100) iCurrentVolume = 100;
-		else audio_set_playback_volume(iCurrentVolume);
+		else audio_set_playback_volume(-1, iCurrentVolume);
 	DBG_MUTEX_LOCK(&system_mutex);	
 	iBasicVolume = iCurrentVolume;
 	DBG_MUTEX_UNLOCK(&system_mutex);	
@@ -1594,7 +1594,7 @@ int Menu_MusicVolumeDec(void *pData, int iPos)
 	DBG_LOG_IN();
 	iCurrentVolume -= iPos;
 	if (iCurrentVolume < 0) iCurrentVolume = 0;		
-	audio_set_playback_volume(iCurrentVolume);
+	audio_set_playback_volume(-1, iCurrentVolume);
 	DBG_MUTEX_LOCK(&system_mutex);	
 	iBasicVolume = iCurrentVolume;
 	DBG_MUTEX_UNLOCK(&system_mutex);	
@@ -1608,7 +1608,7 @@ int Menu_MusicVolumeDown(void *pData, int iMenuNum)
 	DBG_LOG_IN();
 	iCurrentVolume -= 5;
 	if (iCurrentVolume < 0) iCurrentVolume = 0;		
-	audio_set_playback_volume(iCurrentVolume);
+	audio_set_playback_volume(-1, iCurrentVolume);
 	DBG_MUTEX_LOCK(&system_mutex);	
 	iBasicVolume = iCurrentVolume;
 	DBG_MUTEX_UNLOCK(&system_mutex);	
@@ -1623,7 +1623,7 @@ int MusicVolumeSet(int iNum)
 	if ((iNum >= 0) && (iNum <= 100))
 	{
 		iCurrentVolume = iNum;
-		audio_set_playback_volume(iCurrentVolume);
+		audio_set_playback_volume(-1, iCurrentVolume);
 		DBG_MUTEX_LOCK(&system_mutex);	
 		iBasicVolume = iCurrentVolume;
 		DBG_MUTEX_UNLOCK(&system_mutex);	
@@ -1637,7 +1637,7 @@ int Menu_MusicVolumeMute(void *pData, int iMenuNum)
 {
 	DBG_LOG_IN();
 	iCurrentVolume = 0;
-	audio_set_playback_volume(iCurrentVolume);
+	audio_set_playback_volume(-1, iCurrentVolume);
 	DBG_MUTEX_LOCK(&system_mutex);	
 	iBasicVolume = iCurrentVolume;
 	DBG_MUTEX_UNLOCK(&system_mutex);	
@@ -1649,7 +1649,7 @@ int Menu_MusicVolumeMute(void *pData, int iMenuNum)
 int MusicVolumeTempMute(int iMute)
 {
 	DBG_LOG_IN();
-	if (iMute) audio_set_playback_volume(0); else audio_set_playback_volume(iCurrentVolume);	
+	if (iMute) audio_set_playback_volume(-1, 0); else audio_set_playback_volume(-1, iCurrentVolume);	
 	DBG_LOG_OUT();
 	return 0;
 }
@@ -1658,7 +1658,7 @@ int Menu_MusicVolumeMiddle(void *pData, int iMenuNum)
 {
 	DBG_LOG_IN();
 	iCurrentVolume = 50;
-	audio_set_playback_volume(iCurrentVolume);
+	audio_set_playback_volume(-1, iCurrentVolume);
 	DBG_MUTEX_LOCK(&system_mutex);	
 	iBasicVolume = iCurrentVolume;	
 	DBG_MUTEX_UNLOCK(&system_mutex);	
@@ -1675,7 +1675,7 @@ int Menu_AlarmVolumeSet(void *pData, int iPos)
 	if (iAlarmVolume < 0) iAlarmVolume = 100;
 	if (iAlarmVolume > 100) iAlarmVolume = 100;
 	DBG_MUTEX_UNLOCK(&system_mutex);		
-		//else audio_set_playback_volume(iAlarmVolume);
+		//else audio_set_playback_volume(-1, iAlarmVolume);
 	uiTimerShowVolume = 0;
 	DBG_LOG_OUT();
 	return 0;
@@ -1688,7 +1688,7 @@ int Menu_AlarmVolumeUp(void *pData, int iMenuNum)
 	iAlarmVolume += 5;
 	if (iAlarmVolume > 100) iAlarmVolume = 100;
 	DBG_MUTEX_UNLOCK(&system_mutex);	
-	//else audio_set_playback_volume(iAlarmVolume);	
+	//else audio_set_playback_volume(-1, iAlarmVolume);	
 	uiTimerShowVolume = 0;
 	DBG_LOG_OUT();
 	return 0;
@@ -1701,7 +1701,7 @@ int Menu_AlarmVolumeInc(void *pData, int iPos)
 	iAlarmVolume += iPos;
 	if (iAlarmVolume > 100) iAlarmVolume = 100;
 	DBG_MUTEX_UNLOCK(&system_mutex);		
-		//else audio_set_playback_volume(iAlarmVolume);
+		//else audio_set_playback_volume(-1, iAlarmVolume);
 	uiTimerShowVolume = 0;
 	DBG_LOG_OUT();
 	return 0;
@@ -1714,7 +1714,7 @@ int Menu_AlarmVolumeDown(void *pData, int iMenuNum)
 	iAlarmVolume -= 5;
 	if (iAlarmVolume < 0) iAlarmVolume = 0;	
 	DBG_MUTEX_UNLOCK(&system_mutex);		
-	//audio_set_playback_volume(iMusicVolume);
+	//audio_set_playback_volume(-1, iMusicVolume);
 	uiTimerShowVolume = 0;
 	DBG_LOG_OUT();
 	return 0;
@@ -1727,7 +1727,7 @@ int Menu_AlarmVolumeDec(void *pData, int iPos)
 	iAlarmVolume -= iPos;
 	if (iAlarmVolume < 0) iAlarmVolume = 0;
 	DBG_MUTEX_UNLOCK(&system_mutex);		
-	//audio_set_playback_volume(iMusicVolume);
+	//audio_set_playback_volume(-1, iMusicVolume);
 	uiTimerShowVolume = 0;
 	DBG_LOG_OUT();
 	return 0;
@@ -2887,7 +2887,7 @@ int Action_PlayAudioModule(unsigned int uiID)
 					memcpy(f_link->pSubModule, &miModuleList[miModuleList[n].SubModule], sizeof(MODULE_INFO));	
 					DBG_MUTEX_UNLOCK(&modulelist_mutex);					
 				}
-				audio_set_playback_volume(iCurrentVolume);
+				audio_set_playback_volume(-1, iCurrentVolume);
 				PlayAudioStream(f_link);
 				result = 1;
 			} else DBG_FREE(f_link);
@@ -4606,7 +4606,7 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 			case MODULE_TYPE_USB_GPIO:
 				if (pModuleList->Local == 0)
 				{
-					DBG_MUTEX_UNLOCK(&modulelist_mutex);		
+					DBG_MUTEX_UNLOCK(&modulelist_mutex);
 					SetModuleStatus(iID, iSubModuleNum, iActionCode);
 					ReqModuleStatus(iID);
 					DBG_MUTEX_LOCK(&modulelist_mutex);
@@ -4680,46 +4680,75 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 				}
 				else
 				{
-					if (iActionCode == 0)
-					{
-						DBG_MUTEX_UNLOCK(&modulelist_mutex);		
-						if (iSubModuleNum != 0)
-						{							
-							Action_PlayTestSound();
-						}
-						else
+					int iDev = pModuleList->Settings[1];
+					
+					if (iSubModuleNum == 0)
+					{							
+						DBG_MUTEX_UNLOCK(&modulelist_mutex);						
+						Action_PlayTestSound();
+						DBG_MUTEX_LOCK(&modulelist_mutex);
+					}
+					
+					if (iSubModuleNum == 1)
+					{	
+						DBG_MUTEX_UNLOCK(&modulelist_mutex);					
+						if (iActionCode == 0) Audio_Stop(0);
+						if (iActionCode == 1) 
 						{
 							Audio_Stop(1);
 							CloseAllConnects(CONNECT_CLIENT, FLAG_AUDIO_STREAM, 0);
 						}
 						DBG_MUTEX_LOCK(&modulelist_mutex);
 					}
-					else
+					
+					if (iSubModuleNum == 2)
 					{
-						pModuleList2 = NULL;
-						iAccess = 0;
+						DBG_MUTEX_UNLOCK(&modulelist_mutex);
+						int iVol = iActionCode;
+						if (iVol == -1)
+						{
+							DBG_MUTEX_LOCK(&system_mutex);	
+							iVol = iBasicVolume;
+							DBG_MUTEX_UNLOCK(&system_mutex);
+						}
+						audio_set_playback_volume(iDev, iVol);
+						DBG_MUTEX_LOCK(&modulelist_mutex);	
+					}
+					
+					if (iSubModuleNum == 3)
+					{
 						res = 0;
 						for (i = 0; i != iSoundListCnt; i++)
 							if (mSoundList[i].ID == iActionCode) {res = 1;break;}	
-						if (res == 0)
-						{
-							pModuleList2 = ModuleIdToPoint(iActionCode, 2);
-							if (pModuleList2) iAccess = pModuleList2->AccessLevel;
+						
+						DBG_MUTEX_UNLOCK(&modulelist_mutex);
+						if (res) Action_PlaySound(iActionCode, 1, Str2Int(cActionName)); 
+						DBG_MUTEX_LOCK(&modulelist_mutex);
+					}			
+			
+					if (iSubModuleNum == 4)
+					{
+						pModuleList2 = ModuleIdToPoint(iActionCode, 2);
+						iAccess = 0;
+						
+						if (pModuleList2) iAccess = pModuleList2->AccessLevel;
 							 else dbgprintf(2, "Module not found for connect to %.4s\n", (char*)&iActionCode);
-						}
-						DBG_MUTEX_UNLOCK(&modulelist_mutex);		
-						if (res) Action_PlaySound(iActionCode, iSubModuleNum, Str2Int(cActionName)); 
-						else 
+						
+						if (pModuleList2)
 						{
-							if (pModuleList2)
-							{
-								DBG_MUTEX_LOCK(&system_mutex);	
-								iSysAccessLevel = iAccessLevel;
-								DBG_MUTEX_UNLOCK(&system_mutex);
-								if (iSysAccessLevel >= iAccess)	Action_PlayAudioModule(iActionCode); else dbgprintf(2, "Access denied for connect to %.4s\n", (char*)&iActionCode);
-							}
-						}
-						DBG_MUTEX_LOCK(&modulelist_mutex);		
+							DBG_MUTEX_UNLOCK(&modulelist_mutex);
+						
+							DBG_MUTEX_LOCK(&system_mutex);	
+							iSysAccessLevel = iAccessLevel;
+							DBG_MUTEX_UNLOCK(&system_mutex);
+								
+							if (iSysAccessLevel >= iAccess)	
+									Action_PlayAudioModule(iActionCode); 
+								else 
+									dbgprintf(2, "Access denied for connect to %.4s\n", (char*)&iActionCode);
+							
+							DBG_MUTEX_LOCK(&modulelist_mutex);	
+						}							
 					}
 				}
 				break;
@@ -4814,7 +4843,14 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 				break;
 			case MODULE_TYPE_COUNTER:
 				//printf("MODULE_TYPE_COUNTER %i, %i\n", iActionCode, pModuleList->Settings[1]);
-				if (pModuleList->Local == 1) 	
+				if (pModuleList->Local == 0)
+				{
+					DBG_MUTEX_UNLOCK(&modulelist_mutex);		
+					SetModuleStatus(iID, iSubModuleNum, iActionCode);
+					//ReqModuleStatus(iID);	
+					DBG_MUTEX_LOCK(&modulelist_mutex);
+				}
+				else	
 				{	
 					testnum = 0;
 					teststat1 = 0;
@@ -4855,6 +4891,14 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 				}
 				break;
 			case MODULE_TYPE_MIC:
+				if (pModuleList->Local == 0)
+				{
+					DBG_MUTEX_UNLOCK(&modulelist_mutex);		
+					SetModuleStatus(iID, iSubModuleNum, iActionCode);
+					//ReqModuleStatus(iID);	
+					DBG_MUTEX_LOCK(&modulelist_mutex);
+				}
+				else
 				{
 					int iDev = pModuleList->Settings[1];
 					int iVol = pModuleList->Settings[15];
@@ -4865,7 +4909,7 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 					DBG_MUTEX_UNLOCK(&system_mutex);
 					if (iSubModuleNum == 0)
 					{
-						if (pModuleList->Local) CloseAllConnects(CONNECT_SERVER, FLAG_AUDIO_STREAM, 0);
+						CloseAllConnects(CONNECT_SERVER, FLAG_AUDIO_STREAM, 0);
 					}
 					if (iSubModuleNum == 1)
 					{
@@ -4873,18 +4917,11 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 					}
 					if (iSubModuleNum == 2)
 					{
-						if (pModuleList->Local)
+						if ((iActionCode >= 0) && (iActionCode <= 100))
 						{
-							if ((iActionCode >= 0) && (iActionCode <= 100))
-							{
-								audio_set_capture_volume(iDev, (float)iVol / 100 * iActionCode);
-								pModuleList->Status[2] = iActionCode;
-							}
-						}
-						else
-						{
-							SetModuleStatus(iID, iSubModuleNum, iActionCode);
-						}
+							audio_set_capture_volume(iDev, (float)iVol / 100 * iActionCode);
+							pModuleList->Status[2] = iActionCode;
+						}						
 					}
 					DBG_MUTEX_LOCK(&modulelist_mutex);
 				}
@@ -5164,7 +5201,7 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 							if (GetCurShowType() & SHOW_TYPE_OFF)
 							{
 								if ((iSubModuleNum >= 0) && (iSubModuleNum <= 100))
-									audio_set_playback_volume(iSubModuleNum);
+									audio_set_playback_volume(-1, iSubModuleNum);
 							}
 							else add_sys_cmd_in_list(SYSTEM_CMD_SOUND_VOLUME_SET, iSubModuleNum);
 							break;
@@ -9092,7 +9129,7 @@ char *GetModuleStatusName(unsigned int uiType, unsigned int uiStatusNum, char*Ou
 		case MODULE_TYPE_GPIO:
 			if (uiStatusNum == 0) 
 			{
-				if (cLang) strcpy(Buffer, "Уровень"); else strcpy(Buffer, "Level");
+				if (cLang) strcpy(Buffer, "Уровень/Установить"); else strcpy(Buffer, "Level/Set");
 			}
 			if (uiStatusNum > 1) ret = NULL;
 			break;
@@ -9627,6 +9664,49 @@ char GetModuleStatusEn(unsigned int uiType, unsigned int uiStatusNum)
 			if (uiStatusNum < 22) ret = 1;
 			break;
 		default:
+			ret = 0;
+			break;
+	}
+	
+	return ret;
+}
+
+char GetModuleActionEn(unsigned int uiType, unsigned int uiStatusNum)
+{
+	char ret = 0;
+
+	switch(uiType)
+	{
+		case MODULE_TYPE_SPEAKER:
+			if (uiStatusNum < 5) ret = 1;
+			break;
+		case MODULE_TYPE_MIC:
+			if (uiStatusNum < 3) ret = 1;
+			break;
+		case MODULE_TYPE_GPIO:
+			if (uiStatusNum < 1) ret = 1;
+			break;
+		case MODULE_TYPE_EXTERNAL:
+		case MODULE_TYPE_COUNTER:
+		case MODULE_TYPE_MEMORY:
+		case MODULE_TYPE_USB_GPIO:
+		case MODULE_TYPE_KEYBOARD:
+		case MODULE_TYPE_IR_RECEIVER:
+		case MODULE_TYPE_RS485:
+		case MODULE_TYPE_RTC:
+		case MODULE_TYPE_ADS1015:
+		case MODULE_TYPE_MCP3421:
+		case MODULE_TYPE_PN532:
+		case MODULE_TYPE_RC522:
+		case MODULE_TYPE_TEMP_SENSOR:
+		case MODULE_TYPE_AS5600:
+		case MODULE_TYPE_TFP625A:
+		case MODULE_TYPE_DISPLAY:
+		case MODULE_TYPE_HMC5883L:
+		case MODULE_TYPE_SYSTEM:
+		case MODULE_TYPE_CAMERA:
+		default:
+			ret = 0;
 			break;
 	}
 	
@@ -21371,7 +21451,7 @@ void * Shower()
 					if ((iListAlarmFilesCount == 0) && strlen(cCurrentAlarmPath) && ((cCurrentAlarmPath[strlen(cCurrentAlarmPath)-1] == 47) || (Its_Directory(cCurrentAlarmPath) == 1)))
 					{
 						iCurrentVolume = iAlrmVol;
-						audio_set_playback_volume(iCurrentVolume);			
+						audio_set_playback_volume(-1, iCurrentVolume);			
 						PlayAlarmSound();
 						SetChangeShowNow(0);
 						ClockAlarmStop(0);
@@ -21676,12 +21756,12 @@ void * Shower()
 					if (((iAlarmEvents & ALARM_TYPE_CLOCK) == 0) && (iCurrentVolume != iBasicVol)) 
 					{
 						iCurrentVolume = iBasicVol;
-						audio_set_playback_volume(iCurrentVolume);
+						audio_set_playback_volume(-1, iCurrentVolume);
 					}
 					if ((cNewShowType & SHOW_TYPE_ALARM1) && (iChangeVolumeSoft == 0)) 
 					{
 						iCurrentVolume = iAlrmVol;
-						audio_set_playback_volume(iCurrentVolume);
+						audio_set_playback_volume(-1, iCurrentVolume);
 					}
 					if ((!(cNewShowType & SHOW_TYPE_ALARM1)) && ((cCurShowType & SHOW_TYPE_AUDIO) == 0) && (iAlarmEvents & ALARM_TYPE_CLOCK))
 					{
@@ -21782,7 +21862,7 @@ void * Shower()
 										memcpy(f_link->pSubModule, &miModuleList[miModuleList[n].SubModule], sizeof(MODULE_INFO));	
 										DBG_MUTEX_UNLOCK(&modulelist_mutex);					
 									}
-									audio_set_playback_volume(iBasicVol);		
+									audio_set_playback_volume(-1, iBasicVol);		
 									PlayAudioStream(f_link);	
 									pScreenMenu[0].Options[6].Show = 1; //Audio menu								
 									AddCurShowType(SHOW_TYPE_MIC_STREAM);	
@@ -21892,7 +21972,7 @@ void * Shower()
 								memcpy(f_link->pSubModule, &miModuleList[miModuleList[n].SubModule], sizeof(MODULE_INFO));	
 								DBG_MUTEX_UNLOCK(&modulelist_mutex);					
 							}
-							audio_set_playback_volume(iBasicVol);		
+							audio_set_playback_volume(-1, iBasicVol);		
 							PlayAudioStream(f_link);	
 							pScreenMenu[0].Options[6].Show = 1; //Audio menu								
 							AddCurShowType(SHOW_TYPE_MIC_FILE);	
@@ -22305,7 +22385,7 @@ void * Shower()
 											f_link->pSubModule = (MODULE_INFO*)DBG_MALLOC(sizeof(MODULE_INFO));
 											memcpy(f_link->pSubModule, &miModuleList[miModuleList[n].SubModule], sizeof(MODULE_INFO));								
 										}
-										audio_set_playback_volume(iCurrentVolume);
+										audio_set_playback_volume(-1, iCurrentVolume);
 										PlayAudioStream(f_link);
 										iShowFileNameStatus = 1;
 										break;
@@ -22370,11 +22450,11 @@ void * Shower()
 						if ((iNewShow & SHOW_TYPE_ALARM1) && ((ret & FILE_TYPE_AUDIO) == 0)) 
 						{
 							iCurrentVolume = iAlrmVol;
-							audio_set_playback_volume(iCurrentVolume);			
+							audio_set_playback_volume(-1, iCurrentVolume);			
 							PlayAlarmSound();	
 							ClockAlarmStop(0);
 							if (iChangeVolumeSoft) iChangeVolumeSoft = 0;
-							//audio_set_playback_volume(iCurrentVolume);								
+							//audio_set_playback_volume(-1, iCurrentVolume);								
 						}
 						if (ret & FILE_TYPE_IMAGE) 
 						{
@@ -23279,7 +23359,7 @@ void * Shower()
 						iCurrentVolume = 0; 
 						ClockAlarmStop(1);
 					}
-					audio_set_playback_volume(iCurrentVolume);															
+					audio_set_playback_volume(-1, iCurrentVolume);															
 				}
 				else
 				{
@@ -24318,7 +24398,7 @@ int main(int argc, char *argv[])
 				if (miModuleList[n].Type == MODULE_TYPE_SPEAKER) 
 				{
 					SetAudioPlayDeviceName(miModuleList[n].Settings[1]);
-					audio_set_playback_volume(iBasicVolume);
+					audio_set_playback_volume(-1, iBasicVolume);
 				}
 				if (miModuleList[n].Type == MODULE_TYPE_MIC)
 				{

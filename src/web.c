@@ -17028,7 +17028,7 @@ int WEB_settings_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int i
 	
 	cnt++;
 	memset(msg_subbody, 0, 3072);
-	sprintf(msg_subbody, 
+	sprintf(msg_subbody,
 				"<form action='/settings/save'>\r\n"
 				"<input type='hidden' name='req_index' value=%i>\r\n"
 				"<input type='hidden' name='Num' value=%i>\r\n"				
