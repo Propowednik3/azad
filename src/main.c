@@ -4855,20 +4855,39 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 				}
 				break;
 			case MODULE_TYPE_MIC:
-				iAccess = pModuleList->AccessLevel;
-				DBG_MUTEX_UNLOCK(&modulelist_mutex);		
-				DBG_MUTEX_LOCK(&system_mutex);	
-				iSysAccessLevel = iAccessLevel;
-				DBG_MUTEX_UNLOCK(&system_mutex);
-				if (iSubModuleNum == 0)
 				{
-					if (pModuleList->Local) CloseAllConnects(CONNECT_SERVER, FLAG_AUDIO_STREAM, 0);
+					int iDev = pModuleList->Settings[1];
+					int iVol = pModuleList->Settings[15];
+					iAccess = pModuleList->AccessLevel;
+					DBG_MUTEX_UNLOCK(&modulelist_mutex);		
+					DBG_MUTEX_LOCK(&system_mutex);	
+					iSysAccessLevel = iAccessLevel;
+					DBG_MUTEX_UNLOCK(&system_mutex);
+					if (iSubModuleNum == 0)
+					{
+						if (pModuleList->Local) CloseAllConnects(CONNECT_SERVER, FLAG_AUDIO_STREAM, 0);
+					}
+					if (iSubModuleNum == 1)
+					{
+						if (iSysAccessLevel >= iAccess)	Action_PlayAudioModule(iID); else dbgprintf(2, "Access denied for connect to %.4s\n", (char*)&iID);
+					}
+					if (iSubModuleNum == 2)
+					{
+						if (pModuleList->Local)
+						{
+							if ((iActionCode >= 0) && (iActionCode <= 100))
+							{
+								audio_set_capture_volume(iDev, (float)iVol / 100 * iActionCode);
+								pModuleList->Status[2] = iActionCode;
+							}
+						}
+						else
+						{
+							SetModuleStatus(iID, iSubModuleNum, iActionCode);
+						}
+					}
+					DBG_MUTEX_LOCK(&modulelist_mutex);
 				}
-				else
-				{
-					if (iSysAccessLevel >= iAccess)	Action_PlayAudioModule(iID); else dbgprintf(2, "Access denied for connect to %.4s\n", (char*)&iID);
-				}
-				DBG_MUTEX_LOCK(&modulelist_mutex);
 				break;
 			case MODULE_TYPE_MEMORY:
 				if ((iSubModuleNum > 0) && (iSubModuleNum <= MAX_MODULE_STATUSES))
@@ -9142,11 +9161,13 @@ char *GetModuleStatusName(unsigned int uiType, unsigned int uiStatusNum, char*Ou
 			{
 				if (uiStatusNum == 0) strcpy(Buffer, "Уровень");
 				if (uiStatusNum == 1) strcpy(Buffer, "Подключен");
+				if (uiStatusNum == 2) strcpy(Buffer, "Громкость");
 			}
 			else
 			{
 				if (uiStatusNum == 0) strcpy(Buffer, "Level");
 				if (uiStatusNum == 1) strcpy(Buffer, "Connected");
+				if (uiStatusNum == 2) strcpy(Buffer, "Volume");
 			}
 			if (uiStatusNum > 1) ret = NULL;
 			break;
@@ -9368,6 +9389,7 @@ char *GetModuleStatusValue(unsigned int uiType, unsigned int uiStatusNum, int iS
 		case MODULE_TYPE_MIC:
 			if (uiStatusNum == 0) sprintf(Buffer, "%i", iStatus);
 			if (uiStatusNum == 1) sprintf(Buffer, "%i", iStatus);
+			if (uiStatusNum == 2) sprintf(Buffer, "%i", iStatus);
 			break;
 		case MODULE_TYPE_SYSTEM:
 			switch(uiStatusNum)
@@ -9581,13 +9603,13 @@ char GetModuleStatusEn(unsigned int uiType, unsigned int uiStatusNum)
 		case MODULE_TYPE_MCP3421:
 			if (uiStatusNum == 0) ret = 1;
 			break;
-		case MODULE_TYPE_MIC:
 		case MODULE_TYPE_PN532:
 		case MODULE_TYPE_RC522:
 		case MODULE_TYPE_TEMP_SENSOR:
 		case MODULE_TYPE_AS5600:
 			if (uiStatusNum < 2) ret = 1;
 			break;
+		case MODULE_TYPE_MIC:
 		case MODULE_TYPE_SPEAKER:
 		case MODULE_TYPE_TFP625A:
 			if (uiStatusNum < 3) ret = 1;
@@ -23342,7 +23364,7 @@ void * Shower()
 			}
 			
 			if ((iAccessLevelCopy != 0) && (cIncConn & 2) && (iTimer < 15)) RenderText(state, 36*fMSize, 300*fMSize, 80*fMSize, 1,"Камера подключена");			
-			if ((iAccessLevelCopy != 0) && (cIncConn & 1) && (iTimer >= 15)) RenderText(state, 36*fMSize, 550*fMSize, 80*fMSize, 1,"Микрофон подключен");			
+			//if ((iAccessLevelCopy != 0) && (cIncConn & 1) && (iTimer >= 15)) RenderText(state, 36*fMSize, 550*fMSize, 80*fMSize, 1,"Микрофон подключен");			
 			if ((iMiscData[4] == 0) && (iMiscData[6] & SHOW_TYPE_CAMERA))
 			{
 				int iPan = 0;
@@ -24298,11 +24320,14 @@ int main(int argc, char *argv[])
 					SetAudioPlayDeviceName(miModuleList[n].Settings[1]);
 					audio_set_playback_volume(iBasicVolume);
 				}
-				if ((miModuleList[n].Type == MODULE_TYPE_MIC) && ucCaptEnabledAudio)
+				if (miModuleList[n].Type == MODULE_TYPE_MIC)
 				{
-					if (miModuleList[n].Settings[7] & 1) ucCaptAud |= 1;	//NORM
-					if (miModuleList[n].Settings[10]) ucCaptAud |= 2;		//AUDIO DIFF
-					if (miModuleList[n].Settings[7] & 2) ucCaptAud |= 4;	//VIDEO DIFF
+					if (ucCaptEnabledAudio)
+					{
+						if (miModuleList[n].Settings[7] & 1) ucCaptAud |= 1;	//NORM
+						if (miModuleList[n].Settings[10]) ucCaptAud |= 2;		//AUDIO DIFF
+						if (miModuleList[n].Settings[7] & 2) ucCaptAud |= 4;	//VIDEO DIFF
+					}
 					audio_set_capture_volume(miModuleList[n].Settings[1], miModuleList[n].Settings[15]);
 					audio_set_capture_agc(miModuleList[n].Settings[1], (miModuleList[n].Settings[7] & 4) ? 1 : 0);
 				}
