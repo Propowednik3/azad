@@ -4722,7 +4722,7 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 							if (mSoundList[i].ID == iActionCode) {res = 1;break;}	
 						
 						DBG_MUTEX_UNLOCK(&modulelist_mutex);
-						if (res) Action_PlaySound(iActionCode, 1, Str2Int(cActionName)); 
+						if (res) Action_PlaySound(iActionCode, 0, Str2Int(cActionName)); 
 						DBG_MUTEX_LOCK(&modulelist_mutex);
 					}			
 			
