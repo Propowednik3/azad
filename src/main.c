@@ -4931,7 +4931,7 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 					{
 						if (iSysAccessLevel >= iAccess)	
 						{
-							DBG_MUTEX_UNLOCK(&system_mutex);
+							DBG_MUTEX_UNLOCK(&modulelist_mutex);
 							Action_PlayAudioModule(iID); 
 							DBG_MUTEX_LOCK(&modulelist_mutex);	
 						} else dbgprintf(2, "Access denied for connect to %.4s\n", (char*)&iID);
@@ -4940,7 +4940,7 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 					{
 						if ((iActionCode >= 0) && (iActionCode <= 100))
 						{
-							DBG_MUTEX_UNLOCK(&system_mutex);					
+							DBG_MUTEX_UNLOCK(&modulelist_mutex);					
 							audio_set_capture_volume(iDev, (float)iVol / 100 * iActionCode);
 							DBG_MUTEX_LOCK(&modulelist_mutex);
 							pModuleList->Status[2] = iActionCode;							
@@ -4948,7 +4948,7 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 					}
 					if (iSubModuleNum == 3)
 					{						
-						DBG_MUTEX_UNLOCK(&system_mutex);					
+						DBG_MUTEX_UNLOCK(&modulelist_mutex);					
 						Audio_MuteCapture(iActionCode == 0);
 						DBG_MUTEX_LOCK(&modulelist_mutex);
 						pModuleList->Status[3] = (iActionCode == 0) ? 0 : 1;
