@@ -8773,10 +8773,17 @@ int WEB_system_respond(char *msg_tx, WEB_SESSION *session)
 					
 	char *cBody = (char*)DBG_MALLOC(4096);
 	
+	char cSysVersion[64];	
+	DBG_MUTEX_LOCK(&system_mutex);
+	SYSTEM_INFO *si = GetLocalSysInfo();
+	memcpy(cSysVersion, si->Version, 64);
+	DBG_MUTEX_UNLOCK(&system_mutex);
+	
 	DBG_MUTEX_LOCK(&system_mutex);
 	memset(cBody, 0, 4096);
 	sprintf(cBody, "<form action='/system/save'>\r\n"
 						"<input type='hidden' name='req_index' value=%i>\r\n"
+						"Версия: %s<br />\r\n"
 						"Запущено: %s<br />\r\n"
 						"Режим запуска:%s%s%s%s%s<br />\r\n"
 						"Системное время:  <input type='number' name='DateDay' min=1 max=31 value='%i' style='width: 50px;'>\r\n"
@@ -8794,7 +8801,7 @@ int WEB_system_respond(char *msg_tx, WEB_SESSION *session)
 					"<input type='button' value='Аварийный выход' onclick=\"window.location.href='/system/close?req_index=%i'\">\r\n"
 					"<input type='button' value='Сброс настроек' onclick=\"window.location.href='/system/refresh?req_index=%i'\"><br /><br />\r\n"
 					"<input type='button' value='Обновить' onclick=\"window.location.href='/system/update?req_index=%i'\"><br /><br />\r\n"
-					, session->request_id, cStartTime,
+					, session->request_id, cSysVersion, cStartTime,
 					(uiStartMode & 0x0001) ? " Reset" : "",
 					(uiStartMode & 0x0002) ? " Debug" : "",
 					(uiStartMode & 0x0004) ? " Safe" : "",
@@ -16170,7 +16177,7 @@ int WEB_modstatuses_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 						
 	strcat(msg_tx, "<table border='1' width='100%' cellpadding='5'>"
 					"<tr><th>Номер</th><th>Включен</th><th>IP адрес</th><th>Тип</th><th>ИД</th><th>Версия</th><th>Имя</th><th>Интервал проверки (кратно 50мс)</th>"
-					"<th>Состояние<br />(Номер,Лог,События[локально,глобально],Имя,Значение)</th><th>Действие</th></tr>");
+					"<th>Состояние<br />(Номер,Лог,События[локально,глобально],Имя,Значение)</th><th>Управление</th><th>Действие</th></tr>");
 
 	int iSubPages, iCurPage, iFirstOption, iLastOption;
 	
@@ -16253,8 +16260,8 @@ int WEB_modstatuses_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 			char cStatusPrn[256];
 			int flag = 1;
 			memset(msg_subbody, 0, 3072);
-			strcat(msg_tx, "<td>");
 			
+			strcat(msg_tx, "<td>");			
 			ret = 0;
 			for (i = 0; i < MAX_MODULE_STATUSES; i++)
 			{
@@ -16274,7 +16281,8 @@ int WEB_modstatuses_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 				strcat(msg_tx, cStatusPrn);
 				flag <<= 1;
 				ret++;
-			}
+			}			
+			
 			if (miModuleList[n].Type == MODULE_TYPE_RTC)
 			{
 				strcat(msg_tx, "<select name='Action' style='width: 300;'>\r\n"
@@ -16310,6 +16318,20 @@ int WEB_modstatuses_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 									"Описание: <input type='text' name='TempInfo' value='' maxlength=31 style='width: 140px;'>\r\n");
 											
 				DBG_MUTEX_UNLOCK(miModuleList[n].IO_mutex);
+			}
+			
+			strcat(msg_tx, "</td><td>\r\n");
+			
+			ret = 0;
+			for (i = 0; i < MAX_MODULE_STATUSES; i++)
+			{
+				if (!GetModuleActionEn(miModuleList[n].Type, i)) break;
+				
+				memset(cStatusPrn, 0, 256);	
+				sprintf(cStatusPrn, "%s<br />\r\n",	GetModuleActionName(miModuleList[n].Type, i, cBufferName, 64, 1));
+				strcat(msg_tx, cStatusPrn);
+				flag <<= 1;
+				ret++;
 			}
 			
 			strcat(msg_tx, "</td>\r\n");

@@ -4811,9 +4811,9 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 			case MODULE_TYPE_RC522:
 				break;				
 			case MODULE_TYPE_RTC:
-			 	if (iActionCode == 0) i2c_write_timedate3231(I2C_ADDRESS_CLOCK);
-				if (iActionCode == 1) i2c_read_timedate3231(I2C_ADDRESS_CLOCK);
-				if (iActionCode == 2)
+			 	if (iSubModuleNum == 0) i2c_write_timedate3231(I2C_ADDRESS_CLOCK);
+				if (iSubModuleNum == 1) i2c_read_timedate3231(I2C_ADDRESS_CLOCK);
+				if (iSubModuleNum == 2)
 				{
 					struct tm timeinfo;
 					i2c_read_spec_timedate3231(I2C_ADDRESS_CLOCK, &timeinfo);
@@ -4829,7 +4829,7 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 					SendBroadCastMessage(cBcTCP, TYPE_MESSAGE_FORCE_DATETIME,  (char*)&rawtime, sizeof(rawtime), (char*)&SysID, sizeof(SysID));	
 					DBG_MUTEX_LOCK(&modulelist_mutex);		
 				}
-				if (iActionCode == 3)
+				if (iSubModuleNum == 3)
 				{
 					time_t rawtime;
 					time(&rawtime);	
@@ -4905,10 +4905,23 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 			case MODULE_TYPE_MIC:
 				if (pModuleList->Local == 0)
 				{
-					DBG_MUTEX_UNLOCK(&modulelist_mutex);		
-					SetModuleStatus(iID, iSubModuleNum, iActionCode);
-					//ReqModuleStatus(iID);	
-					DBG_MUTEX_LOCK(&modulelist_mutex);
+					if (iSubModuleNum == 1)
+					{
+						iAccess = pModuleList->AccessLevel;
+						DBG_MUTEX_UNLOCK(&modulelist_mutex);		
+						DBG_MUTEX_LOCK(&system_mutex);	
+						iSysAccessLevel = iAccessLevel;
+						DBG_MUTEX_UNLOCK(&system_mutex);
+						if (iSysAccessLevel >= iAccess)	Action_PlayAudioModule(iID); 
+							else dbgprintf(2, "Access denied for connect to %.4s\n", (char*)&iID);
+						DBG_MUTEX_LOCK(&modulelist_mutex);	
+					}
+					else 
+					{
+						DBG_MUTEX_UNLOCK(&modulelist_mutex);		
+						SetModuleStatus(iID, iSubModuleNum, iActionCode);
+						DBG_MUTEX_LOCK(&modulelist_mutex);
+					}
 				}
 				else
 				{
@@ -4952,8 +4965,7 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 						Audio_MuteCapture(iActionCode == 0);
 						DBG_MUTEX_LOCK(&modulelist_mutex);
 						pModuleList->Status[3] = (iActionCode == 0) ? 0 : 1;
-					}	
-									
+					}			
 				}
 				break;
 			case MODULE_TYPE_MEMORY:
@@ -9159,7 +9171,7 @@ char *GetModuleStatusName(unsigned int uiType, unsigned int uiStatusNum, char*Ou
 		case MODULE_TYPE_GPIO:
 			if (uiStatusNum == 0) 
 			{
-				if (cLang) strcpy(Buffer, "Уровень/Установить"); else strcpy(Buffer, "Level/Set");
+				if (cLang) strcpy(Buffer, "Уровень"); else strcpy(Buffer, "Level");
 			}
 			if (uiStatusNum > 1) ret = NULL;
 			break;
@@ -9707,39 +9719,228 @@ char GetModuleActionEn(unsigned int uiType, unsigned int uiStatusNum)
 
 	switch(uiType)
 	{
-		case MODULE_TYPE_SPEAKER:
-			if (uiStatusNum < 5) ret = 1;
-			break;
-		case MODULE_TYPE_MIC:
-			if (uiStatusNum < 3) ret = 1;
-			break;
-		case MODULE_TYPE_GPIO:
-			if (uiStatusNum < 1) ret = 1;
-			break;
 		case MODULE_TYPE_EXTERNAL:
-		case MODULE_TYPE_COUNTER:
-		case MODULE_TYPE_MEMORY:
 		case MODULE_TYPE_USB_GPIO:
-		case MODULE_TYPE_KEYBOARD:
-		case MODULE_TYPE_IR_RECEIVER:
-		case MODULE_TYPE_RS485:
-		case MODULE_TYPE_RTC:
-		case MODULE_TYPE_ADS1015:
-		case MODULE_TYPE_MCP3421:
-		case MODULE_TYPE_PN532:
-		case MODULE_TYPE_RC522:
-		case MODULE_TYPE_TEMP_SENSOR:
-		case MODULE_TYPE_AS5600:
-		case MODULE_TYPE_TFP625A:
-		case MODULE_TYPE_DISPLAY:
-		case MODULE_TYPE_HMC5883L:
+		case MODULE_TYPE_GPIO:
+		case MODULE_TYPE_DISPLAY:	
+		case MODULE_TYPE_MEMORY:
+		case MODULE_TYPE_RS485:		
 		case MODULE_TYPE_SYSTEM:
+			if (uiStatusNum == 0) ret = 1;
+			break;		
+		case MODULE_TYPE_SPEAKER:
+			if (uiStatusNum <= 5) ret = 1;
+			break;
+		case MODULE_TYPE_RTC:
+			if (uiStatusNum <= 3) ret = 1;
+			break;	
+		case MODULE_TYPE_COUNTER:
+			if (uiStatusNum <= 10) ret = 1;
+			break;			
+		case MODULE_TYPE_MIC:
+			if (uiStatusNum <= 3) ret = 1;
+			break;
 		case MODULE_TYPE_CAMERA:
+			if (uiStatusNum <= 1) ret = 1;
+			break;		
 		default:
 			ret = 0;
 			break;
 	}
 	
+	return ret;
+}
+
+char *GetModuleActionName(unsigned int uiType, unsigned int uiStatusNum, char*OutBuff, unsigned int OutSize, char cLang)
+{
+	memset(OutBuff, 0, OutSize);
+	unsigned int BuffLen = 64;
+	char Buffer[64];
+	memset(Buffer, 0, BuffLen);
+	char *ret = OutBuff;
+	
+	switch(uiType)
+	{
+		case MODULE_TYPE_EXTERNAL:
+		case MODULE_TYPE_USB_GPIO:
+			if (uiStatusNum == 0)
+			{
+				if (cLang) strcpy(Buffer, "[0] По свойствам модуля"); else strcpy(Buffer, "[0] From module properties");
+			}
+			if (uiStatusNum > 1) ret = NULL;
+			break;
+		case MODULE_TYPE_GPIO:
+			if (uiStatusNum == 0) 
+			{
+				if (cLang) strcpy(Buffer, "[0] Установить (0,1,2-инверт)"); else strcpy(Buffer, "[0] Set (0,1,2-Invert)");
+			}
+			if (uiStatusNum > 1) ret = NULL;
+			break;			
+		case MODULE_TYPE_SPEAKER:
+			if (cLang)
+			{
+				if (uiStatusNum == 0) strcpy(Buffer, "[0] Тест");
+				if (uiStatusNum == 1) strcpy(Buffer, "[1] Остановить (0-soft,1-force)");
+				if (uiStatusNum == 2) strcpy(Buffer, "[2] Громкость (0-100)");
+				if (uiStatusNum == 3) strcpy(Buffer, "[3] Системный звук (ID)");
+				if (uiStatusNum == 4) strcpy(Buffer, "[4] Микрофон (ID)");
+				if (uiStatusNum == 5) strcpy(Buffer, "[5] Громкость (0-выкл,1-вкл)");
+			}
+			else
+			{
+				if (uiStatusNum == 0) strcpy(Buffer, "[0] Test");
+				if (uiStatusNum == 1) strcpy(Buffer, "[1] Stop (0-soft,1-force)");
+				if (uiStatusNum == 2) strcpy(Buffer, "[2] Volume (0-100)");
+				if (uiStatusNum == 3) strcpy(Buffer, "[3] System sound (ID)");
+				if (uiStatusNum == 4) strcpy(Buffer, "[4] Microphone (ID)");
+				if (uiStatusNum == 5) strcpy(Buffer, "[5] Volume (0-off,1-on)");
+			}
+			if (uiStatusNum > 5) ret = NULL;
+			break;	
+		case MODULE_TYPE_DISPLAY:
+			if (uiStatusNum == 0)
+			{
+				if (cLang) strcpy(Buffer, "[0] Подключить камеру(act ID)+микрофон(sub ID)"); else strcpy(Buffer, "[0] Play camera(act ID)+mic(sub ID)");
+			}
+			if (uiStatusNum > 1) ret = NULL;
+			break;
+		case MODULE_TYPE_RTC:
+			if (cLang)
+			{
+				if (uiStatusNum == 0) strcpy(Buffer, "[0] Сохранить время");
+				if (uiStatusNum == 1) strcpy(Buffer, "[1] Считать время");
+				if (uiStatusNum == 2) strcpy(Buffer, "[2] Считать и разослать время");
+				if (uiStatusNum == 3) strcpy(Buffer, "[3] Разослать время");
+			}
+			else
+			{
+				if (uiStatusNum == 0) strcpy(Buffer, "[0] Save time");
+				if (uiStatusNum == 1) strcpy(Buffer, "[1] Read time");
+				if (uiStatusNum == 2) strcpy(Buffer, "[2] Read and send time");
+				if (uiStatusNum == 3) strcpy(Buffer, "[3] Send time");
+			}
+			if (uiStatusNum > 3) ret = NULL;
+			break;
+		case MODULE_TYPE_COUNTER:
+			if (cLang)
+			{
+				if (uiStatusNum == 0) strcpy(Buffer, "Управление ячейками:");
+			}
+			else
+			{
+				if (uiStatusNum == 0) strcpy(Buffer, "Cell control:");
+			}
+			if (uiStatusNum == 1) strcpy(Buffer, "act:COUNTER_INCREMENT=+1");
+			if (uiStatusNum == 2) strcpy(Buffer, "act:COUNTER_DECREMENT=-1");
+			if (uiStatusNum == 3) strcpy(Buffer, "act:COUNTER_SET=1");
+			if (uiStatusNum == 4) strcpy(Buffer, "act:COUNTER_RESET=0");
+			if (uiStatusNum == 5) strcpy(Buffer, "act:COUNTER_INC_N_VALUE=+from_name");
+			if (uiStatusNum == 6) strcpy(Buffer, "act:COUNTER_DEC_N_VALUE=-from_name");
+			if (uiStatusNum == 7) strcpy(Buffer, "act:COUNTER_SET_N_VALUE=from_name");
+			if (uiStatusNum == 8) strcpy(Buffer, "act:COUNTER_SET_VALUE=subnum_to_first");
+			if (uiStatusNum == 9) strcpy(Buffer, "act:COUNTER_SET_INC=+subnum_to_first");
+			if (uiStatusNum == 10) strcpy(Buffer, "act:COUNTER_SET_DEC=-subnum_to_first");		
+			if (uiStatusNum > 10) ret = NULL;	
+			break;
+		case MODULE_TYPE_MIC:
+			if (cLang)
+			{
+				if (uiStatusNum == 0) strcpy(Buffer, "[0] Отключить всех");
+				if (uiStatusNum == 1) strcpy(Buffer, "[1] Подключиться (воспр.)");
+				if (uiStatusNum == 2) strcpy(Buffer, "[2] Громкость (0-100)");
+				if (uiStatusNum == 3) strcpy(Buffer, "[3] Громкость (0-выкл,1-вкл)");
+			}
+			else
+			{
+				if (uiStatusNum == 0) strcpy(Buffer, "[0] Disconnect all");
+				if (uiStatusNum == 1) strcpy(Buffer, "[1] Play mic");
+				if (uiStatusNum == 2) strcpy(Buffer, "[2] Volume (0-100)");
+				if (uiStatusNum == 3) strcpy(Buffer, "[3] Volume (0-off,1-on");
+			}
+			if (uiStatusNum > 3) ret = NULL;
+			break;
+		case MODULE_TYPE_MEMORY:
+			if (uiStatusNum == 0) 
+			{
+				if (cLang) strcpy(Buffer, "Установить значение в ячейку"); else strcpy(Buffer, "Set Value to cell from subnum");
+			}
+			if (uiStatusNum > 1) ret = NULL;
+			break;	
+		case MODULE_TYPE_RS485:
+			if (uiStatusNum == 0) 
+			{
+				if (cLang) strcpy(Buffer, "[0] Отправить значение в порт"); else strcpy(Buffer, "[0] Send value to port");
+			}
+			if (uiStatusNum > 1) ret = NULL;
+			break;
+		case MODULE_TYPE_KEYBOARD:
+			if (cLang)
+			{
+				if (uiStatusNum == 0) strcpy(Buffer, "[0] Управление клавиатурой:");
+			}
+			else
+			{
+				if (uiStatusNum == 0) strcpy(Buffer, "[0] Keyboard control:");
+			}
+			if (uiStatusNum == 1) strcpy(Buffer, "act:KEY_CODE+subcode");
+			if (uiStatusNum == 2) strcpy(Buffer, "subcode == 0: only KEY_CODE");
+			if (uiStatusNum == 3) strcpy(Buffer, "subcode & 4:LEFTALT");
+			if (uiStatusNum == 4) strcpy(Buffer, "subcode & 8:LEFTSHIFT");
+			if (uiStatusNum == 5) strcpy(Buffer, "subcode & 16:LEFTCTRL");
+			if (uiStatusNum == 6) strcpy(Buffer, "subcode & 32:RIGHTALT");
+			if (uiStatusNum == 7) strcpy(Buffer, "subcode & 64:RIGHTSHIFT");
+			if (uiStatusNum == 8) strcpy(Buffer, "subcode & 128:RIGHTCTRL");
+			if (uiStatusNum > 8) ret = NULL;	
+			break;
+		case MODULE_TYPE_CAMERA:
+			if (cLang)
+			{
+				if (uiStatusNum == 0) strcpy(Buffer, "[0] Подключиться (воспр.) + act: Микрофон (ID)");
+				if (uiStatusNum == 1) strcpy(Buffer, "[3] Экспозиция");
+				if (uiStatusNum == 2) strcpy(Buffer, "[6] Уровень движения 0-255");
+				if (uiStatusNum == 3) strcpy(Buffer, "[7] Уровень движения (измен) 0-255");
+				if (uiStatusNum == 4) strcpy(Buffer, "[12] Уровень движения (медл) 0-255");
+				if (uiStatusNum == 5) strcpy(Buffer, "[16] Яркость (-100..100)");
+				if (uiStatusNum == 6) strcpy(Buffer, "[20] Фильтр");
+				if (uiStatusNum == 7) strcpy(Buffer, "[21] Баланс белого");
+				if (uiStatusNum == 8) strcpy(Buffer, "[22] Контраст (-100..100)");
+				if (uiStatusNum == 9) strcpy(Buffer, "[23] Четкость (-100..100)");
+				if (uiStatusNum == 10) strcpy(Buffer, "[24] Цветность (-100..100)");
+			}
+			else
+			{
+				if (uiStatusNum == 0) strcpy(Buffer, "Play + act: mic (ID)");
+				if (uiStatusNum == 1) strcpy(Buffer, "[3] Exposure");
+				if (uiStatusNum == 2) strcpy(Buffer, "[6] Move level 0-255");
+				if (uiStatusNum == 3) strcpy(Buffer, "[7] Move level (diff) 0-255");
+				if (uiStatusNum == 4) strcpy(Buffer, "[12] Move level (slow) 0-255");
+				if (uiStatusNum == 5) strcpy(Buffer, "[16] Brightness (-100..100)");
+				if (uiStatusNum == 6) strcpy(Buffer, "[20] ImageFilter");
+				if (uiStatusNum == 7) strcpy(Buffer, "[21] WhiteBalance");
+				if (uiStatusNum == 8) strcpy(Buffer, "[22] Contrast (-100..100)");
+				if (uiStatusNum == 9) strcpy(Buffer, "[23] Sharpness (-100..100)");
+				if (uiStatusNum == 10) strcpy(Buffer, "[24] ColorSaturation (-100..100)");
+			}
+			if (uiStatusNum > 10) ret = NULL;
+			break;
+		case MODULE_TYPE_SYSTEM:
+			if (uiStatusNum == 0)
+			{
+				if (cLang) strcpy(Buffer, "act: команда, sub:доп инфо"); else strcpy(Buffer, "act: CMD, sub:add info");
+			}
+			if (uiStatusNum > 1) ret = NULL;
+			break;
+		default:
+			ret = NULL;
+			break;
+	}
+	if (ret)
+	{
+		if (OutSize < BuffLen) 
+			memcpy(OutBuff, Buffer, OutSize - 1);
+			else
+			memcpy(OutBuff, Buffer, BuffLen);
+	}
 	return ret;
 }
 

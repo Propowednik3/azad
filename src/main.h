@@ -1557,6 +1557,8 @@ char *GetModuleStatusName(unsigned int uiType, unsigned int uiStatusNum, char*Ou
 char *GetModuleStatusValue(unsigned int uiType, unsigned int uiStatusNum, int iStatus, char*OutBuff, unsigned int OutSize);
 char *GetModuleStatusValueType(unsigned int uiType, unsigned int uiStatusNum, char*OutBuff, unsigned int OutSize);
 char GetModuleStatusEn(unsigned int uiType, unsigned int uiStatusNum);
+char GetModuleActionEn(unsigned int uiType, unsigned int uiStatusNum);
+char *GetModuleActionName(unsigned int uiType, unsigned int uiStatusNum, char*OutBuff, unsigned int OutSize, char cLang);
 int RequestModulesSecurity(char cType);
 //int ClearMessageList(int iNum);
 int SearchStrInData(char *cData, int iDataLen, int iPos, char *cStr);
