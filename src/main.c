@@ -4703,16 +4703,13 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 					
 					if (iSubModuleNum == 2)
 					{
-						DBG_MUTEX_UNLOCK(&modulelist_mutex);
-						int iVol = iActionCode;
-						if (iVol == -1)
+						if ((iActionCode >= 0) && (iActionCode <= 100))
 						{
-							DBG_MUTEX_LOCK(&system_mutex);	
-							iVol = iBasicVolume;
-							DBG_MUTEX_UNLOCK(&system_mutex);
-						}
-						audio_set_playback_volume(iDev, iVol);
-						DBG_MUTEX_LOCK(&modulelist_mutex);	
+							DBG_MUTEX_UNLOCK(&modulelist_mutex);						
+							audio_set_playback_volume(iDev, iActionCode);	
+							DBG_MUTEX_LOCK(&modulelist_mutex);	
+							pModuleList->Status[2] = iActionCode;
+						}							
 					}
 					
 					if (iSubModuleNum == 3)
@@ -4748,7 +4745,22 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 									dbgprintf(2, "Access denied for connect to %.4s\n", (char*)&iActionCode);
 							
 							DBG_MUTEX_LOCK(&modulelist_mutex);	
-						}							
+						}			
+					}
+					
+					if (iSubModuleNum == 5)
+					{
+						DBG_MUTEX_UNLOCK(&modulelist_mutex);
+						int iVol = 0;
+						if (iActionCode != 0)
+						{
+							DBG_MUTEX_LOCK(&system_mutex);	
+							iVol = iBasicVolume;
+							DBG_MUTEX_UNLOCK(&system_mutex);
+						}
+						audio_set_playback_volume(iDev, iVol);
+						DBG_MUTEX_LOCK(&modulelist_mutex);	
+						pModuleList->Status[2] = iVol;						
 					}
 				}
 				break;
@@ -4907,23 +4919,33 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 					DBG_MUTEX_LOCK(&system_mutex);	
 					iSysAccessLevel = iAccessLevel;
 					DBG_MUTEX_UNLOCK(&system_mutex);
+					DBG_MUTEX_LOCK(&modulelist_mutex);	
+						
 					if (iSubModuleNum == 0)
-					{
+					{		
+						DBG_MUTEX_UNLOCK(&modulelist_mutex);										
 						CloseAllConnects(CONNECT_SERVER, FLAG_AUDIO_STREAM, 0);
+						DBG_MUTEX_LOCK(&modulelist_mutex);	
 					}
 					if (iSubModuleNum == 1)
 					{
-						if (iSysAccessLevel >= iAccess)	Action_PlayAudioModule(iID); else dbgprintf(2, "Access denied for connect to %.4s\n", (char*)&iID);
+						if (iSysAccessLevel >= iAccess)	
+						{
+							DBG_MUTEX_UNLOCK(&system_mutex);
+							Action_PlayAudioModule(iID); 
+							DBG_MUTEX_LOCK(&modulelist_mutex);	
+						} else dbgprintf(2, "Access denied for connect to %.4s\n", (char*)&iID);
 					}
 					if (iSubModuleNum == 2)
 					{
 						if ((iActionCode >= 0) && (iActionCode <= 100))
 						{
+							DBG_MUTEX_UNLOCK(&system_mutex);					
 							audio_set_capture_volume(iDev, (float)iVol / 100 * iActionCode);
-							pModuleList->Status[2] = iActionCode;
+							DBG_MUTEX_LOCK(&modulelist_mutex);
+							pModuleList->Status[2] = iActionCode;							
 						}						
-					}
-					DBG_MUTEX_LOCK(&modulelist_mutex);
+					}					
 				}
 				break;
 			case MODULE_TYPE_MEMORY:
