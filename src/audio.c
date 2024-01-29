@@ -412,6 +412,27 @@ int Audio_StopCapture(int iWaitStop)
 	return 1;
 }
 
+int Audio_MuteCapture(char cMute)
+{
+	if (iAudioStarted == 0) return -1;
+	int iEvent = CAPTURE_EVENT_MUTE_ON;
+	if (cMute == 0) iEvent = CAPTURE_EVENT_MUTE_OFF;
+		
+	if (tx_eventer_test_event(&pevnt_mcapt_run, iEvent) != 0)
+		tx_eventer_delete_event(&pevnt_mcapt_run, iEvent);
+		else return 0;		
+	return 1;
+}
+
+int Audio_UnMuteCapture()
+{
+	if (iAudioStarted == 0) return -1;
+	if (tx_eventer_test_event(&pevnt_mcapt_run, CAPTURE_EVENT_MUTE_OFF) != 0)
+		tx_eventer_delete_event(&pevnt_mcapt_run, CAPTURE_EVENT_MUTE_OFF);
+		else return 0;		
+	return 1;
+}
+
 int Media_StopRec(int iWaitStop)
 {
 	if (iAudioStarted == 0) return -1;
@@ -1809,6 +1830,7 @@ void audio_loop_poll_mmap(snd_pcm_t **ach, struct pollfd *poll_fds, int audio_fd
 	float amplifCoefficient = 1.0f;
 	int uiCalc;
 	char cCriticalError = 0;
+	char cMute = 0;
 	
 	while (1) 
 	{
@@ -1827,6 +1849,19 @@ void audio_loop_poll_mmap(snd_pcm_t **ach, struct pollfd *poll_fds, int audio_fd
 			dbgprintf(5,"CAPTURE_EVENT_STOP\n");
 			break;
 		}
+		if (tx_eventer_test_event(&pevnt_mcapt_run, CAPTURE_EVENT_MUTE_ON) == 0)
+		{
+			tx_eventer_add_event(&pevnt_mcapt_run, CAPTURE_EVENT_MUTE_ON);
+			dbgprintf(5,"CAPTURE_EVENT_MUTE_ON\n");
+			cMute = 1;
+		}
+		if (tx_eventer_test_event(&pevnt_mcapt_run, CAPTURE_EVENT_MUTE_OFF) == 0)
+		{
+			tx_eventer_add_event(&pevnt_mcapt_run, CAPTURE_EVENT_MUTE_OFF);
+			dbgprintf(5,"CAPTURE_EVENT_MUTE_OFF\n");
+			cMute = 0;
+		}
+		
 		if (is_first_audio)
 		{
 			ret = read_audio_poll_mmap(audio_capture_handle, period_size, (uint16_t *)piCaptureBuffer, f_link->codec_info.audio_channels, &is_first_audio);
@@ -1952,9 +1987,8 @@ void audio_loop_poll_mmap(snd_pcm_t **ach, struct pollfd *poll_fds, int audio_fd
 					if (uiRecVidDiff) UnSkipAudioFrame((void*)pCaptStreamDiff);
 					iSaveFrame = 1;
 				}
-				if (f_link->codec_info.size_empty_frame == 0) memset(piCaptureBuffer, 0, iBufferSize);
-				
-				
+				if ((f_link->codec_info.size_empty_frame == 0) || (cMute)) memset(piCaptureBuffer, 0, iBufferSize);
+								
 				//fwrite(piCaptureBuffer, 1, f_link->codec_info.audio_frame_size*2, dst_file);
 				swr_convert(swr, (uint8_t**)&uiInBuffer, av_frame->nb_samples, (const uint8_t**)&piCaptureBuffer, av_frame->nb_samples);
 				//fwrite(uiInBuffer, 1, iBufferSize * 2, dst_file);
@@ -4327,7 +4361,9 @@ void* thread_CaptureAudioStream(void *pData)
 		return (void*)-2;
     }
 	
-	tx_eventer_add_event(&pevnt_mcapt_run, CAPTURE_EVENT_STOP);    
+	tx_eventer_add_event(&pevnt_mcapt_run, CAPTURE_EVENT_STOP);
+	tx_eventer_add_event(&pevnt_mcapt_run, CAPTURE_EVENT_MUTE_ON);
+	tx_eventer_add_event(&pevnt_mcapt_run, CAPTURE_EVENT_MUTE_OFF);
     
 	DBG_MUTEX_LOCK(&system_mutex);
 	cThreadAudCaptStatus++;

@@ -4945,7 +4945,15 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 							DBG_MUTEX_LOCK(&modulelist_mutex);
 							pModuleList->Status[2] = iActionCode;							
 						}						
-					}					
+					}
+					if (iSubModuleNum == 3)
+					{						
+						DBG_MUTEX_UNLOCK(&system_mutex);					
+						Audio_MuteCapture(iActionCode == 0);
+						DBG_MUTEX_LOCK(&modulelist_mutex);
+						pModuleList->Status[3] = (iActionCode == 0) ? 0 : 1;
+					}	
+									
 				}
 				break;
 			case MODULE_TYPE_MEMORY:

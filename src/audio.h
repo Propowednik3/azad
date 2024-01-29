@@ -38,6 +38,8 @@
 #define	CAPTURE_EVENT_BUSY				117
 #define	AUDIO_EVENT_PLAY				118
 #define	AUDIO_EVENT_PAUSE				119
+#define	CAPTURE_EVENT_MUTE_ON			120
+#define	CAPTURE_EVENT_MUTE_OFF			121
 
 
 #define	MEDIA_EVENT_STOP				1
@@ -80,6 +82,7 @@ int Media_Pause();
 int Media_Play();
 int Media_StopRec(int iWaitStop);
 int Audio_StopCapture(int iWaitStop);
+int Audio_MuteCapture(char cMute);
 int Media_Forward(unsigned int iDiffPos);
 int Media_Backward(unsigned int iDiffPos);
 int Media_SetNewPos(unsigned int uiPos);
