@@ -17443,9 +17443,9 @@ char WEB_Auth(WEB_SESSION *session, char *msg_rx)
     char *uri_end = strstr(uri_start, "\"");
 	if (uri_end == NULL) {dbgprintf(4, "WEB: Not find end URI_MARK\n"); return 0;}
 	int urilen = uri_end - uri_start;
-	if (urilen >= 512) {dbgprintf(4, "WEB: Big len URI\n"); return 0;}
-	char uri[512];
-	memset(uri, 0, 512);
+	if (urilen >= 4096) {dbgprintf(4, "WEB: Big len URI\n"); return 0;}
+	char uri[4096];
+	memset(uri, 0, 4096);
     memcpy(uri, uri_start, urilen);
 	
 	char *cnonce_start = strstr(auth, CNONCE_MARK);
