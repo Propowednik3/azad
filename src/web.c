@@ -9254,7 +9254,6 @@ int WEB_widget_add(int *pParams, char* strParam, float* flParams)
 	iWidgetsCnt++;
 	wiWidgetList = (WIDGET_INFO*)DBG_REALLOC(wiWidgetList, sizeof(WIDGET_INFO)*iWidgetsCnt);
 	memset(&wiWidgetList[iWidgetsCnt-1], 0, sizeof(WIDGET_INFO));
-	if ((pParams[2] < 0) || (pParams[2] >= 3)) pParams[2] = 0;		
 	if ((pParams[3] < WIDGET_TYPE_UNKNOWN) || (pParams[3] >= WIDGET_TYPE_MAX)) pParams[3] = 0;		
 	wiWidgetList[iWidgetsCnt-1].Status = -1;
 	wiWidgetList[iWidgetsCnt-1].WidgetID = pParams[1];
