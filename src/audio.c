@@ -1765,8 +1765,11 @@ void audio_loop_poll_mmap(snd_pcm_t **ach, struct pollfd *poll_fds, int audio_fd
 	unsigned int iDiffResult = 0;
 	DBG_MUTEX_LOCK(&modulelist_mutex);	
 	int iMicModuleNum = ModuleIdToNum(miModule->ID, 1);
+	unsigned int uiEventsFlag = miModuleList[iMicModuleNum].GenEvents | miModuleList[iMicModuleNum].Global;
 	DBG_MUTEX_UNLOCK(&modulelist_mutex);
-	int iSensorPrevStatus = 0;	
+	
+	int iSensorPrevStatus[8];	
+	memset(&iSensorPrevStatus, 0, sizeof(int)*8);
 	int iLastStatRtsp = 1;
 	int iNeedSend;	
 	
@@ -1831,6 +1834,7 @@ void audio_loop_poll_mmap(snd_pcm_t **ach, struct pollfd *poll_fds, int audio_fd
 	int uiCalc;
 	char cCriticalError = 0;
 	char cMute = 0;
+	int iMaxSignalLevel = 0;
 	
 	while (1) 
 	{
@@ -1841,6 +1845,8 @@ void audio_loop_poll_mmap(snd_pcm_t **ach, struct pollfd *poll_fds, int audio_fd
 			DBG_MUTEX_LOCK(&modulelist_mutex);	
 			uiDigConvertMode = miModuleList[iMicModuleNum].Settings[17];
 			uiDigLevel = 1 << miModuleList[iMicModuleNum].Settings[18];
+			miModuleList[iMicModuleNum].Status[4] = iMaxSignalLevel >> 4;
+			iMaxSignalLevel = 0;
 			DBG_MUTEX_UNLOCK(&modulelist_mutex);
 		}
 		
@@ -1936,21 +1942,36 @@ void audio_loop_poll_mmap(snd_pcm_t **ach, struct pollfd *poll_fds, int audio_fd
 					{
 						iTimeScanClk = uiSenceSkip;	
 						//SENSOR
-						ret = 0;
+						int iCurStatuses[8];
+						iCurStatuses[0] = 0;
+						iCurStatuses[1] = 0;
+						
 						for (n = 0; n < f_link->codec_info.audio_frame_size; n += ucScanGridSize)
 						{
-							if ((piCaptureBuffer[n] > 0) && (piCaptureBuffer[n] > uiControlLevel)) {ret = 1; break;}
-							if ((piCaptureBuffer[n] < 0) && (piCaptureBuffer[n] < (-uiControlLevel))) {ret = 1; break;}
+							if ((piCaptureBuffer[n] > 0) && (piCaptureBuffer[n] > uiControlLevel)) 
+							{
+								iCurStatuses[0] = 1;
+								if (iCurStatuses[1] < piCaptureBuffer[n]) iCurStatuses[1] = piCaptureBuffer[n];
+								if ((uiEventsFlag & 0b00100000) == 0) break;
+							}
+							if ((piCaptureBuffer[n] < 0) && (piCaptureBuffer[n] < (-uiControlLevel))) 
+							{
+								iCurStatuses[0] = 1;
+								if (iCurStatuses[1] < (-piCaptureBuffer[n])) iCurStatuses[1] = -piCaptureBuffer[n];
+								if ((uiEventsFlag & 0b00100000) == 0) break;
+							}
 							//if (ucCaptureBuffer[n] > 0) dbgprintf(3,"+ %i\n", ucCaptureBuffer[n]);
 							//if (ucCaptureBuffer[n] < 0) dbgprintf(3,"- %i\n", -ucCaptureBuffer[n]);					
 						}
-						if (ret != iSensorPrevStatus)
+						if ((iCurStatuses[0] != iSensorPrevStatus[0]) || (iCurStatuses[1] != iSensorPrevStatus[1]))
 						{
 							//dbgprintf(5,"Click\n");		
 							DBG_MUTEX_LOCK(&modulelist_mutex);	
-							miModuleList[iMicModuleNum].Status[0] = ret;
+							miModuleList[iMicModuleNum].Status[0] = iCurStatuses[0];
+							miModuleList[iMicModuleNum].Status[5] = iCurStatuses[1] >> 4;
 							DBG_MUTEX_UNLOCK(&modulelist_mutex);
-							iSensorPrevStatus = ret;
+							iSensorPrevStatus[0] = iCurStatuses[0];
+							iSensorPrevStatus[1] = iCurStatuses[1];
 						}												
 					} else iTimeScanClk--;
 				}
@@ -1966,8 +1987,24 @@ void audio_loop_poll_mmap(snd_pcm_t **ach, struct pollfd *poll_fds, int audio_fd
 						{
 							//if ((piCaptureBuffer[n] > 0) && (piCaptureBuffer[n] > max)) max = piCaptureBuffer[n];
 							//if ((piCaptureBuffer[n] < 0) && (piCaptureBuffer[n] < (-max))) max = -piCaptureBuffer[n];
-							if ((piCaptureBuffer[n] > 0) && (piCaptureBuffer[n] > uiRecLevel)) {iDiffResult = 1; break;}
-							if ((piCaptureBuffer[n] < 0) && (piCaptureBuffer[n] < (-uiRecLevel))) {iDiffResult = 1; break;}
+							if (piCaptureBuffer[n] > 0)
+							{
+								if (iMaxSignalLevel < piCaptureBuffer[n]) iMaxSignalLevel = piCaptureBuffer[n];
+								if (piCaptureBuffer[n] > uiRecLevel) 
+								{
+									iDiffResult = 1; 									
+									if ((uiEventsFlag & 0b00010000) == 0) break;
+								}
+							}
+							if (piCaptureBuffer[n] < 0)
+							{
+								if (iMaxSignalLevel < (-piCaptureBuffer[n])) iMaxSignalLevel = -piCaptureBuffer[n];								
+								if (piCaptureBuffer[n] < (-uiRecLevel)) 
+								{
+									iDiffResult = 1; 
+									if ((uiEventsFlag & 0b00010000) == 0) break;
+								}
+							}
 							//if (ucCaptureBuffer[n] > 0) printf("+ %i\n", ucCaptureBuffer[n]);
 							//if (ucCaptureBuffer[n] < 0) printf("- %i\n", -ucCaptureBuffer[n]);					
 						}

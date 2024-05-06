@@ -9333,6 +9333,8 @@ char *GetModuleStatusName(unsigned int uiType, unsigned int uiStatusNum, char*Ou
 				if (uiStatusNum == 1) strcpy(Buffer, "Подключен");
 				if (uiStatusNum == 2) strcpy(Buffer, "Громкость");
 				if (uiStatusNum == 3) strcpy(Buffer, "Отключен");
+				if (uiStatusNum == 4) strcpy(Buffer, "Пиковое значение (сенсор)");
+				if (uiStatusNum == 5) strcpy(Buffer, "Пиковое значение (рекордер)");
 			}
 			else
 			{
@@ -9340,8 +9342,10 @@ char *GetModuleStatusName(unsigned int uiType, unsigned int uiStatusNum, char*Ou
 				if (uiStatusNum == 1) strcpy(Buffer, "Connected");
 				if (uiStatusNum == 2) strcpy(Buffer, "Volume");
 				if (uiStatusNum == 3) strcpy(Buffer, "Disabled");	
+				if (uiStatusNum == 4) strcpy(Buffer, "Peak level (sensor)");
+				if (uiStatusNum == 5) strcpy(Buffer, "Peak level (recorder)");		
 			}
-			if (uiStatusNum > 3) ret = NULL;
+			if (uiStatusNum > 5) ret = NULL;
 			break;
 		case MODULE_TYPE_SYSTEM:
 			if (cLang)
@@ -9564,6 +9568,8 @@ char *GetModuleStatusValue(unsigned int uiType, unsigned int uiStatusNum, int iS
 			if (uiStatusNum == 1) sprintf(Buffer, "%i", iStatus);
 			if (uiStatusNum == 2) sprintf(Buffer, "%i", iStatus);
 			if (uiStatusNum == 3) sprintf(Buffer, "%i", iStatus);	
+			if (uiStatusNum == 4) sprintf(Buffer, "%i", iStatus);	
+			if (uiStatusNum == 5) sprintf(Buffer, "%i", iStatus);	
 			break;
 		case MODULE_TYPE_SYSTEM:
 			switch(uiStatusNum)
@@ -9660,12 +9666,15 @@ char *GetModuleStatusValueType(unsigned int uiType, unsigned int uiStatusNum, ch
 
 	switch(uiType)
 	{
+		case MODULE_TYPE_MIC:
+			if (uiStatusNum == 4) strcpy(Buffer, " (0-1024)");
+			if (uiStatusNum == 5) strcpy(Buffer, " (0-1024)");
+			break;
 		case MODULE_TYPE_EXTERNAL:
 		case MODULE_TYPE_COUNTER:
 		case MODULE_TYPE_MEMORY:
 		case MODULE_TYPE_GPIO:
 		case MODULE_TYPE_USB_GPIO:
-		case MODULE_TYPE_MIC:
 		case MODULE_TYPE_RTC:
 		case MODULE_TYPE_ADS1015:
 		case MODULE_TYPE_MCP3421:
@@ -9787,6 +9796,8 @@ char GetModuleStatusEn(unsigned int uiType, unsigned int uiStatusNum)
 			if (uiStatusNum < 3) ret = 1;
 			break;
 		case MODULE_TYPE_MIC:
+			if (uiStatusNum < 6) ret = 1;
+			break;
 		case MODULE_TYPE_DISPLAY:
 			if (uiStatusNum < 4) ret = 1;
 			break;

@@ -2809,7 +2809,7 @@ int ReWorkTraffic(int Num)
 									a_stime(&rawtime);
 									char timebuff[64];
 									strftime(timebuff, 64, "%Y-%m-%d %H:%M:%S", &timeinfo);
-									dbgprintf(3,"Recv time lvl: %i, '%s'\n", cRecvTU[0], timebuff);								
+									dbgprintf(4,"Recv time lvl: %i, '%s'\n", cRecvTU[0], timebuff);								
 									ucTimeUpdated = cRecvTU[0];
 									if (ucTimeUpdated >= 2) memcpy(cStartTime, timebuff, 64);
 								}
