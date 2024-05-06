@@ -256,6 +256,8 @@ unsigned int uiCurCameraID;
 unsigned int uiCurMicID;
 unsigned int iRadioCode = 0;
 unsigned int iRadioOverTcp = 0;
+unsigned int iRadioVideoEn = 0;
+unsigned int iRadioAudioEn = 0;
 unsigned int iVolumeCode = 0;
 int iListFilesOrderCnt = 0;
 int iListDirsOrderCnt = 0;
@@ -2243,6 +2245,8 @@ int StreamOn(int iNum)
 		memcpy(cCurrentFile, irInternetRadio[iNum].URL, 256);
 		iRadioCode = iNum;
 		iRadioOverTcp = irInternetRadio[iNum].OverTCP;
+		iRadioVideoEn = irInternetRadio[iNum].VideoEn;
+		iRadioAudioEn = irInternetRadio[iNum].AudioEn;
 		DBG_MUTEX_UNLOCK(&system_mutex);		
 		SetNewShowType(SHOW_TYPE_URL);
 		SetChangeShowNow(1);
@@ -2253,6 +2257,27 @@ int StreamOn(int iNum)
 		DBG_MUTEX_UNLOCK(&system_mutex);		
 	}
 	
+	DBG_LOG_OUT();
+	return 0;
+}
+
+int StreamOnId(unsigned int iID)
+{
+	DBG_LOG_IN();
+	int i, n = 9000;
+	DBG_MUTEX_LOCK(&system_mutex);	
+	
+	for (i = 0; i < iInternetRadioCnt; i++) 
+	{
+		if (irInternetRadio[i].ID == iID) 
+		{
+			n = i;
+			break;
+		}
+	}
+	
+	DBG_MUTEX_UNLOCK(&system_mutex);
+	if (n != 9000) StreamOn(n);
 	DBG_LOG_OUT();
 	return 0;
 }
@@ -5613,6 +5638,9 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 						case SYSTEM_CMD_STREAM_ON:
 							add_sys_cmd_in_list(SYSTEM_CMD_STREAM_ON, iSubModuleNum);	
 							break;
+						case SYSTEM_CMD_STREAM_ON_ID:
+							add_sys_cmd_in_list(SYSTEM_CMD_STREAM_ON_ID, iSubModuleNum);	
+							break;
 						case SYSTEM_CMD_STREAM_ON_LAST:
 							add_sys_cmd_in_list(SYSTEM_CMD_STREAM_ON_LAST, iSubModuleNum);	
 							break;
@@ -7981,6 +8009,7 @@ char* GetActionCodeName(int iCode, char* cBuff, int iBufflen, int iMode)
 		case SYSTEM_CMD_SET_ACCESS_LEVEL:	return "SYS_SET_ACCESS_LEVEL";
 		case SYSTEM_CMD_SKIP:				return "SYS_SKIP";
 		case SYSTEM_CMD_STREAM_ON:			return "SYS_STREAM_ON";
+		case SYSTEM_CMD_STREAM_ON_ID:		return "SYS_STREAM_ID";
 		case SYSTEM_CMD_STREAM_OFF:			return "SYS_STREAM_OFF";
 		case SYSTEM_CMD_STREAM_ON_LAST:		return "SYS_STREAM_ON_LAST";
 		case SYSTEM_CMD_STREAM_ON_NEXT:		return "SYS_STREAM_ON_NEXT";
@@ -8782,6 +8811,7 @@ unsigned int GetModuleSettings(char *Buff, int iLen, char iInt)
 	if (SearchStrInData(Buff, iLen, 0, "SYS_ACTION_TEMP_OFF") != 0) 	ret = SYSTEM_CMD_ACTION_TEMP_OFF;
 	if (SearchStrInData(Buff, iLen, 0, "SYS_SKIP") != 0) 				ret = SYSTEM_CMD_SKIP;	
 	if (SearchStrInData(Buff, iLen, 0, "SYS_STREAM_ON") != 0) 			ret = SYSTEM_CMD_STREAM_ON;
+	if (SearchStrInData(Buff, iLen, 0, "SYS_STREAM_ID") != 0) 			ret = SYSTEM_CMD_STREAM_ON_ID;
 	if (SearchStrInData(Buff, iLen, 0, "SYS_STREAM_ON_LAST") != 0) 		ret = SYSTEM_CMD_STREAM_ON_LAST;
 	if (SearchStrInData(Buff, iLen, 0, "SYS_STREAM_OFF") != 0) 			ret = SYSTEM_CMD_STREAM_OFF;
 	if (SearchStrInData(Buff, iLen, 0, "SYS_STREAM_ON_NEXT") != 0) 		ret = SYSTEM_CMD_STREAM_ON_NEXT;
@@ -10281,6 +10311,8 @@ int InitSettings()
 	
 	iRadioCode = 0;
 	iRadioOverTcp = 0;
+	iRadioVideoEn = 0;
+	iRadioAudioEn = 0;
 	iVolumeCode = 0;
 	
 	iSkipIrCodeMaxCnt = SKIPIRCODE_MAX_CNT;
@@ -14502,7 +14534,15 @@ int LoadStreams(char *Buff)
 					if (GetParamSetting(3, 59, Buff3, len3, Buff4, 256) == 1)
 						strcpy(irInternetRadio[iInternetRadioCnt-1].URL, Buff4);	
 					if (GetParamSetting(4, 59, Buff3, len3, Buff4, 10) == 1)
-						irInternetRadio[iInternetRadioCnt-1].OverTCP = (unsigned int)Str2Int(Buff4);								
+						irInternetRadio[iInternetRadioCnt-1].OverTCP = (unsigned int)Str2Int(Buff4);	
+					if (GetParamSetting(5, 59, Buff3, len3, Buff4, 5) == 1)
+					{
+						memcpy(&irInternetRadio[iInternetRadioCnt-1].ID, Buff4, 4);
+					}	
+					if (GetParamSetting(6, 59, Buff3, len3, Buff4, 10) == 1)
+						irInternetRadio[iInternetRadioCnt-1].VideoEn = (unsigned int)Str2Int(Buff4);	
+					if (GetParamSetting(7, 59, Buff3, len3, Buff4, 10) == 1)
+						irInternetRadio[iInternetRadioCnt-1].AudioEn = (unsigned int)Str2Int(Buff4);						
 				}							
 			}
 		}
@@ -14536,8 +14576,8 @@ int SaveStreams()
 	for (n = 0; n < iInternetRadioCnt; n++)
 	{
 		memset(Buff1, 0, 1024);
-		sprintf(Buff1, "Stream=%i;%i;%s;%s;%i;\n", irInternetRadio[n].Access, irInternetRadio[n].Type,
-										irInternetRadio[n].Name, irInternetRadio[n].URL, irInternetRadio[n].OverTCP);
+		sprintf(Buff1, "Stream=%i;%i;%s;%s;%i;%.4s;%i;%i;\n", irInternetRadio[n].Access, irInternetRadio[n].Type,
+										irInternetRadio[n].Name, irInternetRadio[n].URL, irInternetRadio[n].OverTCP, (char*)&irInternetRadio[n].ID, irInternetRadio[n].VideoEn, irInternetRadio[n].AudioEn);
 		fputs(Buff1, f);
 	}
 	fclose(f);
@@ -21181,7 +21221,9 @@ void * Shower()
 	iListAlarmFilesCount = 0;
 	func_link *f_link;							
 	char *pLinkNextShow;
-	char overTCP = 0;
+	char strmOverTCP = 0;
+	char strmVideoEn = 0;
+	char strmAudioEn = 0;
 	
 	dbgprintf(3,"Init_GL\n");   
 	memset(state, 0, sizeof(GL_STATE_T));
@@ -22649,10 +22691,12 @@ void * Shower()
 							//ret = GetTypesStreamsMediaFile(CurrentFile);
 							//ret = GetTypesStreamsMediaFile("/mnt/FLASH/sz2.mkv");
 							DBG_MUTEX_LOCK(&system_mutex);		
-							overTCP = iRadioOverTcp;
+							strmOverTCP = iRadioOverTcp;
+							strmVideoEn = iRadioVideoEn;
+							strmAudioEn = iRadioAudioEn;
 							DBG_MUTEX_UNLOCK(&system_mutex);	
 										
-							ret = PlayMediaFile(pLinkNextShow, (uiDevType & DEVICE_TYPE_VIDEO_OUT) ? 1 : 0, (uiDevType & DEVICE_TYPE_AUDIO_OUT) ? 1 : 0, overTCP);								
+							ret = PlayMediaFile(pLinkNextShow, (uiDevType & DEVICE_TYPE_VIDEO_OUT) ? strmVideoEn : 0, (uiDevType & DEVICE_TYPE_AUDIO_OUT) ? strmAudioEn : 0, strmOverTCP);								
 							if (ret & (FILE_TYPE_VIDEO | FILE_TYPE_AUDIO)) 
 							{									
 								//PlayMediaFile("/mnt/FLASH/sz2.mkv");
@@ -23163,6 +23207,7 @@ void * Shower()
 			if (ret == SYSTEM_CMD_RADIO_ON) Menu_OnRadioStation(pScreenMenu, 0);
 			if (ret == SYSTEM_CMD_PLAY_NEXT_DIR) Menu_PlayNextDir(pScreenMenu, 0);
 			if (ret == SYSTEM_CMD_PLAY_PREV_DIR) Menu_PlayPrevDir(pScreenMenu, 0);
+			if (ret == SYSTEM_CMD_STREAM_ON_ID) StreamOnId(ret4);
 			if (ret == SYSTEM_CMD_STREAM_ON) StreamOn(ret4);
 			if (ret == SYSTEM_CMD_STREAM_ON_LAST) StreamOnLast();			
 			if (ret == SYSTEM_CMD_STREAM_ON_NEXT) StreamOnNext();

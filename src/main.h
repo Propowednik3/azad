@@ -530,6 +530,7 @@ enum SYSTEM_CMD
 	SYSTEM_CMD_ACTION_TRANSLATE_TEST2,
 	SYSTEM_CMD_SOUND_VOLUME_TEMP_MUTE,
 	SYSTEM_CMD_SOUND_VOLUME_TEMP_UNMUTE,
+	SYSTEM_CMD_STREAM_ON_ID,
 	SYSTEM_CMD_MAX,	
 	
 	SYSTEM_KEY_RESERVED	 = 0x41001000,
@@ -1328,11 +1329,14 @@ typedef struct
 
 typedef struct
 {
+	unsigned int	ID;
 	unsigned int	Access;
 	unsigned int	Type;
 	char			Name[64];
 	char			URL[256];	
 	char			OverTCP;
+	char			VideoEn;
+	char			AudioEn;
 } STREAM_SETT;
 
 typedef struct

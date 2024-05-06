@@ -2913,6 +2913,16 @@ int WEB_get_msg_type(char *msg_rx, int iLen, unsigned int *uiType, unsigned int 
 				iValue[2] = Str2Int(param_value);
 			if (WEB_get_param_from_url(msg, msg_len, "OverTCP", param_value, 2048) >= 0) 
 				iValue[3] = SearchStrInDataCaseIgn(param_value, strlen(param_value), 0, "ON");
+			if (WEB_get_param_from_url(msg, msg_len, "ID", param_value, 2048) >= 0) 
+			{
+				WEB_decode_url_to_src(param_value, strlen(param_value));	
+				if (strlen(param_value) > 4) memcpy(&iValue[4], param_value, 4);
+					else memcpy(&iValue[4], param_value, strlen(param_value));
+			}
+			if (WEB_get_param_from_url(msg, msg_len, "VideoEn", param_value, 2048) >= 0) 
+				iValue[5] = SearchStrInDataCaseIgn(param_value, strlen(param_value), 0, "ON");
+			if (WEB_get_param_from_url(msg, msg_len, "AudioEn", param_value, 2048) >= 0) 
+				iValue[6] = SearchStrInDataCaseIgn(param_value, strlen(param_value), 0, "ON");
 			if (WEB_get_param_from_url(msg, msg_len, "NewPos", param_value, 2048) >= 0) 
 				iValue[10] = Str2Int(param_value);			
 			if (WEB_get_param_from_url(msg, msg_len, "Name", param_value, 2048) >= 0) 
@@ -9944,7 +9954,10 @@ int WEB_stream_save(int *pParams, char* strParam)
 		if (strlen(&strParam[64]) > 255) memcpy(irInternetRadio[pParams[0]].URL, &strParam[64], 255);
 			else memcpy(irInternetRadio[pParams[0]].URL, &strParam[64], strlen(&strParam[64]));		
 		irInternetRadio[pParams[0]].OverTCP = pParams[3];
-		
+		irInternetRadio[pParams[0]].ID = pParams[4];
+		irInternetRadio[pParams[0]].VideoEn = pParams[5];
+		irInternetRadio[pParams[0]].AudioEn = pParams[6];
+	
 		if (pParams[0] != pParams[10]) WEB_change_pos(pParams[0], pParams[10], (char*)irInternetRadio, iInternetRadioCnt, sizeof(STREAM_SETT));
 		
 		ret = 1;
@@ -9993,6 +10006,9 @@ int WEB_stream_add(int *pParams, char* strParam)
 	if (strlen(&strParam[64]) > 255) memcpy(irInternetRadio[iInternetRadioCnt-1].URL, &strParam[64], 255);
 		else memcpy(irInternetRadio[iInternetRadioCnt-1].URL, &strParam[64], strlen(&strParam[64]));
 	irInternetRadio[iInternetRadioCnt-1].OverTCP = pParams[3];
+	irInternetRadio[iInternetRadioCnt-1].ID = pParams[4];
+	irInternetRadio[iInternetRadioCnt-1].VideoEn = pParams[5];
+	irInternetRadio[iInternetRadioCnt-1].AudioEn = pParams[6];
 	
 	if (pParams[10] < (iInternetRadioCnt-1)) WEB_change_pos(iInternetRadioCnt-1, pParams[10], (char*)irInternetRadio, iInternetRadioCnt, sizeof(STREAM_SETT));
 	
@@ -10095,7 +10111,7 @@ int WEB_streams_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 	strcat(msg_tx, msg_subbody);
 	
 	strcat(msg_tx, "<table border='1' width='100%' cellpadding='5'>"
-					"<tr><th>Номер</th><th>Уровень доступа</th><th>Тип</th><th>Наименование</th><th>Путь(Адрес)</th><th>Через TCP</th><th>Действие</th></tr>");
+					"<tr><th>Номер</th><th>ИД</th><th>Уровень доступа</th><th>Тип</th><th>Наименование</th><th>Путь(Адрес)</th><th>TCP/Video/Audio</th><th>Действие</th></tr>");
 
 	int iSubPages, iCurPage, iFirstOption, iLastOption;
 	
@@ -10177,18 +10193,27 @@ int WEB_streams_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 						"<input type='hidden' name='req_index' value=%i>\r\n"
 						"<input type='hidden' name='Num' value=%i>"
 						"<td><input type='number' name='NewPos' value=%i style='width: 50px;'></td>\r\n"
+						"<td><input type='text' name='ID' value='%.4s' maxlength=4 style='width: 60px;'></td>\r\n"
 						"<td><input type='number' name='Access' min=0 max=1000 value=%i style='width: 50px;'></td>\r\n"
 						"<td><select name='Type' style='width: 140px;'>\r\n"
 							"%s"
 							"</select></td>\r\n"
 						"<td><input type='text' name='Name' value='%s'></td>\r\n"
 						"<td><input type='text' name='Url' value='%s' style='width: 380px;'></td>\r\n"
-						"<td><input type='checkbox' name='OverTCP'%s></td>\r\n"
+						"<td>"
+							"<input type='checkbox' name='OverTCP'%s>"
+							"<input type='checkbox' name='VideoEn'%s>"
+							"<input type='checkbox' name='AudioEn'%s>"
+						"</td>\r\n"
 						"<td>%s\r\n"
 						"<button type='submit' formaction='/streams/play'>Воспроизвести</button></td></form></tr>\r\n",
 						session->request_id,
-						n,n, irInternetRadio[n].Access, msg_listtype, irInternetRadio[n].Name, irInternetRadio[n].URL, 
+						n,n, 
+						(char*)&irInternetRadio[n].ID,
+						irInternetRadio[n].Access, msg_listtype, irInternetRadio[n].Name, irInternetRadio[n].URL, 
 						irInternetRadio[n].OverTCP ? " checked " : "", 
+						irInternetRadio[n].VideoEn ? " checked " : "",
+						irInternetRadio[n].AudioEn ? " checked " : "",
 						(session->access_level > 0) ? "<button type='submit'>Сохранить</button>\r\n"
 													"<button type='submit' formaction='/streams/delete'>Удалить</button>\r\n"
 													"<button type='submit' formaction='/streams/get_up'>Выше</button>\r\n"
@@ -10212,14 +10237,19 @@ int WEB_streams_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 	sprintf(msg_subbody, 
 					"<tr><form action='/streams/add'>\r\n"
 					"<input type='hidden' name='req_index' value=%i>\r\n"
-					"<td><input type='number' name='NewPos' value=%i style='width: 50px;'></td>\r\n"					
+					"<td><input type='number' name='NewPos' value=%i style='width: 50px;'></td>\r\n"	
+					"<td><input type='text' name='ID' value='' maxlength=4 style='width: 60px;'></td>\r\n"				
 					"<td><input type='number' name='Access' min=0 max=1000 value=0 style='width: 50px;'></td>\r\n"
 					"<td><select name='Type' value='%s' style='width: 140px;'>\r\n"
 						"%s"
 						"</select></td>\r\n"
 					"<td><input type='text' name='Name' value=''></td>\r\n"
 					"<td><input type='text' name='Url' value='' style='width: 380px;'></td>\r\n"
-					"<td><input type='checkbox' name='OverTCP'></td>\r\n"
+					"<td>"
+						"<input type='checkbox' name='OverTCP'>"
+						"<input type='checkbox' name='VideoEn' checked>"
+						"<input type='checkbox' name='AudioEn' checked>"
+					"</td>\r\n"
 					"<input type='hidden' name='Page' value=%i>"
 					"<td><button type='submit'>Добавить</button></td></form></tr>\r\n", 
 					session->request_id,
