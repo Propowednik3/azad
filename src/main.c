@@ -19197,10 +19197,15 @@ char ClearSpace(FS_GROUP *fs_group, unsigned int fsCount)
 		
 		if (deleted_count > 0)
 		{
-			if (fs_group[i].MinFree > get_fs_free_mbytes(fs_group[i].Paths[0]))
+			long lNowFree = get_fs_free_mbytes(fs_group[i].Paths[0]);
+			if (fs_group[i].MinFree > lNowFree)
 			{
-				dbgprintf(2, "Error clean disk in group %i, need more space '%i>%i'\n", i, fs_group[i].MinFree, get_fs_free_mbytes(fs_group[i].Paths[0]));
-					for (m = 0; m < fs_group[i].Count; m++)
+				if ((fs_group[i].MinFree >> 1) > lNowFree)
+					dbgprintf(2, "Error clean disk in group %i, need more space '%i>%i'\n", i, fs_group[i].MinFree, get_fs_free_mbytes(fs_group[i].Paths[0]));
+					else 
+					dbgprintf(3, "Warning clean disk (slow clean) in group %i, need more space '%i>%i'\n", i, fs_group[i].MinFree, get_fs_free_mbytes(fs_group[i].Paths[0]));
+						
+				for (m = 0; m < fs_group[i].Count; m++)
 						dbgprintf(3, "\tfrom path: '%s'\n", fs_group[i].Paths[m]);				
 			}
 			else clean_result++;
