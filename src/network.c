@@ -2788,7 +2788,7 @@ int ReWorkTraffic(int Num)
 							{
 								char *cRecvTU = (char*)(trInBuffer + sizeof(TRANSFER_DATA));
 								DBG_MUTEX_LOCK(&system_mutex);
-								if (ucTimeUpdated < cRecvTU[0]) 
+								if (ucTimeUpdated <= cRecvTU[0]) 
 								{									
 									//time_t *prawtime = (time_t*)(trInBuffer + sizeof(TRANSFER_DATA) + 1);
 									//stime(prawtime);
