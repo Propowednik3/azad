@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,10 +41,10 @@ int 			iTextInit = 0;
 char 			cAccelerateRender = 1;
 RGB_T			rgbTextColor;
 
-GLuint 			text_tex[2];
+GLuint 			text_tex[10];
 static GLfloat gPoints[160*4*2];
 static GLfloat gTexturePoints[160*4*2];
-TEXT_LIST 		**ppTextList = NULL;
+TEXT_LIST 		**ppTextList;
 unsigned int	uiTextListCnt = 0;
 //GLuint 			FramebufferName = 0;
 		
@@ -405,7 +404,7 @@ int InitGLText(unsigned int uiColor, GLfloat gA, char cAccelerator)
 }
 
 int RenderGLTextFast(int iTextSize, GLfloat gX, GLfloat gY, char *cText, int iLen)
-{
+{				
 	//printf("RenderGLTextFast %s\n", cText);
 	int i;
 	int iExist = 0;

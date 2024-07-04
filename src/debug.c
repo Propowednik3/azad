@@ -1,4 +1,3 @@
-
 #include "signal.h"
 #include <stdarg.h>
 #include <stdio.h>
@@ -1529,7 +1528,7 @@ int dbg_mutex_unlock(pthread_mutex_t *mutex, char *pFileName, const char *pFuncN
 														dbg_mutex_data[i].filename, 
 														dbg_mutex_data[i].funcname, 
 														dbg_mutex_data[i].line, 
-														(int)dbg_mutex_data[i].mutex,
+														(int)(intptr_t)dbg_mutex_data[i].mutex,
 														dbg_mutex_data[i].tid,
 														dbg_mutex_data[i].mutexname,
 														(unsigned int)get_now_ms(&dbg_mutex_data[i].startlock_ms),
@@ -1565,7 +1564,7 @@ void dbg_mutex_print_locked(unsigned int uiMutexTime, char cResult)
 														dbg_mutex_data[i].filename, 
 														dbg_mutex_data[i].funcname, 
 														dbg_mutex_data[i].line, 
-														(int)dbg_mutex_data[i].mutex,
+														(int)(intptr_t)dbg_mutex_data[i].mutex,
 														dbg_mutex_data[i].tid,
 														dbg_mutex_data[i].mutexname,
 														(unsigned int)get_now_ms(&dbg_mutex_data[i].startlock_ms));
@@ -1577,7 +1576,7 @@ void dbg_mutex_print_locked(unsigned int uiMutexTime, char cResult)
 														dbg_mutex_data[i].filename, 
 														dbg_mutex_data[i].funcname, 
 														dbg_mutex_data[i].line, 
-														(int)dbg_mutex_data[i].mutex,
+														(int)(intptr_t)dbg_mutex_data[i].mutex,
 														dbg_mutex_data[i].tid,
 														dbg_mutex_data[i].mutexname,
 														(unsigned int)get_now_ms(&dbg_mutex_data[i].startlock_ms),

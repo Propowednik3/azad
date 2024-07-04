@@ -112,7 +112,7 @@ uint32_t bcm2835_peri_read(volatile uint32_t* paddr)
 {
     if (debug)
     {
-        printf("bcm2835_peri_read  paddr %08X\n", (unsigned) paddr);
+        printf("bcm2835_peri_read  paddr %08X\n", (unsigned)(intptr_t)paddr);
 	return 0;
     }
     else
@@ -152,7 +152,7 @@ uint32_t bcm2835_peri_read_nb(volatile uint32_t* paddr)
 {
     if (debug)
     {
-	printf("bcm2835_peri_read_nb  paddr %08X\n", (unsigned) paddr);
+	printf("bcm2835_peri_read_nb  paddr %08X\n", (unsigned)(intptr_t)paddr);
 	return 0;
     }
     else
@@ -168,7 +168,7 @@ void bcm2835_peri_write(volatile uint32_t* paddr, uint32_t value)
 {
     if (debug)
     {
-	printf("bcm2835_peri_write paddr %08X, value %08X\n", (unsigned) paddr, value);
+	printf("bcm2835_peri_write paddr %08X, value %08X\n", (unsigned)(intptr_t)paddr, value);
     }
     else
     {
@@ -199,7 +199,7 @@ void bcm2835_peri_write_nb(volatile uint32_t* paddr, uint32_t value)
     if (debug)
     {
 	printf("bcm2835_peri_write_nb paddr %08X, value %08X\n",
-               (unsigned) paddr, value);
+               (unsigned)(intptr_t)paddr, value);
     }
     else
     {
@@ -459,7 +459,7 @@ void bcm2835_delayMicroseconds(uint64_t micros)
     if (debug)
     {
 	/* Cant access sytem timers in debug mode */
-	printf("bcm2835_delayMicroseconds %lld\n", micros);
+	printf("bcm2835_delayMicroseconds %lld\n", (long long int)micros);
 	return;
     }
 
@@ -1311,7 +1311,7 @@ int bcm2835_init(void)
         unsigned char buf[4];
 	fseek(fp, BMC2835_RPI2_DT_PERI_BASE_ADDRESS_OFFSET, SEEK_SET);
 	if (fread(buf, 1, sizeof(buf), fp) == sizeof(buf))
-	  bcm2835_peripherals_base = (uint32_t *)(buf[0] << 24 | buf[1] << 16 | buf[2] << 8 | buf[3] << 0);
+	  bcm2835_peripherals_base = (uint32_t *)(intptr_t)(buf[0] << 24 | buf[1] << 16 | buf[2] << 8 | buf[3] << 0);
 	fseek(fp, BMC2835_RPI2_DT_PERI_SIZE_OFFSET, SEEK_SET);
 	if (fread(buf, 1, sizeof(buf), fp) == sizeof(buf))
 	  bcm2835_peripherals_size = (buf[0] << 24 | buf[1] << 16 | buf[2] << 8 | buf[3] << 0);
@@ -1331,7 +1331,7 @@ int bcm2835_init(void)
     }
 	
     /* Base of the peripherals block is mapped to VM */
-    bcm2835_peripherals = mapmem("gpio", bcm2835_peripherals_size, memfd, (uint32_t)bcm2835_peripherals_base);
+    bcm2835_peripherals = mapmem("gpio", bcm2835_peripherals_size, memfd, (uint32_t)(intptr_t)bcm2835_peripherals_base);
     if (bcm2835_peripherals == MAP_FAILED) goto exit;
 
     /* Now compute the base addresses of various peripherals, 

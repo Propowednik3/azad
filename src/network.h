@@ -342,19 +342,19 @@ typedef struct
     char            if_newname[IFNAMSIZ];    
 } eth_config;
 
-int iMessagesListCnt;
-char *cMessagesList;
-char iMessageListChanged;
+extern int iMessagesListCnt;
+extern char *cMessagesList;
+extern char iMessageListChanged;
 
-unsigned int 		Connects_Count;
-unsigned int 		Connects_Max_Active;
-CONNECT_INFO 		*Connects_Info;
+extern unsigned int 		Connects_Count;
+extern unsigned int 		Connects_Max_Active;
+extern CONNECT_INFO 		*Connects_Info;
 
 //char *PacketBuffer;
 
-unsigned int iAlarmEvents;
-unsigned int uiRecvDataCnt;
-unsigned int uiSendDataCnt;
+extern unsigned int iAlarmEvents;
+extern unsigned int uiRecvDataCnt;
+extern unsigned int uiSendDataCnt;
 
 char* getnamemessage(int TypeMessage);
 int GetLocalNetIf(eth_config *ifr);

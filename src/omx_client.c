@@ -257,12 +257,12 @@ static OMX_ERRORTYPE CallBackEmpty(
 	DBG_LOG_IN();
 	
 	int CompNum;
-	CompNum = (int)pAppData;
-	dbgprintf(8,"buffer empty %i %i\n", CompNum, (unsigned int)(pBuffer->pAppPrivate));
+	CompNum = (int)(intptr_t)pAppData;
+	dbgprintf(8,"buffer empty %i %i\n", CompNum, (unsigned int)(intptr_t)(pBuffer->pAppPrivate));
 	//printf("OMX_EventEmptyBuffer\n");		
 	pBuffer->nFilledLen = 0;
 	if (m_oCompList[CompNum].psem)
-		tx_semaphore_go(m_oCompList[CompNum].psem, OMX_EventEmptyBuffer, (unsigned int)(pBuffer->pAppPrivate));
+		tx_semaphore_go(m_oCompList[CompNum].psem, OMX_EventEmptyBuffer, (unsigned int)(intptr_t)(pBuffer->pAppPrivate));
 		else dbgprintf(2, "CallBackEmpty: Critical warning %i\n", CompNum);
 	
 	DBG_LOG_OUT();
@@ -277,7 +277,7 @@ static OMX_ERRORTYPE CallBackFill(
 	
 	int CompNum;
 	
-	CompNum = (int)pAppData;
+	CompNum = (int)(intptr_t)pAppData;
     OMX_ERRORTYPE err = OMX_ErrorNone;
 	
     /*printf("buffer fill %i\n", (uint32_t)get_ms(&gl_previous_ms));
@@ -306,7 +306,7 @@ static OMX_ERRORTYPE CallBackFillSync(
 	DBG_LOG_IN();
 	
 	int CompNum, ret;
-	CompNum = (int)pAppData;
+	CompNum = (int)(intptr_t)pAppData;
     OMX_ERRORTYPE err = OMX_ErrorNone;
     //printf("!!!!!!!!! %i %i\n", (unsigned int)FromOMXTime(pBuffer->nTimeStamp), pBuffer->nTickCount);
 			
@@ -350,16 +350,16 @@ static OMX_ERRORTYPE CallBackFillWait(OMX_OUT OMX_HANDLETYPE hComponent, OMX_OUT
 	DBG_LOG_IN();
 	
 	int CompNum;
-	CompNum = (int)pAppData;
+	CompNum = (int)(intptr_t)pAppData;
     OMX_ERRORTYPE err = OMX_ErrorNone;    
    // m_oCompList[Comp].current_out_buffer = pBuffer;
-    dbgprintf(8,"buffer fill wait %i, %i\n", CompNum, (unsigned int)(pBuffer->pAppPrivate));
+    dbgprintf(8,"buffer fill wait %i, %i\n", CompNum, (unsigned int)(intptr_t)(pBuffer->pAppPrivate));
 	
 	//printf("buffer fill wait %i, %i\n", CompNum, (unsigned int)(pBuffer->pAppPrivate));
 	//omx_print_wait_list(CompNum);
     //OMX_FillThisBuffer(m_oCompList[CompNum].handle, pBuffer);	
     if (m_oCompList[CompNum].psem)
-		tx_semaphore_go(m_oCompList[CompNum].psem, OMX_EventFillBuffer, (unsigned int)(pBuffer->pAppPrivate));
+		tx_semaphore_go(m_oCompList[CompNum].psem, OMX_EventFillBuffer, (unsigned int)(intptr_t)(pBuffer->pAppPrivate));
 		else dbgprintf(2, "CallBackFillWait: Critical warning %i\n", CompNum);
 	DBG_LOG_OUT();	
 	return err;
@@ -373,7 +373,7 @@ static OMX_ERRORTYPE CallBackEvent(
     DBG_LOG_IN();
 	
 	int Comp;
-	Comp = (int)pAppData;
+	Comp = (int)(intptr_t)pAppData;
     OMX_ERRORTYPE err = OMX_ErrorNone;
     //OMX_PARAM_PORTDEFINITIONTYPE param;
 
@@ -2248,7 +2248,7 @@ int omx_LoadComponent(int ComponentID, int iFunc)
 	
 	char cName[128];
 	omx_GetComponentName(m_oCompList[m_iComp].type, cName, 128);
-	if (OMX_GetHandle(&m_oCompList[m_iComp].handle, (char *)cName, (void *) (m_iComp), &m_Calls) != OMX_ErrorNone) 
+	if (OMX_GetHandle(&m_oCompList[m_iComp].handle, (char *)cName, (void *)(intptr_t)(m_iComp), &m_Calls) != OMX_ErrorNone) 
 	{
 		dbgprintf(1,"OMX error open component:%s\n", cName);
 		omx_Release_Component(m_iComp);
@@ -4282,7 +4282,7 @@ int omx_create_buffers(int CompNum, int port, int port_type)
 		OMX_ERRORTYPE oerr = OMX_AllocateBuffer(m_oCompList[CompNum].handle, &pport[port].buffer[i], port_num, NULL, portdef.nBufferSize);
 		if (OMX_TEST_ERROR(oerr)) {res = 0; break;}
 		//pport[port].buffer[i]->pAppPrivate = (void*)((port_num<<8)+i);
-		pport[port].buffer[i]->pAppPrivate = (void*)CompNum;
+		pport[port].buffer[i]->pAppPrivate = (void*)(intptr_t)CompNum;
 	}
     
 	DBG_LOG_OUT();
@@ -4306,11 +4306,11 @@ int omx_test_buffers(int CompNum, int port, int port_type, unsigned int iLine)
 	unsigned int addr;
     for (i = 0; i != pport[port].buffers_count; i++)
     {
-		addr = (unsigned int)(pport[port].buffer[i]->pBuffer);
+		addr = (unsigned int)(intptr_t)(pport[port].buffer[i]->pBuffer);
 		if (addr < 100000) 
 		{
 			res = 0;
-			dbgprintf(1,"Error buffer in line %i, comp %i, port %i, num %i, addr: %i, addrnow: %i\n", iLine, CompNum, port_num, i, addr, (unsigned int)pport[port].buffer[i]->pBuffer);
+			dbgprintf(1,"Error buffer in line %i, comp %i, port %i, num %i, addr: %i, addrnow: %i\n", iLine, CompNum, port_num, i, addr, (unsigned int)(intptr_t)pport[port].buffer[i]->pBuffer);
 		}
 	} 
 	DBG_LOG_OUT();
@@ -4453,7 +4453,7 @@ int omx_activate_buffers(int CompNum, int port, int port_type, int iFlags)
 	
 	if (port_type == OMX_PORT_IN) 
 	{			
-		dbgprintf(8,"buffer activate to empty %i CompNum:%i App:%i\n",i,CompNum, (int)pport[port].buffer[i]->pAppPrivate);
+		dbgprintf(8,"buffer activate to empty %i CompNum:%i App:%i\n",i,CompNum, (int)(intptr_t)pport[port].buffer[i]->pAppPrivate);
 		//pport[port].buffer[i]->pAppPrivate = (void*)CompNum;
 		//pport[port].buffer[i]->nFilledLen = 0;
 		//printf("acc i %i, %i\n", i,pport[port].buffers_count);
@@ -4787,11 +4787,11 @@ int omx_create_egl_buffer(int CompNum, int width, int height, GLuint texture_id,
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);//GL_LINEAR
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//GL_NEAREST
 	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	dbgprintf(8,"create gl image Disp: %i, Cont:%i, Text:%i, W:%i,H:%i\n",(int)*eglDisplay, (int)*eglContext, texture_id,width,height);
-	pport[port].EglImage = (void *)eglCreateImageKHR (*eglDisplay, *eglContext, EGL_GL_TEXTURE_2D_KHR, (EGLClientBuffer) texture_id, 0);
+	dbgprintf(8,"create gl image Disp: %i, Cont:%i, Text:%i, W:%i,H:%i\n",(int)(intptr_t)(*eglDisplay), (int)(intptr_t)(*eglContext), texture_id,width,height);
+	pport[port].EglImage = (void *)eglCreateImageKHR (*eglDisplay, *eglContext, EGL_GL_TEXTURE_2D_KHR, (EGLClientBuffer)(intptr_t)texture_id, 0);
 	if (pport[port].EglImage == EGL_NO_IMAGE_KHR)
 	{
-		dbgprintf(1,"dont create gl image Disp: %i, Cont:%i, Text:%i, W:%i,H:%i\n",(int)*eglDisplay, (int)*eglContext, texture_id,width,height);
+		dbgprintf(1,"dont create gl image Disp: %i, Cont:%i, Text:%i, W:%i,H:%i\n",(int)(intptr_t)(*eglDisplay), (int)(intptr_t)(*eglContext), texture_id,width,height);
 		dbgprintf(1,"get egl errors : %i(w:%i,h:%i)\n",eglGetError(),width, height);		
 		pport[port].EglImage = NULL;
 		
@@ -5392,7 +5392,7 @@ error_out:
   
   DBG_LOG_OUT();
 	dbgprintf(5, "Exit from Thread: '%s', TID: %i, SID: %i\n", __func__, (unsigned int)pthread_self(), gettid());	
-  return (void*)res;
+  return (void*)(intptr_t)res;
 }
 
 void omx_stop_video(int iWait)
@@ -6266,7 +6266,7 @@ error_out:
 	
 	DBG_LOG_OUT();  
 	dbgprintf(5, "Exit from Thread: '%s', TID: %i, SID: %i\n", __func__, (unsigned int)pthread_self(), gettid());		
-	return (void*)res;
+	return (void*)(intptr_t)res;
 }
 
 void* thread_omx_play_video_on_egl_from_func(void * pdata)
@@ -6617,7 +6617,7 @@ error_out:
 	
 	DBG_LOG_OUT();  
 	dbgprintf(5, "Exit from Thread: '%s', TID: %i, SID: %i\n", __func__, (unsigned int)pthread_self(), gettid());		
-	return (void*)res;
+	return (void*)(intptr_t)res;
 }
 
 int omx_image_to_buffer(char *FilePath, void ** vBuffer, unsigned int *iSize, int *sW, int *sH)
@@ -8081,7 +8081,7 @@ void* thread_omx_video_capture_send(void *pData)
 			if (pSensResizerOutBuffer == NULL)	{dbgprintf(1,"error omx_get_active_buffer pSensResizerOutBuffer\n");cStop = 1; break;}
 		}
 		
-		omx_add_cmd_in_list(iVideoEncodeNum, OMX_EventFillBuffer, (int)pMainEncoderOutBuffer->pAppPrivate);
+		omx_add_cmd_in_list(iVideoEncodeNum, OMX_EventFillBuffer, (int)(intptr_t)pMainEncoderOutBuffer->pAppPrivate);
 		if (!omx_activate_buffers(iVideoEncodeNum, OMX_PORT_1, OMX_PORT_OUT, 0)) {cStop = 1; break;}	
 		
 		if (cPreviewEnabled) 
@@ -8094,7 +8094,7 @@ void* thread_omx_video_capture_send(void *pData)
 			pPrevEncoderOutBuffer->nFilledLen = 0;
 			vControlBufferPrev = pPrevEncoderOutBuffer->pBuffer;
 			
-			omx_add_cmd_in_list(iVideoEncodeNumPrev, OMX_EventFillBuffer, (int)pPrevEncoderOutBuffer->pAppPrivate);
+			omx_add_cmd_in_list(iVideoEncodeNumPrev, OMX_EventFillBuffer, (int)(intptr_t)pPrevEncoderOutBuffer->pAppPrivate);
 			if (!omx_activate_buffers(iVideoEncodeNumPrev, OMX_PORT_1, OMX_PORT_OUT, 0)) {cStop = 1; break;}	
 		}
 		
@@ -8108,7 +8108,7 @@ void* thread_omx_video_capture_send(void *pData)
 			pSlowEncoderOutBuffer->nFilledLen = 0;
 			vControlBufferSlow = pSlowEncoderOutBuffer->pBuffer;
 			
-			omx_add_cmd_in_list(iVideoEncodeNumSlow, OMX_EventFillBuffer, (int)pSlowEncoderOutBuffer->pAppPrivate);
+			omx_add_cmd_in_list(iVideoEncodeNumSlow, OMX_EventFillBuffer, (int)(intptr_t)pSlowEncoderOutBuffer->pAppPrivate);
 			if (!omx_activate_buffers(iVideoEncodeNumSlow, OMX_PORT_1, OMX_PORT_OUT, 0)) {cStop = 1; break;}	
 		}
 	} while(1 == 2);
@@ -8200,12 +8200,12 @@ void* thread_omx_video_capture_send(void *pData)
 			//if (iNumFrame != START_VIDEO_FRAME_NUMBER) 
 				//memcpy(pSensResizerInBuffer, &tebpbuff, sizeof(OMX_BUFFERHEADERTYPE));
 			
-			omx_add_cmd_in_list(iResizerNumSens, OMX_EventEmptyBuffer, (int)pSensResizerInBuffer->pAppPrivate);	
+			omx_add_cmd_in_list(iResizerNumSens, OMX_EventEmptyBuffer, (int)(intptr_t)pSensResizerInBuffer->pAppPrivate);	
 			if (tx_semaphore_exist_in_list(m_oCompList[iResizerNumSens].psem, OMX_EventFillBuffer, TX_ANY) == 0)
 				omx_add_cmd_in_list(iResizerNumSens, OMX_EventFillBuffer, OMX_CommandAny);
 					
 			if (!omx_activate_buffers(iResizerNumSens, OMX_PORT_1, OMX_PORT_IN, 0)) break;
-			ret = tx_semaphore_wait_event_timeout(m_oCompList[iResizerNumSens].psem, OMX_EventEmptyBuffer, (int)pSensResizerInBuffer->pAppPrivate, iTimeOutPrev);
+			ret = tx_semaphore_wait_event_timeout(m_oCompList[iResizerNumSens].psem, OMX_EventEmptyBuffer, (int)(intptr_t)pSensResizerInBuffer->pAppPrivate, iTimeOutPrev);
 			if (ret == 0) 
 			{
 				iSensorResizerEnabled = 0;
@@ -9476,19 +9476,19 @@ void* thread_omx_video_capture_send(void *pData)
 				if (iNeedSend || iNeedRTSP || (iEncFramePrev == START_VIDEO_FRAME_NUMBER))
 				{
 					cCurEncoderStatus |= 1;
-					omx_add_cmd_in_list(iVideoEncodeNumPrev, OMX_EventEmptyBuffer, (int)pPrevEncoderInBuffer->pAppPrivate);		
+					omx_add_cmd_in_list(iVideoEncodeNumPrev, OMX_EventEmptyBuffer, (int)(intptr_t)pPrevEncoderInBuffer->pAppPrivate);		
 					if (!omx_activate_buffers(iVideoEncodeNumPrev, OMX_PORT_1, OMX_PORT_IN, 0)) break;
-					ret = tx_semaphore_wait_event_timeout(m_oCompList[iVideoEncodeNumPrev].psem, OMX_EventEmptyBuffer, (int)pPrevEncoderInBuffer->pAppPrivate, iTimeOutPrev);
+					ret = tx_semaphore_wait_event_timeout(m_oCompList[iVideoEncodeNumPrev].psem, OMX_EventEmptyBuffer, (int)(intptr_t)pPrevEncoderInBuffer->pAppPrivate, iTimeOutPrev);
 					if (ret == 0) 
 					{
 						dbgprintf(1,"Error encode preview frame %i, %i, %i\n", iNumFrame, pPrevEncoderInBuffer->nFilledLen, pPrevEncoderOutBuffer->nFilledLen);	
 						//cPreviewEnabled--;
 						cPreviewEnabled = 0;
 					}
-					ret = tx_semaphore_wait_event_timeout(m_oCompList[iVideoEncodeNumPrev].psem, OMX_EventFillBuffer, (int)pPrevEncoderOutBuffer->pAppPrivate, uiStepFrameMS);
+					ret = tx_semaphore_wait_event_timeout(m_oCompList[iVideoEncodeNumPrev].psem, OMX_EventFillBuffer, (int)(intptr_t)pPrevEncoderOutBuffer->pAppPrivate, uiStepFrameMS);
 					if (ret != 0)
 					{	
-						while ((tx_semaphore_exist_in_list(m_oCompList[iVideoEncodeNumPrev].psem, OMX_EventFillBuffer, (int)pPrevEncoderOutBuffer->pAppPrivate) == 0)
+						while ((tx_semaphore_exist_in_list(m_oCompList[iVideoEncodeNumPrev].psem, OMX_EventFillBuffer, (int)(intptr_t)pPrevEncoderOutBuffer->pAppPrivate) == 0)
 							&& (pPrevEncoderOutBuffer->nFilledLen != 0))
 						{
 							if (vControlBufferPrev == pPrevEncoderOutBuffer->pBuffer)
@@ -9529,7 +9529,7 @@ void* thread_omx_video_capture_send(void *pData)
 										}
 										if ((pPrevEncoderOutBuffer->nFilledLen < (StartPackPrev.BufferStartSize - StartPackPrev.StartFrameLen)) && (StartPackPrev.StartFramesCount < tVideoInfoPreview.video_intra_frame))
 										{
-											ret = (int)pPrevEncoderOutBuffer->pBuffer;
+											ret = (int)(intptr_t)pPrevEncoderOutBuffer->pBuffer;
 											memcpy(StartPackPrev.BufferStartFrame + StartPackPrev.StartFrameLen, pPrevEncoderOutBuffer->pBuffer + pPrevEncoderOutBuffer->nOffset, pPrevEncoderOutBuffer->nFilledLen);
 											StartPackPrev.StartFrameLen += pPrevEncoderOutBuffer->nFilledLen;							
 											StartPackPrev.StartFramesSizes[StartPackPrev.StartFramesCount] += pPrevEncoderOutBuffer->nFilledLen;
@@ -9568,7 +9568,7 @@ void* thread_omx_video_capture_send(void *pData)
 									//while(ret == 0);
 								}
 								pPrevEncoderOutBuffer->nFilledLen = 0;
-								omx_add_cmd_in_list(iVideoEncodeNumPrev, OMX_EventFillBuffer, (int)pPrevEncoderOutBuffer->pAppPrivate);
+								omx_add_cmd_in_list(iVideoEncodeNumPrev, OMX_EventFillBuffer, (int)(intptr_t)pPrevEncoderOutBuffer->pAppPrivate);
 								if (!omx_activate_buffers(iVideoEncodeNumPrev, OMX_PORT_1, OMX_PORT_OUT, 0)) break;
 							} 
 							else 
@@ -9585,19 +9585,19 @@ void* thread_omx_video_capture_send(void *pData)
 			if (cSlowEncoderEnabled && (uiSlowFramesCnt >= uiSlowFramesSkip))
 			{
 				cCurEncoderStatus |= 2;
-				omx_add_cmd_in_list(iVideoEncodeNumSlow, OMX_EventEmptyBuffer, (int)pSlowEncoderInBuffer->pAppPrivate);		
+				omx_add_cmd_in_list(iVideoEncodeNumSlow, OMX_EventEmptyBuffer, (int)(intptr_t)pSlowEncoderInBuffer->pAppPrivate);		
 				if (!omx_activate_buffers(iVideoEncodeNumSlow, OMX_PORT_1, OMX_PORT_IN, 0)) break;
-				ret = tx_semaphore_wait_event_timeout(m_oCompList[iVideoEncodeNumSlow].psem, OMX_EventEmptyBuffer, (int)pSlowEncoderInBuffer->pAppPrivate, iTimeOutMain);
+				ret = tx_semaphore_wait_event_timeout(m_oCompList[iVideoEncodeNumSlow].psem, OMX_EventEmptyBuffer, (int)(intptr_t)pSlowEncoderInBuffer->pAppPrivate, iTimeOutMain);
 				if (ret == 0) 
 				{
 					dbgprintf(1,"Error encode preview frame %i, %i, %i\n", iNumFrame, pSlowEncoderInBuffer->nFilledLen, pSlowEncoderOutBuffer->nFilledLen);	
 					//cSlowEncoderEnabled--;
 					cSlowEncoderEnabled = 0;
 				}
-				ret = tx_semaphore_wait_event_timeout(m_oCompList[iVideoEncodeNumSlow].psem, OMX_EventFillBuffer, (int)pSlowEncoderOutBuffer->pAppPrivate, uiStepFrameMS);
+				ret = tx_semaphore_wait_event_timeout(m_oCompList[iVideoEncodeNumSlow].psem, OMX_EventFillBuffer, (int)(intptr_t)pSlowEncoderOutBuffer->pAppPrivate, uiStepFrameMS);
 				if (ret != 0)
 				{	
-					while ((tx_semaphore_exist_in_list(m_oCompList[iVideoEncodeNumSlow].psem, OMX_EventFillBuffer, (int)pSlowEncoderOutBuffer->pAppPrivate) == 0)
+					while ((tx_semaphore_exist_in_list(m_oCompList[iVideoEncodeNumSlow].psem, OMX_EventFillBuffer, (int)(intptr_t)pSlowEncoderOutBuffer->pAppPrivate) == 0)
 						&& (pSlowEncoderOutBuffer->nFilledLen != 0))
 					{
 						if (vControlBufferSlow == pSlowEncoderOutBuffer->pBuffer)
@@ -9683,7 +9683,7 @@ void* thread_omx_video_capture_send(void *pData)
 								//while(ret == 0);
 							}
 							pSlowEncoderOutBuffer->nFilledLen = 0;
-							omx_add_cmd_in_list(iVideoEncodeNumSlow, OMX_EventFillBuffer, (int)pSlowEncoderOutBuffer->pAppPrivate);
+							omx_add_cmd_in_list(iVideoEncodeNumSlow, OMX_EventFillBuffer, (int)(intptr_t)pSlowEncoderOutBuffer->pAppPrivate);
 							if (!omx_activate_buffers(iVideoEncodeNumSlow, OMX_PORT_1, OMX_PORT_OUT, 0)) break;
 						}
 						else 
@@ -9709,9 +9709,9 @@ void* thread_omx_video_capture_send(void *pData)
 			if (cNormRecordEnabled || cDiffRecordEnabled || ((cRecSlowEnabled) && (!(cSlowEncoderEnabled))) || iNeedSend || iNeedRTSP || (iEncFrame == START_VIDEO_FRAME_NUMBER))
 			{	
 				cCurEncoderStatus |= 4;
-				omx_add_cmd_in_list(iVideoEncodeNum, OMX_EventEmptyBuffer, (int)pMainEncoderInBuffer->pAppPrivate);		
+				omx_add_cmd_in_list(iVideoEncodeNum, OMX_EventEmptyBuffer, (int)(intptr_t)pMainEncoderInBuffer->pAppPrivate);		
 				if (!omx_activate_buffers(iVideoEncodeNum, OMX_PORT_1, OMX_PORT_IN, 0)) break;
-				ret = tx_semaphore_wait_event_timeout(m_oCompList[iVideoEncodeNum].psem, OMX_EventEmptyBuffer, (int)pMainEncoderInBuffer->pAppPrivate, iTimeOutMain);
+				ret = tx_semaphore_wait_event_timeout(m_oCompList[iVideoEncodeNum].psem, OMX_EventEmptyBuffer, (int)(intptr_t)pMainEncoderInBuffer->pAppPrivate, iTimeOutMain);
 				if (ret == 0)
 				{
 					dbgprintf(1,"Error encode main capture frame %i, %i, %i\n", iNumFrame, pMainEncoderInBuffer->nFilledLen, pMainEncoderOutBuffer->nFilledLen);
@@ -9719,10 +9719,10 @@ void* thread_omx_video_capture_send(void *pData)
 					break;
 				}
 				
-				ret = tx_semaphore_wait_event_timeout(m_oCompList[iVideoEncodeNum].psem, OMX_EventFillBuffer, (int)pMainEncoderOutBuffer->pAppPrivate, uiStepFrameMS);
+				ret = tx_semaphore_wait_event_timeout(m_oCompList[iVideoEncodeNum].psem, OMX_EventFillBuffer, (int)(intptr_t)pMainEncoderOutBuffer->pAppPrivate, uiStepFrameMS);
 				if (ret != 0)
 				{
-					while ((tx_semaphore_exist_in_list(m_oCompList[iVideoEncodeNum].psem, OMX_EventFillBuffer, (int)pMainEncoderOutBuffer->pAppPrivate) == 0)
+					while ((tx_semaphore_exist_in_list(m_oCompList[iVideoEncodeNum].psem, OMX_EventFillBuffer, (int)(intptr_t)pMainEncoderOutBuffer->pAppPrivate) == 0)
 							&& (pMainEncoderOutBuffer->nFilledLen != 0))
 					{
 						if (vControlBufferNorm == pMainEncoderOutBuffer->pBuffer)
@@ -9816,7 +9816,7 @@ void* thread_omx_video_capture_send(void *pData)
 								} 
 							}
 							pMainEncoderOutBuffer->nFilledLen = 0;
-							omx_add_cmd_in_list(iVideoEncodeNum, OMX_EventFillBuffer, (int)pMainEncoderOutBuffer->pAppPrivate);
+							omx_add_cmd_in_list(iVideoEncodeNum, OMX_EventFillBuffer, (int)(intptr_t)pMainEncoderOutBuffer->pAppPrivate);
 							if (!omx_activate_buffers(iVideoEncodeNum, OMX_PORT_1, OMX_PORT_OUT, 0)) break;
 						}
 						else 

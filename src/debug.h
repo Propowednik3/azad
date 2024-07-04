@@ -174,16 +174,16 @@ unsigned int dbg_use_mem();
 int gettid();
 unsigned int load_last_dbg_data(char *data, unsigned int len);
 
-int iFileLog, iScreenLog, iMessageLog, iLocalMessageLog, iEmailLog;
-char cFileLogName[256];
-char cLogIP[256];
-int64_t iLogEmailTimer;
-char cLogMailAddress[64];
-char cLogMailServer[64];
-char cLogMailLogin[64];
-char cLogMailPassword[64];
-char cLogMailAuth[64];
-unsigned int uiLogEmailPauseSize;
-pthread_mutex_t 	dbg_mutex;
+extern int iFileLog, iScreenLog, iMessageLog, iLocalMessageLog, iEmailLog;
+extern char cFileLogName[256];
+extern char cLogIP[256];
+extern int64_t iLogEmailTimer;
+extern char cLogMailAddress[64];
+extern char cLogMailServer[64];
+extern char cLogMailLogin[64];
+extern char cLogMailPassword[64];
+extern char cLogMailAuth[64];
+extern unsigned int uiLogEmailPauseSize;
+extern pthread_mutex_t 	dbg_mutex;
 
 #endif

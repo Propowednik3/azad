@@ -48,9 +48,9 @@ typedef struct
    FILE *filehandle;
 } TRANSFER_FILE_INFO;
 
-unsigned int cThreadWriterStatus;
-TRANSFER_FILE_INFO tfTransferFileStatus;
-TX_EVENTER writeevent_evnt;
+extern unsigned int cThreadWriterStatus;
+extern TRANSFER_FILE_INFO tfTransferFileStatus;
+extern TX_EVENTER writeevent_evnt;
 
 int CloseWriter();
 void * Writer(void *pData);

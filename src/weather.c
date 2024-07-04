@@ -501,7 +501,7 @@ int DownloadXml(char *cServer, char *cPath, char **cBuffer)
 	int m;
 	//u_long *ulTmp = (u_long *) (remoteHost->h_addr_list[0]);
 	//addr.s_addr = *ulTmp;
-	memcpy(&addr.s_addr, remoteHost->h_addr_list[0], sizeof(u_long));
+	memcpy(&addr.s_addr, remoteHost->h_addr_list[0], sizeof(addr.s_addr));
     //printf("\tIPv4 Address #%d: %s\n",0, inet_ntoa(addr));
 
 	memset(cHeader, 0, 2048);
@@ -613,7 +613,7 @@ int DownloadFileNB(char *cServer, char *cPath, char **cBuffer)
 		DBG_LOG_OUT();
 		return 0;
 	}
-	memcpy(&addr.s_addr, remoteHost->h_addr_list[0], sizeof(u_long));
+	memcpy(&addr.s_addr, remoteHost->h_addr_list[0], sizeof(addr.s_addr));
     //addr.s_addr = inet_addr("172.16.2.81");
 	
 	int i = 0;

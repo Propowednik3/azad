@@ -219,11 +219,11 @@ typedef struct WEB_HISTORY_INFO
 	char			Login[96];
 } WEB_HISTORY_INFO;
 
-pthread_mutex_t WEB_mutex;
-pthread_mutex_t WEB_req_mutex;
-pthread_mutex_t WEB_explorer_mutex;
-int iWebHistoryCnt;
-WEB_HISTORY_INFO *whWebHistory;
+extern pthread_mutex_t WEB_mutex;
+extern pthread_mutex_t WEB_req_mutex;
+extern pthread_mutex_t WEB_explorer_mutex;
+extern int iWebHistoryCnt;
+extern WEB_HISTORY_INFO *whWebHistory;
 
 void web_start(unsigned int uiPort);
 int web_stop();

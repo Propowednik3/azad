@@ -1,4 +1,3 @@
-
 //#include <curses.h>
 #include <stdio.h>
 #include <dirent.h>
@@ -2606,13 +2605,17 @@ int Menu_ChangeWidgetShowMode(void *pData, int iMenuNum)
 		{
 			wiWidgetList[n].ShowMode++;
 			if (wiWidgetList[n].ShowMode > WIDGET_SHOWMODE_ALLWAYS) wiWidgetList[n].ShowMode = 0;
-			sprintf(pMenu[iMenuNum].Options[pMenu[iMenuNum].SelectedOption].Name, "(%s%s%s%s%s) %s",
+			char buff[128];
+			memset(buff, 0, 128);
+			snprintf(buff, 127, "(%s%s%s%s%s) %s",
 					(wiWidgetList[n].ShowMode == 0) ? "Скрыто" : "",
 					(wiWidgetList[n].ShowMode & WIDGET_SHOWMODE_DAYTIME) ? "Время " : "",
 					(wiWidgetList[n].ShowMode & WIDGET_SHOWMODE_MENU) ? " Меню " : "",
 					(wiWidgetList[n].ShowMode & WIDGET_SHOWMODE_TIMEOUT) ? " Интервал " : "",
 					(wiWidgetList[n].ShowMode & WIDGET_SHOWMODE_ALLWAYS) ? " Всегда" : "",
 					wiWidgetList[n].Name);
+			memcpy(pMenu[iMenuNum].Options[pMenu[iMenuNum].SelectedOption].Name, buff, 63);
+			pMenu[iMenuNum].Options[pMenu[iMenuNum].SelectedOption].Name[63] = 0;
 			if (wiWidgetList[n].Type == WIDGET_TYPE_IMAGE)
 			{
 				if (wiWidgetList[n].ShowMode == 0) 
@@ -3331,7 +3334,10 @@ int Menu_RefreshRadiosMenu(void *pData, int iMenuNum)
 		pMenu[6].Options[i].PrevPage = 0;
 		pMenu[6].Options[i].NextPage = 0;
 		pMenu[6].Options[i].ActionFunc = Menu_OnRadioStation;
-		sprintf(pMenu[6].Options[i].Name, "%s(%.1f)", riRadioStation[i-5].Name, riRadioStation[i-5].Frequency);
+		char buff[128];
+		memset(buff, 0, 128);		
+		snprintf(buff, 127, "%s(%.1f)", riRadioStation[i-5].Name, riRadioStation[i-5].Frequency);
+		memcpy(pMenu[6].Options[i].Name, buff, 63);
 	}
 	
 	DBG_MUTEX_UNLOCK(&system_mutex);	
@@ -3587,13 +3593,16 @@ int Menu_RefreshWidgetList(void *pData, int iMenuNum)
 		pMenu[15].Options[i].NextPage = 0;
 		pMenu[15].Options[i].ActionFunc = Menu_ChangeWidgetShowMode;
 		pMenu[15].Options[i].MiscData = wiWidgetList[i].WidgetID;
-		sprintf(pMenu[15].Options[i].Name, "(%s%s%s%s%s) %s",
+		char buff[128];
+		memset(buff, 0, 128);		
+		snprintf(buff, 127, "(%s%s%s%s%s) %s",
 			(wiWidgetList[i].ShowMode == 0) ? "Скрыто" : "",
 			(wiWidgetList[i].ShowMode & WIDGET_SHOWMODE_DAYTIME) ? "Время " : "",
 			(wiWidgetList[i].ShowMode & WIDGET_SHOWMODE_MENU) ? " Меню " : "",
 			(wiWidgetList[i].ShowMode & WIDGET_SHOWMODE_TIMEOUT) ? " Интервал " : "",
 			(wiWidgetList[i].ShowMode & WIDGET_SHOWMODE_ALLWAYS) ? " Всегда" : "",
 			wiWidgetList[i].Name);
+		memcpy(pMenu[15].Options[i].Name, buff, 63);
 	}
 	
 	DBG_MUTEX_UNLOCK(&widget_mutex);	
@@ -14765,13 +14774,13 @@ int SaveDirectories()
 		DBG_LOG_OUT();
 		return 0;
 	}
-	char Buff1[1024];	
+	char Buff1[2048];	
 	unsigned int n;
 	
 	for (n = 0; n < iDirsCnt; n++)
 	{
-		memset(Buff1, 0, 1024);
-		sprintf(Buff1, "Directory=%i;%i;%s;%s;%i;%i;%s;%i;%i;%i;%s;%i;%i;%s;%i;%i;%i;%i;%s;%i;%i;%i;%i;%s;%i;%i;%i;%i;\n", 
+		memset(Buff1, 0, 2048);
+		snprintf(Buff1, 2047, "Directory=%i;%i;%s;%s;%i;%i;%s;%i;%i;%i;%s;%i;%i;%s;%i;%i;%i;%i;%s;%i;%i;%i;%i;%s;%i;%i;%i;%i;\n", 
 														diDirList[n].Access,
 														diDirList[n].RemoteAccess,
 														diDirList[n].Name,
@@ -15984,14 +15993,14 @@ int UpdateListFiles(char *cPath, int iMode)
 		struct tm timeinfo;
 		time(&rawtime);
 		localtime_r(&rawtime, &timeinfo);
-		char mon[10];
-		char day[10];
+		char mon[20];
+		char day[20];
 		
-		memset(mon,0,10);
-		memset(day,0,10);
+		memset(mon,0,20);
+		memset(day,0,20);
 		memset(cPath2,0,256);
-		sprintf(mon, "%i",timeinfo.tm_mon+1);
-		sprintf(day, "%i",timeinfo.tm_mday);
+		snprintf(mon, 19, "%i",timeinfo.tm_mon+1);
+		snprintf(day, 19, "%i",timeinfo.tm_mday);
 		strcpy(cPath2, cPath);
 		if (cPath[strlen(cPath)-1] != 47) strcat(cPath2, "/");
 		strcat(cPath2, mon);
@@ -16186,15 +16195,15 @@ int UpdateAlarmFiles(char *cPath)
 	struct tm timeinfo;
 	time(&rawtime);
 	localtime_r(&rawtime, &timeinfo);
-	char mon[10];
-	char day[10];
+	char mon[20];
+	char day[20];
 	char cPath2[256];
 	char *cFile;
-	memset(mon,0,10);
-	memset(day,0,10);
+	memset(mon,0,20);
+	memset(day,0,20);
 	memset(cPath2,0,256);
-	sprintf(mon, "%i",timeinfo.tm_mon+1);
-	sprintf(day, "%i",timeinfo.tm_mday);
+	snprintf(mon, 19, "%i",timeinfo.tm_mon+1);
+	snprintf(day, 19, "%i",timeinfo.tm_mday);
 	strcpy(cPath2, cPath);
 	if ((strlen(cPath) > 0) && (cPath[strlen(cPath)-1] != 47)) strcat(cPath2, "/");
 	strcat(cPath2, mon);
@@ -17427,13 +17436,13 @@ void SendToArchive(STREAM_INFO *siArchive, struct tm *prev_time, DIRECTORY_INFO 
 		sl[1] = 0;
 		int iLen = strlen(directoryInfo->BeginPath);
 		if (iLen && (directoryInfo->BeginPath[iLen - 1] != 47)) sl[0] = 47;
-		char cDirName[MAX_FILE_LEN];
-		memset(cDirName, 0, MAX_FILE_LEN);		
-		sprintf(cDirName, "%s%s%s%04i/%s/%02i/", directoryInfo->Path, directoryInfo->BeginPath, sl, prev_time->tm_year+1900, GetMonthName(prev_time->tm_mon+1),prev_time->tm_mday);
+		char cDirName[1024];
+		memset(cDirName, 0, 1024);		
+		snprintf(cDirName, 1023, "%s%s%s%04i/%s/%02i/", directoryInfo->Path, directoryInfo->BeginPath, sl, prev_time->tm_year+1900, GetMonthName(prev_time->tm_mon+1),prev_time->tm_mday);
 		
-		char cArchName[MAX_FILE_LEN];
-		memset(cArchName, 0, MAX_FILE_LEN);
-		sprintf(cArchName, "%s%s%s%04i/%s/%02i/", directoryInfo->ArchivePath, directoryInfo->BeginPath, sl, prev_time->tm_year+1900, GetMonthName(prev_time->tm_mon+1),prev_time->tm_mday);
+		char cArchName[1024];
+		memset(cArchName, 0, 1024);
+		snprintf(cArchName, 1023, "%s%s%s%04i/%s/%02i/", directoryInfo->ArchivePath, directoryInfo->BeginPath, sl, prev_time->tm_year+1900, GetMonthName(prev_time->tm_mon+1),prev_time->tm_mday);
 		char cFileName[MAX_FILE_LEN];
 		memset(cFileName, 0, MAX_FILE_LEN);
 		
@@ -17843,7 +17852,7 @@ void* thread_CopyFile(void *pData)
 				{
 					dbgprintf(2, "thread_CopyFile: Unknown evnt transfer data:%i\n", uiEvent);
 					dbgprintf(3, "\t cAddrOrderer:%s\n", cAddrOrderer);
-					dbgprintf(3, "\t pStream:%i\n", (int)pStream);
+					dbgprintf(3, "\t pStream:%i\n", (uintptr_t)pStream);
 					dbgprintf(3, "\ti iSendedPackets:%i\n", iSendedPackets);
 					dbgprintf(3, "\t len:%i\n", len);
 					if ((len == 0) || (iSendedPackets == 0))
@@ -17923,7 +17932,7 @@ void* thread_CopyFile(void *pData)
 	DBG_FREE(mBuff);
 	DBG_LOG_OUT();
 	dbgprintf(5, "Exit from Thread: '%s', TID: %i, SID: %i\n", __func__, (unsigned int)pthread_self(), gettid());	
-	return (void*)iMainStatus;
+	return (void*)(uintptr_t)iMainStatus;
 }
 
 void AddMessageInList(char *cMessage, int iMessageLen, unsigned int cAddr)
@@ -19150,7 +19159,7 @@ int CopyFile(char *cFrom, char *cTo, char *cToError, char cWait, char cRemoveAft
 	
 	if (cWait) 
 	{
-		ret = (int)thread_CopyFile((void*)mBuff);
+		ret = (intptr_t)thread_CopyFile((void*)mBuff);
 	}
 	else pthread_create(&threadFileIO, &tattrFileIO, thread_CopyFile, (void*)mBuff);
 	return ret;
@@ -21867,7 +21876,7 @@ void * Shower()
 				//if ((pScreenMenu[0].SelectedOption == 2) ||
 					//(pScreenMenu[0].SelectedOption == 3) ||
 					//(pScreenMenu[0].SelectedOption == 6)) pScreenMenu[0].SelectedOption = 0;
-				
+
 				if (GetChangeShowNow() == 0) 
 				{
 					SetNewShowType(SHOW_TYPE_NA);
@@ -21907,7 +21916,7 @@ void * Shower()
 				iTimerToNextShow = 0;								
 				//printf("Next Photo %i,%i,%i\n",iFade_Direct,iShowStatus,cNewShowType);
 			}	// Next Photo
-			
+					
 			if (iFade_Direct == 1) 
 			{// && ((omx_IsFree() == 1) || (cNewShowType & SHOW_TYPE_CAMERA))
 				//if ((GetShowType() & (SHOW_TYPE_IMAGE | SHOW_TYPE_FILE)) == SHOW_TYPE_IMAGE) iFade += 3; else iFade+=20; 
@@ -22185,7 +22194,7 @@ void * Shower()
 					DBG_MUTEX_UNLOCK(&widget_mutex);*/
 				}
 			}
-			
+					
 			////////////ACCEPT NEXT SOURCE////////////	
 			//printf("Fade direct %i iNewShow %i uiSMode %i ChangeNow() %i Status %i ForceStatus %i\n", iFade_Direct, iNewShow, uiSMode, GetChangeShowNow(), iShowStatus, iForceShowStatus);
 			if (iFade_Direct == 2)				
@@ -22316,7 +22325,7 @@ void * Shower()
 							}
 						}				
 					}
-					
+							
 					if (iNewShow & (SHOW_TYPE_CAMERA_FILE | SHOW_TYPE_MIC_FILE))
 					{
 						//printf("OpenServerFile!!!\n");
@@ -22356,7 +22365,7 @@ void * Shower()
 							DelCurShowType(SHOW_TYPE_CAMERA_FILE | SHOW_TYPE_MIC_FILE);
 						}
 					}
-					
+						
 					if (iNewShow & SHOW_TYPE_MIC_FILE)
 					{			
 						SetShowTimeMax(iCamTimeMax);
@@ -22533,7 +22542,7 @@ void * Shower()
 							}
 						}
 					}
-					
+								
 					if (iNewShow & SHOW_TYPE_CAMERA_LIST)
 					{
 						if (iCameraListNewCnt != 0)
@@ -22584,7 +22593,7 @@ void * Shower()
 							AddModuleEventInList(uiLocalSysID, 15, SYSTEM_CMD_PLAY_VIDEO, NULL, 0, 0);			
 						}
 					}
-					
+							
 					if (!(iNewShow & (SHOW_TYPE_ERROR | SHOW_TYPE_MIC_STREAM | SHOW_TYPE_MIC_FILE | SHOW_TYPE_CAMERA | SHOW_TYPE_CAMERA_FILE | SHOW_TYPE_CAMERA_LIST)))
 					{
 						memcpy(CurrentFile, cCurrentFile, 256);
@@ -22956,8 +22965,8 @@ void * Shower()
 					iSlideShowRenderStatus = 0;
 				}	*/	  
 				iFade_Direct = 3;
-			}//DECODE NEXT PHOTO			
-				    
+			}//DECODE NEXT PHOTO	
+			
 			if (iFade_Direct == 3) 
 			{
 				//if ((GetShowType() & (SHOW_TYPE_IMAGE | SHOW_TYPE_FILE)) == SHOW_TYPE_IMAGE) iFade -= 2; else iFade-=20; 
@@ -25676,14 +25685,14 @@ int main(int argc, char *argv[])
 		system("./azad debug safe &");	
 		exit(2);
 	}*/
-	char cExeStr[256];
+	char cExeStr[4096];
 			
 	if (cRebootAfterUpdate)
 	{
 		if ((cThreadMainStatus == 7) && (cNewSourcePath[0] != 0)) //Update
 		{
-			memset(cExeStr, 0, 256);
-			snprintf(cExeStr, 255, "./updater 1 %s %s %s %s &", cNewSourcePath, cNewSourceLogin, cNewSourcePass, cNewSourceFile);	
+			memset(cExeStr, 0, 4096);
+			snprintf(cExeStr, 4095, "./updater 1 %s %s %s %s &", cNewSourcePath, cNewSourceLogin, cNewSourcePass, cNewSourceFile);	
 			system(cExeStr);
 			exit(1);
 		}
@@ -25999,13 +26008,13 @@ int main(int argc, char *argv[])
 	
 	if ((cThreadMainStatus == 7) && (cNewSourcePath[0] != 0)) //Update 
 	{		
-		memset(cExeStr, 0, 256);
-		snprintf(cExeStr, 255, "./updater 0 %s %s %s %s >> updater.log &", cNewSourcePath, cNewSourceLogin, cNewSourcePass, cNewSourceFile);	
+		memset(cExeStr, 0, 4096);
+		snprintf(cExeStr, 4098, "./updater 0 %s %s %s %s >> updater.log &", cNewSourcePath, cNewSourceLogin, cNewSourcePass, cNewSourceFile);	
 		printf("Exec:'%s'\n", cExeStr);
 		system(cExeStr);
 	}
 	
-	memset(cExeStr, 0, 256);
+	memset(cExeStr, 0, 4096);
 	strcpy(cExeStr, "./azad");
 	
 	if (cThreadMainStatus == 3) strcat(cExeStr, " pause");

@@ -245,7 +245,7 @@ char ir_init(unsigned int uiPinNum)
 	pthread_mutex_init(&IRWork_mutex, NULL);
 	pthread_attr_init(&tattrIRWork);      
 	pthread_attr_setdetachstate(&tattrIRWork, PTHREAD_CREATE_DETACHED);	
-	pthread_create(&threadIRWork, &tattrIRWork, IRWorker, (void*)iPinCode);
+	pthread_create(&threadIRWork, &tattrIRWork, IRWorker, (void*)(intptr_t)iPinCode);
 	
 	return 1;
 }
@@ -451,7 +451,7 @@ void* IRWorker(void *pData)
 	int gpio_fd, rc;
 	char buf[MAX_BUF];
 	int len;
-	unsigned int gpio_pin = (unsigned int)pData;
+	unsigned int gpio_pin = (unsigned int)(intptr_t)pData;
 	
 	char threadName[16];
 	memset(threadName, 0, 16);

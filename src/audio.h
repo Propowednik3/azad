@@ -128,11 +128,11 @@ void* thread_PlayMediaFile(void *cFileName);
 void* thread_SaveMediaFile(void* vFileName);
 void* thread_SaveFLVFile(void* vFileName);
 
-pthread_mutex_t Play_Mutex;
-unsigned int uiAudioDataCnt;
-unsigned int uiVideoDataCnt;
-unsigned int uiNewMediaPos;
-unsigned int cThreadAudCaptStatus;
-TX_EVENTER 	pevntRMS;
+extern pthread_mutex_t Play_Mutex;
+extern unsigned int uiAudioDataCnt;
+extern unsigned int uiVideoDataCnt;
+extern unsigned int uiNewMediaPos;
+extern unsigned int cThreadAudCaptStatus;
+extern TX_EVENTER 	pevntRMS;
 
 #endif

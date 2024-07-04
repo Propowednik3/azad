@@ -1,4 +1,3 @@
-
 #include <stdint.h>
 #include <stdio.h>
 #include <dirent.h>
@@ -18,6 +17,7 @@
 #include <locale.h>
 #include <libudev.h>
 #include "main.h"
+#include <pthread.h>
  
 #include <unistd.h>			//Used for UART
 #include <fcntl.h>			//Used for UART
@@ -906,7 +906,6 @@ void RDA5807M_setVolume(uint8_t newVolume)
 
 void RDA5807M_setBassBoost(char switchOn)
 {
-  RDA5807M_setBassBoost(switchOn);
   uint16_t regCtrl = cRadioRegisters[RADIO_REG_CTRL];
   if (switchOn) regCtrl |= RADIO_REG_CTRL_BASS;
 	else regCtrl &= (~RADIO_REG_CTRL_BASS);
@@ -917,8 +916,6 @@ void RDA5807M_setBassBoost(char switchOn)
 // Mono / Stereo
 void RDA5807M_setMono(char switchOn)
 {
-  RDA5807M_setMono(switchOn);
-
   cRadioRegisters[RADIO_REG_CTRL] &= (~RADIO_REG_CTRL_SEEK);
   if (switchOn) cRadioRegisters[RADIO_REG_CTRL] |= RADIO_REG_CTRL_MONO;
   else cRadioRegisters[RADIO_REG_CTRL] &= ~RADIO_REG_CTRL_MONO;

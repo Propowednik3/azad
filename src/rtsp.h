@@ -136,8 +136,10 @@ void DigestCalcHA1(char * pszAlg, char * pszUserName, char * pszRealm, char * ps
 void DigestCalcResponse(HASHHEX HA1, char * pszNonce, char * pszNonceCount, char * pszCNonce, char * pszQop, 
 		char * pszMethod, char * pszDigestUri, HASHHEX HEntity, HASHHEX Response);
 int ItsRTSPNeed(unsigned int uiType, unsigned int iID, char cCalc);
-pthread_mutex_t RTP_session_mutex;
-RTP_SESSION *RTP_session;
-unsigned int RTP_session_cnt;
+
+
+extern pthread_mutex_t RTP_session_mutex;
+extern RTP_SESSION *RTP_session;
+extern unsigned int RTP_session_cnt;
 
 #endif

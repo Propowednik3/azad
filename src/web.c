@@ -4937,7 +4937,7 @@ int WEB_main_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session)
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -5130,7 +5130,7 @@ int WEB_control_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session)
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");	
@@ -5313,7 +5313,7 @@ int WEB_youtube_load(char *msg_rx, char *msg_tx, WEB_SESSION *session)
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -5396,7 +5396,7 @@ int WEB_youtube_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session)
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -5452,7 +5452,7 @@ int WEB_media_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session)
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -5730,7 +5730,7 @@ int WEB_skipevents_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -5888,7 +5888,7 @@ int WEB_alienkeys_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int 
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -6036,7 +6036,7 @@ int WEB_skipircodes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -6262,7 +6262,7 @@ int WEB_ircodes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -6730,7 +6730,7 @@ int WEB_keys_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPage
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -7521,7 +7521,7 @@ int WEB_evntactions_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -7823,7 +7823,7 @@ int WEB_mnlactions_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -8090,7 +8090,7 @@ int WEB_camrects_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int i
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -8532,7 +8532,7 @@ int WEB_camera_respond(char *msg_tx, WEB_SESSION *session)
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -8648,7 +8648,7 @@ int WEB_mic_respond(char *msg_tx, WEB_SESSION *session)
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -8863,7 +8863,7 @@ int WEB_system_respond(char *msg_tx, WEB_SESSION *session)
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -9247,7 +9247,7 @@ int WEB_directories_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -9900,7 +9900,7 @@ int WEB_widgets_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -10268,7 +10268,7 @@ int WEB_streams_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -10454,7 +10454,7 @@ int WEB_streamtypes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -10660,7 +10660,7 @@ int WEB_mails_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPag
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -10842,7 +10842,7 @@ int WEB_sounds_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPa
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -11272,7 +11272,7 @@ int WEB_explorer_work_request(char *msg_tx, WEB_SESSION *session, int *pParams, 
 					"</html>\r\n");	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -11421,7 +11421,7 @@ int WEB_explorer_busy_test(char *msg_tx, WEB_SESSION *session)
 					"</html>\r\n");	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -11722,7 +11722,7 @@ int WEB_explorer_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int i
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -11824,7 +11824,7 @@ int WEB_messages_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int i
 					"</html>\r\n");	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -11960,7 +11960,7 @@ int WEB_viewer_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPa
 					"</html>\r\n");	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -12054,7 +12054,7 @@ int WEB_manual_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPa
 					"</html>\r\n");	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -12123,7 +12123,7 @@ int WEB_log_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPage,
 					"</html>\r\n");	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -12410,7 +12410,7 @@ int WEB_users_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPag
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -12586,7 +12586,7 @@ int WEB_radios_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPa
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -12817,7 +12817,7 @@ int WEB_alarms_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPa
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -12931,7 +12931,7 @@ int WEB_history_respond(char *msg_tx, WEB_SESSION *session, int iPage)
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -13185,7 +13185,7 @@ int WEB_connects_respond(char *msg_tx, WEB_SESSION *session, int iPage, int iPag
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -15889,7 +15889,7 @@ int WEB_modules_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -16434,7 +16434,7 @@ int WEB_modstatuses_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -17408,7 +17408,7 @@ int WEB_settings_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int i
 	
 	char buff[10];
 	memset(buff, 0, 10);
-	sprintf(buff, "%i", strlen(msg_tx) - iHeadLen);
+	sprintf(buff, "%i", (int)strlen(msg_tx) - iHeadLen);
 	if (strlen(buff) < 7) memcpy(&msg_tx[iPosLen], buff, strlen(buff));
 		else dbgprintf(2, "Web page big size %s\n", buff);
 	strcat(msg_tx,	"\r\n");
@@ -17478,7 +17478,7 @@ static char WEB_describe_respond_401(WEB_SESSION *session, char *msg_rx, char *m
 				"Content-Length: %i\r\n"
 				"\r\n"
 				"%s"
-				"\r\n", session->nonce, strlen(msg_body), msg_body);
+				"\r\n", session->nonce, (int)strlen(msg_body), msg_body);
 	//printf(msg_tx);
 	return 1; 
 }
@@ -17973,7 +17973,7 @@ void * thread_WEB_io(void* pData)
 	memset(msg_tx, 0, WEB_TX_BUF_SIZE_MAX);
 	memset(msg_rx, 0, WEB_RX_BUF_SIZE_DEF);
 	
-	id = (unsigned int) pData; 
+	id = (unsigned int)(intptr_t)pData; 
 	//memset(session->ip_str, 0, 16);
 	//sprintf(session->ip_str, "%d.%d.%d.%d",
       //  ((unsigned char *) &session->ip)[0], ((unsigned char *) &session->ip)[1], ((unsigned char *) &session->ip)[2], ((unsigned char *) &session->ip)[3]); 	

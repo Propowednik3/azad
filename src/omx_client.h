@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef _OMXCLIENT_H_
 #define _OMXCLIENT_H_
 
@@ -373,11 +375,11 @@ typedef struct omx_autofocus_params
 //EGLDisplay *eglDisplay;
 //EGLContext *eglContext;
 
-TX_SEMAPHORE 	psem_omx_sync;
-TX_SEMAPHORE 	psem_omx_run;
-int text_id;
+extern TX_SEMAPHORE 	psem_omx_sync;
+extern TX_SEMAPHORE 	psem_omx_run;
+extern int text_id;
 
-image_sensor_params ispCameraImageSettings;	
+extern image_sensor_params ispCameraImageSettings;	
 
 //OMX_BUFFERHEADERTYPE *texture_bufferHeader;
 //EGLImageKHR texture_mem_handle;
@@ -487,12 +489,12 @@ int omx_dump_data(char *cName, char *cData, int iLen);
 int omx_load_file_size(char *filename, char *buffer, unsigned int uiSize);
 void GetResolutionFromMode(int iMode, int* pW, int *pH);
 
-char cThreadOmxPlayStatus;
-char cThreadOmxImageStatus;
-char cThreadOmxCaptureStatus;
-char cThreadOmxEncoderStatus;
-pthread_mutex_t OMX_mutex;
-int	omx_resource_priority;
-int	omx_speed_play;
+extern char cThreadOmxPlayStatus;
+extern char cThreadOmxImageStatus;
+extern char cThreadOmxCaptureStatus;
+extern char cThreadOmxEncoderStatus;
+extern pthread_mutex_t OMX_mutex;
+extern int	omx_resource_priority;
+extern int	omx_speed_play;
 
 #endif

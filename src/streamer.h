@@ -65,9 +65,9 @@ typedef struct
 	flv_demux_struct flv_info;
 } REMOTE_STATUS_INFO;
 
-char cThreadStreamerStatus;
-unsigned int cStreamerExData[2];
-REMOTE_STATUS_INFO	rsiRemoteStatus;
+extern char cThreadStreamerStatus;
+extern unsigned int cStreamerExData[2];
+extern REMOTE_STATUS_INFO	rsiRemoteStatus;
 
 int RequestFileList(struct sockaddr_in *Address, unsigned int uiMode);
 int NextRemoteFile(struct sockaddr_in *Address, unsigned int uiNewPos);

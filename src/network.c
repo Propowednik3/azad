@@ -981,7 +981,7 @@ int TCP_Client(struct sockaddr_in *m_sin, int cTypeConnect, unsigned int iFlag, 
 	
 	dbgprintf(5, "connected: %i\n", n);
 	
-	pthread_create(&threadTrafWork, &tattrTrafWork, TrafWorker, (void*)n);
+	pthread_create(&threadTrafWork, &tattrTrafWork, TrafWorker, (void*)(intptr_t)n);
 		
 	DBG_LOG_OUT();	
 	return n;
@@ -1488,7 +1488,7 @@ int Init_Servers(void)
 	
 	pthread_create(&threadTrafWork, &tattrTrafWork, TrafWorker, (void*)0);
 	
-	pthread_create(&threadAcceptServer, &tattrAcceptServer, Accept_Server, (void*)sock);
+	pthread_create(&threadAcceptServer, &tattrAcceptServer, Accept_Server, (void*)(intptr_t)sock);
 		
 	DBG_LOG_OUT();	
 	return iLoop;
@@ -1508,7 +1508,7 @@ void* Accept_Server(void *pData)
     int iLoop = 1;
 	int flags;
 	int sockpair[2];
-	sock = (int)pData;
+	sock = (int)(intptr_t)pData;
 	
 	fd_set rfds;
 	struct timeval tv;
@@ -1686,7 +1686,7 @@ void* Accept_Server(void *pData)
 							
 							if (Connects_Max_Active < (n + 1)) Connects_Max_Active = n + 1;
 							
-							pthread_create(&threadTrafWork, &tattrTrafWork, TrafWorker, (void*)n);	
+							pthread_create(&threadTrafWork, &tattrTrafWork, TrafWorker, (void*)(intptr_t)n);	
 						}
 						else
 						{
@@ -1730,7 +1730,7 @@ void* TrafWorker(void *pData)
 	
 	pthread_setname_np(pthread_self(), "traff_reworker");
 	
-	unsigned int conn_num = (unsigned int)pData;
+	unsigned int conn_num = (unsigned int)(intptr_t)pData;
     
 	struct sockaddr_in my_addr;
 	struct sockaddr_in addr;
@@ -4928,7 +4928,7 @@ int SendMailFile(char *cLogin, char *cPassword, char *cServer, char *cFromAddres
 	memset(&ibuffer, 0, sizeof(omx_buffer));
 	memset(&ibuffer2, 0, sizeof(omx_buffer));
 	
-	if ((cMlList->FilePath) && (strlen(cMlList->FilePath)) && (omx_load_file(cMlList->FilePath, &ibuffer) == 0))
+	if (strlen(cMlList->FilePath) && (omx_load_file(cMlList->FilePath, &ibuffer) == 0))
 	{
 		dbgprintf(2, "SendMailFile: error load file %s\n", cMlList->FilePath);
 		DBG_LOG_OUT();
@@ -4949,7 +4949,7 @@ int SendMailFile(char *cLogin, char *cPassword, char *cServer, char *cFromAddres
 		}
 	}
 
-	if ((cMlList->FilePath2) && (strlen(cMlList->FilePath2)) && (omx_load_file(cMlList->FilePath2, &ibuffer2) == 0))
+	if (strlen(cMlList->FilePath2) && (omx_load_file(cMlList->FilePath2, &ibuffer2) == 0))
 	{
 		DBG_FREE(ibuffer.data);
 		dbgprintf(2, "SendMailFile: error load file %s\n", cMlList->FilePath2);
@@ -4994,11 +4994,11 @@ int SendMailFile(char *cLogin, char *cPassword, char *cServer, char *cFromAddres
 	memset(upload_ctx.cMailBody[upload_ctx.lines_count], 0, 128);	
 	strftime(upload_ctx.cMailBody[upload_ctx.lines_count], 128, "Date: %Y-%m-%d %H:%M:%S\r\n", &timeinfo);
 	upload_ctx.lines_count++;
-	unsigned int uid = (unsigned int)(upload_ctx.cMailBody[0]) & 0xEFFFFFFF;
+	unsigned int uid = (unsigned int)(intptr_t)(upload_ctx.cMailBody[0]) & 0xEFFFFFFF;
 	
 	upload_ctx.cMailBody[upload_ctx.lines_count] = (char*)DBG_MALLOC(128);
 	memset(upload_ctx.cMailBody[upload_ctx.lines_count], 0, 128);	
-	if ((cMlList->Address2) && (strlen(cMlList->Address2))) 
+	if (strlen(cMlList->Address2)) 
 		sprintf(upload_ctx.cMailBody[upload_ctx.lines_count], "To: <%s>; <%s>\r\n", cMlList->Address, cMlList->Address2);
 		else
 		sprintf(upload_ctx.cMailBody[upload_ctx.lines_count], "To: <%s>\r\n", cMlList->Address);
@@ -5172,7 +5172,7 @@ int SendMailFile(char *cLogin, char *cPassword, char *cServer, char *cFromAddres
 		memset(cBuff, 0, 128);
 		sprintf(cBuff, "<%s>", cMlList->Address);
 		recipients = curl_slist_append(recipients, cBuff);
-		if ((cMlList->Address2) && (strlen(cMlList->Address2))) 
+		if (strlen(cMlList->Address2)) 
 		{
 			memset(cBuff, 0, 128);
 			sprintf(cBuff, "<%s>", cMlList->Address2);

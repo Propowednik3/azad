@@ -85,9 +85,9 @@ VCHPRE_ int VCHPOST_ vc_dispmanx_resource_set_palette( DISPMANX_RESOURCE_HANDLE_
 VCHPRE_ int VCHPOST_ vc_dispmanx_vsync_callback( DISPMANX_DISPLAY_HANDLE_T display, DISPMANX_CALLBACK_FUNC_T cb_func, void *cb_arg );
 
 
-VCHPRE_ void VCHPOST_ vc_vchi_gencmd_init(VCHI_INSTANCE_T initialise_instance, VCHI_CONNECTION_T **connections, uint32_t num_connections ){return 0;};
+VCHPRE_ void VCHPOST_ vc_vchi_gencmd_init(VCHI_INSTANCE_T initialise_instance, VCHI_CONNECTION_T **connections, uint32_t num_connections ){};
 VCHPRE_ int VCHPOST_ vc_gencmd_init(void){return 0;};
-VCHPRE_ void VCHPOST_ vc_gencmd_stop(void){return 0;};
+VCHPRE_ void VCHPOST_ vc_gencmd_stop(void){};
 VCHPRE_ int VCHPOST_ vc_gencmd_send( const char *format, ... ){return 0;};
 VCHPRE_ int VCHPOST_ vc_gencmd(char *response, int maxlen, const char *format, ...){return 0;};
 VCHPRE_ int VCHPOST_ vc_gencmd_string_property(char *text, const char *property, char **value, int *length){return 0;};
@@ -98,11 +98,11 @@ VCHPRE_ int VCHPOST_ vc_gencmd_until( char        *cmd,
                                       const char  *error_string,
                                       int         timeout){return 0;};  
 									  
-VCHPRE_ void vc_vchi_tv_stop( void ){return 0;};	
-VCHPRE_ void vc_vchi_cec_stop( void ){return 0;};
+VCHPRE_ void vc_vchi_tv_stop( void ){};	
+VCHPRE_ void vc_vchi_cec_stop( void ){};
 
-void bcm_host_init(void){return 0;};
-void bcm_host_deinit(void){return 0;};
+void bcm_host_init(void){};
+void bcm_host_deinit(void){};
 
 int32_t graphics_get_display_size( const uint16_t display_number,
                                                     uint32_t *width,
@@ -114,7 +114,7 @@ unsigned bcm_host_get_sdram_address(void){return 0;};
 
 VCHPRE_ int VCHPOST_ vc_dispman_init( void ){return 0;};
 // Stop the service from being used
-VCHPRE_ void VCHPOST_ vc_dispmanx_stop( void ){return 0;};
+VCHPRE_ void VCHPOST_ vc_dispmanx_stop( void ){};
 // Set the entries in the rect structure
 VCHPRE_ int VCHPOST_ vc_dispmanx_rect_set( VC_RECT_T *rect, uint32_t x_offset, uint32_t y_offset, uint32_t width, uint32_t height ){return 0;};
 // Resources
@@ -191,7 +191,7 @@ VCHPRE_ int VCHPOST_ vc_dispmanx_element_change_attributes( DISPMANX_UPDATE_HAND
 VCHPRE_ uint32_t VCHPOST_ vc_dispmanx_resource_get_image_handle( DISPMANX_RESOURCE_HANDLE_T res){return 0;};
 
 //Call this instead of vc_dispman_init
-VCHPRE_ void VCHPOST_ vc_vchi_dispmanx_init (VCHI_INSTANCE_T initialise_instance, VCHI_CONNECTION_T **connections, uint32_t num_connections ){return 0;};
+VCHPRE_ void VCHPOST_ vc_vchi_dispmanx_init (VCHI_INSTANCE_T initialise_instance, VCHI_CONNECTION_T **connections, uint32_t num_connections ){return;};
 
 // Take a snapshot of a display in its current state.
 // This call may block for a time; when it completes, the snapshot is ready.

@@ -154,8 +154,8 @@ typedef struct AUDIO_INFO {
   char bassBoost;
 } _AUDIO_INFO;
 
-uint16_t *cRadioRegisters;
-char cRadioStatus;
+extern uint16_t *cRadioRegisters;
+extern char cRadioStatus;
 
 char uart_init();
 int uart_init_port(int iPortNum, int iPortSpeed);

@@ -1016,8 +1016,8 @@ int tx_eventer_print_events(TX_EVENTER *pevnt)
 	pthread_mutex_lock(&pevnt->mutex);
 	for(i = 0; i < pevnt->type_list_cnt;i++)
 		printf("tx_events: addr:%i; code:%i; recvd:%i\n",
-			(int)pevnt, pevnt->type_list[i].code, pevnt->type_list[i].recved);
-	if (pevnt->type_list_cnt == 0) printf("NO tx_events: addr:%i\n", (int)pevnt);
+			(int)(intptr_t)pevnt, pevnt->type_list[i].code, pevnt->type_list[i].recved);
+	if (pevnt->type_list_cnt == 0) printf("NO tx_events: addr:%i\n", (int)(intptr_t)pevnt);
 	pthread_mutex_unlock(&pevnt->mutex);
 	return ret;
 }

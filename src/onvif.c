@@ -1360,7 +1360,7 @@ static char ONVIF_describe_respond_401(ONVIF_SESSION *session, char *msg_rx, cha
 				"Content-Length: %i\r\n"
 				"\r\n"
 				"%s"
-				"\r\n", session->nonce, strlen(msg_body), msg_body);
+				"\r\n", session->nonce, (int)strlen(msg_body), msg_body);
 	//printf(msg_tx);
 	return 1; 
 }
@@ -4699,7 +4699,7 @@ static void ONVIV_Template_Dev_GetUsers(char *buff, unsigned int buffsize, HTTP_
 	if (iLen <= 0) return;
 	iLen -= 256;
 	int n;
-	char subbuff[128];
+	char subbuff[256];
 	strcpy(buff, "<s:Header>\r\n"
 			"</s:Header>\r\n"
 			"<s:Body>\r\n"
@@ -4710,8 +4710,8 @@ static void ONVIV_Template_Dev_GetUsers(char *buff, unsigned int buffsize, HTTP_
 	{
 		if (uiUserList[n].Enabled && (uiUserList[n].Access & ACCESS_ONVIF))
 		{
-			memset(subbuff, 0, 128);
-			snprintf(subbuff, 128, "<tds:User>\r\n"
+			memset(subbuff, 0, 256);
+			snprintf(subbuff, 255, "<tds:User>\r\n"
 									"<tt:Username>%s</tt:Username>\r\n"
 									"<tt:UserLevel>%s</tt:UserLevel>\r\n"
 								 "</tds:User>\r\n", 

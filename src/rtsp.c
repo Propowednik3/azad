@@ -116,7 +116,7 @@ void PrintRtspSession(RTSP_SESSION *sess)
 	printf("\t\tinterleaved:%i\n", sess->interleaved);
 	printf("\t\tvideo_channel_num:%i\n", sess->video_channel_num);
 	printf("\t\taudio_channel_num:%i\n", sess->audio_channel_num);
-	printf("\t\tOutBuffer:%i\n", (int)sess->OutBuffer);
+	printf("\t\tOutBuffer:%i\n", (int)(intptr_t)sess->OutBuffer);
 	printf("\t\tOutSize:%i\n", sess->OutSize);
 	printf("\t\tOutLen:%i\n", sess->OutLen);
 	printf("\t\tPassword:%s\n", sess->Password);
@@ -918,13 +918,13 @@ static char RTSP_describe_respond(RTSP_SESSION *session, char *msg_rx, char *msg
 			 "Cache-Control: no-cache\r\n"
 			 "Content-Base: %s\r\n"
              "Content-Type: application/sdp\r\n"
-             "Content-Length: %d\r\n"
+             "Content-Length: %i\r\n"
              "Session: %i;timeout=60\r\n"
 			 "\r\n"
 			 "%s",
              cseq, 
              url,
-             strlen(sdp_main),
+             (int)strlen(sdp_main),
 			 session->rtsp_session_num,
              sdp_main);
 	return 1; 
@@ -2135,7 +2135,7 @@ void * thread_RTSP_income(void* pData)
 					addr_len = sizeof(client_port);
 					getsockname(tcp_sock, (struct sockaddr*)&client_port, (socklen_t*)&addr_len);
 					
-					session->rtsp_session_num = ((unsigned int)(session)) & 0x7FFFFFFF;
+					session->rtsp_session_num = ((unsigned int)(intptr_t)(session)) & 0x7FFFFFFF;
 					session->ip   			= client_addr.sin_addr.s_addr;			
 					session->port			= client_port.sin_port;
 					session->rtsp_port		= uRTSPPort;
@@ -2246,7 +2246,7 @@ void * thread_RTSP_io(void* pData)
 	memset(msg_tx, 0, RTSP_BUF_SIZE_MAX);
 	memset(msg_rx, 0, RTSP_BUF_SIZE_MAX);
 	
-	id = (unsigned int) pData; 
+	id = (unsigned int)(intptr_t)pData; 
 	memset(session->ip_str, 0, 16);
 	sprintf(session->ip_str, "%d.%d.%d.%d",
         ((unsigned char *) &session->ip)[0], ((unsigned char *) &session->ip)[1], ((unsigned char *) &session->ip)[2], ((unsigned char *) &session->ip)[3]); 	

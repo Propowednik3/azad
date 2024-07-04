@@ -1,4 +1,3 @@
-
 #include "main.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -3346,7 +3345,7 @@ int SaveCapturedStreams(char *cPath, STREAM_INFO *pStream, int iMaxFileSize, int
 		strcpy(mBuff->data, cPath);
 		if (mBuff->data[i - 1] != 47) mBuff->data[i] = 47;
 	}
-	else dbgprintf(2, "Big length SaveCapturedStreams link cPath(%i) %i, max %i", (int)pStream, strlen(cPath), MAX_PATH);
+	else dbgprintf(2, "Big length SaveCapturedStreams link cPath(%i) %i, max %i", (intptr_t)pStream, strlen(cPath), MAX_PATH);
 	
 	i = strlen(cSavePath);
 	mBuff->void_data = (char*)DBG_CALLOC(i + 2,1);
@@ -3356,7 +3355,7 @@ int SaveCapturedStreams(char *cPath, STREAM_INFO *pStream, int iMaxFileSize, int
 		buff = mBuff->void_data;
 		if (buff[i - 1] != 47) buff[i] = 47;
 	}
-	else dbgprintf(2, "Big length SaveCapturedStreams link cSavePath(%i) %i, max %i", (int)pStream, strlen(cSavePath), MAX_PATH);
+	else dbgprintf(2, "Big length SaveCapturedStreams link cSavePath(%i) %i, max %i", (intptr_t)pStream, strlen(cSavePath), MAX_PATH);
 	
 	if (cAddrOrderer && (strlen(cAddrOrderer) < 8)) cAddrOrderer = NULL;
 	
@@ -3364,7 +3363,7 @@ int SaveCapturedStreams(char *cPath, STREAM_INFO *pStream, int iMaxFileSize, int
 	{
 		mBuff->void_data2 = (char*)DBG_CALLOC(64,1);
 		if (strlen(cAddrOrderer) < 64) strcpy(mBuff->void_data2, cAddrOrderer); 
-			else dbgprintf(2, "Big length SaveCapturedStreams AddOrderer(%i) %i, max 64", (int)pStream, strlen(cAddrOrderer));	
+			else dbgprintf(2, "Big length SaveCapturedStreams AddOrderer(%i) %i, max 64", (intptr_t)pStream, strlen(cAddrOrderer));	
 	} else mBuff->void_data2 = NULL;
 	
 	i = strlen(cPrePath);
@@ -3374,7 +3373,7 @@ int SaveCapturedStreams(char *cPath, STREAM_INFO *pStream, int iMaxFileSize, int
 		strcpy(mBuff->void_data4, cPrePath);
 		buff = mBuff->void_data4;
 		if (strlen(cPrePath) && (buff[i - 1] != 47)) buff[i] = 47;
-	} else dbgprintf(2, "Big length SaveCapturedStreams link cPrePath(%i) %i, max %i", (int)pStream, strlen(cPrePath), MAX_PATH);
+	} else dbgprintf(2, "Big length SaveCapturedStreams link cPrePath(%i) %i, max %i", (intptr_t)pStream, strlen(cPrePath), MAX_PATH);
 	
 	mBuff->void_data3 = pStream;
 	mBuff->data_size = iMaxFileSize * 1000000;
@@ -4380,7 +4379,7 @@ void* thread_CaptureAudioStream(void *pData)
 		DBG_FREE(f_link);
 		DBG_LOG_OUT();		
 		dbgprintf(5, "Exit from Thread: '%s', TID: %i, SID: %i\n", __func__, (unsigned int)pthread_self(), gettid());	
-		return (void*)ret;
+		return (void*)(intptr_t)ret;
     }
 	
 	int period_size = 0;
@@ -5220,7 +5219,7 @@ void* thread_PlayMediaFile(void *pData)
 			}
 		}
     }
-	if (iTimer == 0) dbgprintf(2,"timeout PlayMediaFile a:%i, v:%i\n", (int)audio_stream, (int)video_stream);
+	if (iTimer == 0) dbgprintf(2,"timeout PlayMediaFile a:%i, v:%i\n", (intptr_t)audio_stream, (intptr_t)video_stream);
 		//else dbgprintf(5,"PlayMediaFile succeeded done.\n");
 	DBG_MUTEX_LOCK(&Play_Mutex);
 	uiAudioDataCnt = 0;
@@ -5910,7 +5909,7 @@ void* thread_SaveFLVFile(void* pvData)
 	pStream->Type = 0;	
 	DBG_MUTEX_UNLOCK(&pStream->mutex);
 	
-	dbgprintf(3, "Done save type:%i num:%i\n", uiCaptType, (int)pStream);
+	dbgprintf(3, "Done save type:%i num:%i\n", uiCaptType, (intptr_t)pStream);
 		
 	DBG_LOG_OUT();
 	dbgprintf(5, "Exit from Thread: '%s', TID: %i, SID: %i\n", __func__, (unsigned int)pthread_self(), gettid());	
@@ -6021,7 +6020,7 @@ void* thread_PlayAudioSound(void *pData)
 		DBG_FREE(f_link->pModule);
 		DBG_FREE(f_link);
 		dbgprintf(5, "Exit from Thread: '%s', TID: %i, SID: %i\n", __func__, (unsigned int)pthread_self(), gettid());	
-		return (void*)err;
+		return (void*)(intptr_t)err;
     }
 	iSrcPeriodSize = iPeriodSize; // / iCnannels * 2;
 	int iPacketSize = iSrcPeriodSize * 4;	
