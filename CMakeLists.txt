@@ -42,7 +42,21 @@ target_include_directories(${PROJECT_NAME} PUBLIC "/opt/vc/include/interface/vmc
 target_link_libraries(${PROJECT_NAME} avformat avcodec asound avutil m crypto swresample z pthread ssl curl udev) 
 
 if(BUILD_PI)
-   		target_link_libraries(${PROJECT_NAME} avformat avcodec asound avutil m crypto swresample z pthread ssl curl udev)
+   		target_link_libraries(${PROJECT_NAME} GLESv2 EGL openmaxil bcm_host vcos vchiq_arm)
+   		target_compile_definitions(${PROJECT_NAME} PUBLIC "-DUSE_EXTERNAL_OMX")
+   		target_compile_definitions(${PROJECT_NAME} PUBLIC "-DHAVE_LIBBCM_HOST")
+   		target_compile_definitions(${PROJECT_NAME} PUBLIC "-DUSE_EXTERNAL_LIBBCM_HOST")
+   		target_compile_definitions(${PROJECT_NAME} PUBLIC "-DUSE_VCHIQ")
+   		target_compile_definitions(${PROJECT_NAME} PUBLIC "-DHAVE_LIBOPENMAX=2")
+   		target_compile_definitions(${PROJECT_NAME} PUBLIC "-DOMX")
+   		target_compile_definitions(${PROJECT_NAME} PUBLIC "-D__STDC_CONSTANT_MACROS")
+   		target_compile_definitions(${PROJECT_NAME} PUBLIC "-D__STDC_LIMIT_MACROS")
+   		target_compile_definitions(${PROJECT_NAME} PUBLIC "-DTARGET_POSIX")
+   		target_compile_definitions(${PROJECT_NAME} PUBLIC "-D_LINUX")
+   		target_compile_definitions(${PROJECT_NAME} PUBLIC "-DPIC")
+   		target_compile_definitions(${PROJECT_NAME} PUBLIC "-D_REENTRANT")
+   		target_compile_definitions(${PROJECT_NAME} PUBLIC "-D_LARGEFILE64_SOURCE")
+   		target_compile_definitions(${PROJECT_NAME} PUBLIC "-D_FILE_OFFSET_BITS")
 endif()
 
 
