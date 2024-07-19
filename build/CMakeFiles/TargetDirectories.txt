@@ -1,3 +1,0 @@
-/mnt/hd0/Distrib/Projects/azad/build/CMakeFiles/rebuild_cache.dir
-/mnt/hd0/Distrib/Projects/azad/build/CMakeFiles/azad.dir
-/mnt/hd0/Distrib/Projects/azad/build/CMakeFiles/edit_cache.dir
