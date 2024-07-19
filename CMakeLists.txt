@@ -25,6 +25,9 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
 
 file(GLOB C_FILES "src/*.c")
+
+list(FILTER C_FILES EXCLUDE REGEX ".*/updater.c$")
+
 if(BUILD_PI)    	
    		list(FILTER C_FILES EXCLUDE REGEX ".*/dummy.c$")
 endif()
