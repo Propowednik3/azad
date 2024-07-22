@@ -64,4 +64,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC "-D_GNU_SOURCE")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DOMX_SKIP64BIT")
 target_compile_definitions(${PROJECT_NAME} PUBLIC -DVERSION="${${PROJECT_NAME}_VERSION}")
 
+add_executable(updater "src/updater.c")
+target_link_libraries(updater m)
+
 message(STATUS "Build ${PROJECT_NAME} version ${${PROJECT_NAME}_VERSION}")

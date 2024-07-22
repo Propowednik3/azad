@@ -1,10 +1,3 @@
-/* usbreset -- send a USB port reset to a USB device
- *
- * Compile using: gcc -o updater updater.c
- *
- *
- * */
-
 #include <stdio.h>
 #include <dirent.h>
 #include <stdlib.h>
@@ -87,8 +80,8 @@ int main(int argc, char **argv)
 		printf("Updater: wrong params %i\n", argc);
 		return 0;
 	}
-	char cExeStr[256];
-	char cLogStr[256];
+	char cExeStr[2048];
+	char cLogStr[4096];
 	char cSourcePath[256];
 	char *cReboot = argv[1];
 	char *cNewSourcePath = argv[2];
@@ -111,57 +104,57 @@ int main(int argc, char **argv)
 			strcat(cSourcePath, "/new_src");
 			mkdir(cSourcePath, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 			
-			memset(cExeStr, 0, 256);
-			snprintf(cExeStr, 255, "mount -t cifs %s %s -o user=%s,pass=%s >> src/update.log", cNewSourcePath, cSourcePath, cNewSourceLogin, cNewSourcePass);
-			memset(cLogStr, 0, 256);
-			snprintf(cLogStr, 255, "echo '%s' >> src/update.log", cExeStr);
+			memset(cExeStr, 0, 2048);
+			snprintf(cExeStr, 2048, "mount -t cifs %s %s -o user=%s,pass=%s >> src/update.log", cNewSourcePath, cSourcePath, cNewSourceLogin, cNewSourcePass);
+			memset(cLogStr, 0, 4096);
+			snprintf(cLogStr, 4096, "echo '%s' >> src/update.log", cExeStr);
 			system_exec(cLogStr);
 			system_exec(cExeStr);
 		} else memcpy(cSourcePath, cNewSourcePath, 256);
 		
-		memset(cExeStr, 0, 256);
-		snprintf(cExeStr, 255, "cp %s/*.c src >> src/update.log", cSourcePath);
-		memset(cLogStr, 0, 256);
-		snprintf(cLogStr, 255, "echo '%s' >> src/update.log", cExeStr);
+		memset(cExeStr, 0, 2048);
+		snprintf(cExeStr, 2048, "cp %s/*.c src >> src/update.log", cSourcePath);
+		memset(cLogStr, 0, 4096);
+		snprintf(cLogStr, 4096, "echo '%s' >> src/update.log", cExeStr);
 		system_exec(cLogStr);
 		system_exec(cExeStr);
 		
-		memset(cExeStr, 0, 256);
-		snprintf(cExeStr, 255, "cp %s/*.h src >> src/update.log", cSourcePath);
-		memset(cLogStr, 0, 256);
-		snprintf(cLogStr, 255, "echo '%s' >> src/update.log", cExeStr);
+		memset(cExeStr, 0, 2048);
+		snprintf(cExeStr, 2048, "cp %s/*.h src >> src/update.log", cSourcePath);
+		memset(cLogStr, 0, 4096);
+		snprintf(cLogStr, 4096, "echo '%s' >> src/update.log", cExeStr);
 		system_exec(cLogStr);
 		system_exec(cExeStr);
 		
-		memset(cExeStr, 0, 256);
-		snprintf(cExeStr, 255, "cp %s/make* src >> src/update.log", cSourcePath);
-		memset(cLogStr, 0, 256);
-		snprintf(cLogStr, 255, "echo '%s' >> src/update.log", cExeStr);
+		memset(cExeStr, 0, 2048);
+		snprintf(cExeStr, 2048, "cp %s/make* src >> src/update.log", cSourcePath);
+		memset(cLogStr, 0, 4096);
+		snprintf(cLogStr, 4096, "echo '%s' >> src/update.log", cExeStr);
 		system_exec(cLogStr);
 		system_exec(cExeStr);
 		
-		memset(cExeStr, 0, 256);
-		snprintf(cExeStr, 255, "cp %s/Make* src >> src/update.log", cSourcePath);
-		memset(cLogStr, 0, 256);
-		snprintf(cLogStr, 255, "echo '%s' >> src/update.log", cExeStr);
+		memset(cExeStr, 0, 2048);
+		snprintf(cExeStr, 2048, "cp %s/Make* src >> src/update.log", cSourcePath);
+		memset(cLogStr, 0, 4096);
+		snprintf(cLogStr, 4096, "echo '%s' >> src/update.log", cExeStr);
 		system_exec(cLogStr);
 		system_exec(cExeStr);
 		 
-		memset(cExeStr, 0, 256);
-		snprintf(cExeStr, 255, "cp %s/build-number.txt src >> src/update.log", cSourcePath);
-		memset(cLogStr, 0, 256);
-		snprintf(cLogStr, 255, "echo '%s' >> src/update.log", cExeStr);
+		memset(cExeStr, 0, 2048);
+		snprintf(cExeStr, 2048, "cp %s/build-number.txt src >> src/update.log", cSourcePath);
+		memset(cLogStr, 0, 4096);
+		snprintf(cLogStr, 4096, "echo '%s' >> src/update.log", cExeStr);
 		system_exec(cLogStr);
 		system_exec(cExeStr);
 		
 		chdir("src");
 		
-		memset(cExeStr, 0, 256);
+		memset(cExeStr, 0, 2048);
 		if (cNewSourceFile != NULL)
-			snprintf(cExeStr, 255, "make -B -f %s >> update.log", cNewSourceFile);
+			snprintf(cExeStr, 2048, "make -B -f %s >> update.log", cNewSourceFile);
 			else strcpy(cExeStr, "make -B >> update.log");
-		memset(cLogStr, 0, 256);
-		snprintf(cLogStr, 255, "echo '%s' >> update.log", cExeStr);
+		memset(cLogStr, 0, 4096);
+		snprintf(cLogStr, 4096, "echo '%s' >> update.log", cExeStr);
 		system_exec(cLogStr);				
 		system_exec(cExeStr);
 		chdir("..");
@@ -169,10 +162,10 @@ int main(int argc, char **argv)
 		
 		if ((cNewSourcePath[0] == 47) && (cNewSourcePath[1] == 47))
 		{
-			memset(cExeStr, 0, 256);
-			snprintf(cExeStr, 255, "umount %s >> src/update.log", cSourcePath);
-			memset(cLogStr, 0, 256);
-			snprintf(cLogStr, 255, "echo '%s' >> src/update.log", cExeStr);
+			memset(cExeStr, 0, 2048);
+			snprintf(cExeStr, 2048, "umount %s >> src/update.log", cSourcePath);
+			memset(cLogStr, 0, 4096);
+			snprintf(cLogStr, 4096, "echo '%s' >> src/update.log", cExeStr);
 			system_exec(cLogStr);
 			system_exec(cExeStr);			
 			remove(cSourcePath);
