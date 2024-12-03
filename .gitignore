@@ -2,5 +2,6 @@ build/*
 src/*.o
 src/*.log
 /azad
+/updater
 /*.log
-
+Settings/*
