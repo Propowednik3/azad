@@ -65,7 +65,7 @@
 #define MENU_IR_SPEED 						400
 #define SKIPEVENT_MAX_CNT					20
 #define ALIENKEY_MAX_CNT					20
-#define SKIPIRCODE_MAX_CNT					20
+#define SKIPSPECIALCODE_MAX_CNT					20
 #define MAX_CAMERA_LIST_CNT					35
 #define CAMERA_RECONNECT_TIME				1500
 #define TIMEWAIT_FREE_SPACE_REPEAT 			4
@@ -5196,7 +5196,39 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 				}
 				else 
 				{
-					if (pModuleList->SubModule >= 0) put_char(iActionCode, &miModuleList[pModuleList->SubModule]);
+					MODULE_INFO *subModule = NULL;
+					if (pModuleList->SubModule >= 0) subModule = &miModuleList[pModuleList->SubModule];
+					if (iActionCode & 0xFFFFFF00)
+					{
+						DBG_MUTEX_UNLOCK(&modulelist_mutex);
+						
+						unsigned int 	indx;
+						int 			Len = -1;
+						uint8_t 		Code[MAX_SPECIALCODE_LEN];
+						DBG_MUTEX_LOCK(&specialcode_mutex);
+						for (indx = 0; indx < iSpecialCodeCnt; indx++)
+						{
+							if (mSpecialCodeList[indx].ID == (unsigned int)iActionCode)
+							{
+								int n;
+								Len = mSpecialCodeList[indx].Len;
+								for (n = 0; n < Len; n++)
+									Code[n] = mSpecialCodeList[indx].Code[n];
+								break;
+							}				
+						}
+						DBG_MUTEX_UNLOCK(&specialcode_mutex);
+						
+						DBG_MUTEX_LOCK(&modulelist_mutex);
+						if (Len > 0)
+							put_chars(Code, Len, subModule);
+							else 
+							dbgprintf(2, "SpecialCode (%.4s) %s, for %.4s\n", (char*)&iActionCode, 
+																	(Len == 0) ? "empty":"not found", 
+																	(char*)&iID);						
+					}
+					else 
+						put_char(iActionCode & 0xFF, subModule);							
 				}
 				break;	
 			case MODULE_TYPE_KEYBOARD:
@@ -8619,7 +8651,7 @@ unsigned int GetModuleSettings(char *Buff, int iLen, char iInt)
 	if (SearchStrInData(Buff, iLen, 0, "[EACT]") != 0) 			ret |= ACCESS_EVNTACTIONS;
 	if (SearchStrInData(Buff, iLen, 0, "[MACT]") != 0) 			ret |= ACCESS_MNLACTIONS;
 	if (SearchStrInData(Buff, iLen, 0, "[KEYS]") != 0) 			ret |= ACCESS_KEYS;
-	if (SearchStrInData(Buff, iLen, 0, "[IRC]") != 0) 			ret |= ACCESS_IRCODES;
+	if (SearchStrInData(Buff, iLen, 0, "[SPC]") != 0) 			ret |= ACCESS_SPECIALCODES;
 	if (SearchStrInData(Buff, iLen, 0, "[RECT]") != 0) 			ret |= ACCESS_CAMRECTS;
 	if (SearchStrInData(Buff, iLen, 0, "[MAN]") != 0) 			ret |= ACCESS_MANUAL;
 	if (SearchStrInData(Buff, iLen, 0, "[MODS]") != 0) 			ret |= ACCESS_MODSTATUSES;
@@ -10016,7 +10048,7 @@ char *GetModuleActionName(unsigned int uiType, unsigned int uiStatusNum, char*Ou
 		case MODULE_TYPE_RS485:
 			if (uiStatusNum == 0) 
 			{
-				if (cLang) strcpy(Buffer, "[0] Отправить значение в порт"); else strcpy(Buffer, "[0] Send value to port");
+				if (cLang) strcpy(Buffer, "[0] Отправить значение(я)[если -1] в порт"); else strcpy(Buffer, "[0] Send value(s)[if -1] to port");
 			}
 			if (uiStatusNum > 1) ret = NULL;
 			break;
@@ -10162,8 +10194,8 @@ int InitSettings()
 	strcpy(cMnlActionFile, "ManualActions.ini");
 	memset(cEvntActionFile, 0, 256);
 	strcpy(cEvntActionFile, "EventActions.ini");
-	memset(cIrCodeFile, 0, 256);
-	strcpy(cIrCodeFile, "IrCodes.ini");
+	memset(cSpecialCodeFile, 0, 256);
+	strcpy(cSpecialCodeFile, "SpecialCodes.ini");
 	memset(cKeyFile, 0, 256);
 	strcpy(cKeyFile, "Keys.ini");
 	memset(cWidgetFile, 0, 256);
@@ -10324,9 +10356,9 @@ int InitSettings()
 	iRadioAudioEn = 0;
 	iVolumeCode = 0;
 	
-	iSkipIrCodeMaxCnt = SKIPIRCODE_MAX_CNT;
-	iSkipIrCodeListCnt = 0;
-	cSkipIrCodeList = NULL;
+	iSkipSpecialCodeMaxCnt = SKIPSPECIALCODE_MAX_CNT;
+	iSkipSpecialCodeListCnt = 0;
+	cSkipSpecialCodeList = NULL;
 	
 	iAlienKeyMaxCnt = ALIENKEY_MAX_CNT;
 	iAlienKeyListCnt = 0;
@@ -10399,8 +10431,8 @@ int InitSettings()
 	iSoundListCnt = 0;
 	mSoundList = NULL;
 	
-	iIRCommandCnt = 0;
-	mIRCommandList = NULL;
+	iSpecialCodeCnt = 0;
+	mSpecialCodeList = NULL;
 	
 	iUserCnt = 0;
 	uiUserList = NULL;
@@ -10500,11 +10532,11 @@ int LoadSettings(char *Buff)
 					memset(cEvntActionFile, 0, 256);
 					strcpy(cEvntActionFile, Buff4);
 				}
-				if ((SearchStrInData(Buff2, len2, 0, "IRCODEFILE=") == 1)
+				if ((SearchStrInData(Buff2, len2, 0, "SPECIALCODEFILE=") == 1)
 					&& (GetParamSetting(0, 59, Buff3, len3, Buff4, 256) == 1))
 				{
-					memset(cIrCodeFile, 0, 256);
-					strcpy(cIrCodeFile, Buff4);
+					memset(cSpecialCodeFile, 0, 256);
+					strcpy(cSpecialCodeFile, Buff4);
 				}
 				if ((SearchStrInData(Buff2, len2, 0, "KEYFILE=") == 1)
 					&& (GetParamSetting(0, 59, Buff3, len3, Buff4, 256) == 1))
@@ -10984,7 +11016,7 @@ int SaveSettings()
 	memset(Buff1, 0, 1024);	sprintf(Buff1, "DirectoryFile=%s\n", cDirectoryFile); fputs(Buff1, f);
 	memset(Buff1, 0, 1024);	sprintf(Buff1, "MnlActionFile=%s\n", cMnlActionFile); fputs(Buff1, f);
 	memset(Buff1, 0, 1024);	sprintf(Buff1, "EvntActionFile=%s\n", cEvntActionFile); fputs(Buff1, f);
-	memset(Buff1, 0, 1024);	sprintf(Buff1, "IrCodeFile=%s\n", cIrCodeFile);	fputs(Buff1, f);
+	memset(Buff1, 0, 1024);	sprintf(Buff1, "SpecialCodeFile=%s\n", cSpecialCodeFile);	fputs(Buff1, f);
 	memset(Buff1, 0, 1024);	sprintf(Buff1, "KeyFile=%s\n", cKeyFile); fputs(Buff1, f);
 	memset(Buff1, 0, 1024);	sprintf(Buff1, "WidgetFile=%s\n", cWidgetFile);	fputs(Buff1, f);
 	memset(Buff1, 0, 1024);	sprintf(Buff1, "StreamFile=%s\n", cStreamFile);	fputs(Buff1, f);
@@ -11532,13 +11564,13 @@ int TestSettings(int iMode)
 	}
 	if (iMode) DBG_MUTEX_UNLOCK(&widget_mutex);
 	
-	if (iMode) DBG_MUTEX_LOCK(&ircode_mutex);
-	if (strlen(cIrCodeFile) == 0) 
+	if (iMode) DBG_MUTEX_LOCK(&specialcode_mutex);
+	if (strlen(cSpecialCodeFile) == 0) 
 	{
-		if (iMode == 0) dbgprintf(3, "TestSettings: IRCODEFILE value is null\n");	
-		else WEB_AddMessageInList("TestSettings: IRCODEFILE value is null");	
+		if (iMode == 0) dbgprintf(3, "TestSettings: SPECIALCODEFILE value is null\n");	
+		else WEB_AddMessageInList("TestSettings: SPECIALCODEFILE value is null");	
 	}
-	if (iMode) DBG_MUTEX_UNLOCK(&ircode_mutex);	
+	if (iMode) DBG_MUTEX_UNLOCK(&specialcode_mutex);	
 	
 	if (iMode) DBG_MUTEX_LOCK(&systemlist_mutex);
 	if ((uiShowerLiveCtrlTime < 0) || (uiShowerLiveCtrlTime > 1000)) 
@@ -11595,7 +11627,7 @@ int TestSettings(int iMode)
 		TestStreams(0);
 		TestWidgets(0);
 		TestCamRectangles(0);
-		TestIrCodes(0);
+		TestSpecialCodes(0);
 		TestKeys(0);
 		TestEvntActions(0);
 		TestMnlActions(0);
@@ -12165,7 +12197,7 @@ int TestAlarms(int iMode)
 	return 1;
 }
 
-int LoadIrCodes(char *Buff)
+int LoadSpecialCodes(char *Buff)
 {	
 	DBG_LOG_IN();	
 	
@@ -12202,23 +12234,23 @@ int LoadIrCodes(char *Buff)
 				len2 = strlen(Buff2);				
 				len3 = strlen(Buff3);	
 				
-				if (SearchStrInData(Buff2, len2, 0, "IRCOMMAND=") == 1)
+				if (SearchStrInData(Buff2, len2, 0, "SPECIALCOMMAND=") == 1)
 				{
-					iIRCommandCnt++;
-					mIRCommandList = (IR_COMMAND_TYPE*)DBG_REALLOC(mIRCommandList, sizeof(IR_COMMAND_TYPE)*iIRCommandCnt);
-					memset(&mIRCommandList[iIRCommandCnt-1], 0, sizeof(IR_COMMAND_TYPE));
+					iSpecialCodeCnt++;
+					mSpecialCodeList = (SPECIAL_CODE_TYPE*)DBG_REALLOC(mSpecialCodeList, sizeof(SPECIAL_CODE_TYPE)*iSpecialCodeCnt);
+					memset(&mSpecialCodeList[iSpecialCodeCnt-1], 0, sizeof(SPECIAL_CODE_TYPE));
 					
 					if (GetParamSetting(0, 59, Buff3, len3, Buff4, 5) == 1)
-						memcpy(&mIRCommandList[iIRCommandCnt-1].ID, Buff4, 4);
-					for (n = 0; n < MAX_IRCOMMAND_LEN; n++)
+						memcpy(&mSpecialCodeList[iSpecialCodeCnt-1].ID, Buff4, 4);
+					for (n = 0; n < MAX_SPECIALCODE_LEN; n++)
 						if (GetParamSetting(n + 1, 59, Buff3, len3, Buff4, 10) == 1)
 						{
-							mIRCommandList[iIRCommandCnt-1].Code[n] = 0;
-							if ((strlen(Buff4) == 1) && (Buff4[0] == 42)) mIRCommandList[iIRCommandCnt-1].Code[n] = 0x0200;
-							if ((strlen(Buff4) > 1) && (Buff4[0] == 38)) mIRCommandList[iIRCommandCnt-1].Code[n] = 0x0100 | ((uint16_t)Str2Int(&Buff4[1]) & 0xFF);
+							mSpecialCodeList[iSpecialCodeCnt-1].Code[n] = 0;
+							if ((strlen(Buff4) == 1) && (Buff4[0] == 42)) mSpecialCodeList[iSpecialCodeCnt-1].Code[n] = 0x0200;
+							if ((strlen(Buff4) > 1) && (Buff4[0] == 38)) mSpecialCodeList[iSpecialCodeCnt-1].Code[n] = 0x0100 | ((uint16_t)Str2Int(&Buff4[1]) & 0xFF);
 							
-							if (mIRCommandList[iIRCommandCnt-1].Code[n] == 0) mIRCommandList[iIRCommandCnt-1].Code[n] = (uint16_t)Str2Int(Buff4) & 0xFF;
-							mIRCommandList[iIRCommandCnt-1].Len = n + 1;
+							if (mSpecialCodeList[iSpecialCodeCnt-1].Code[n] == 0) mSpecialCodeList[iSpecialCodeCnt-1].Code[n] = (uint16_t)Str2Int(Buff4) & 0xFF;
+							mSpecialCodeList[iSpecialCodeCnt-1].Len = n + 1;
 						}
 						else break;						
 				}				
@@ -12232,19 +12264,19 @@ int LoadIrCodes(char *Buff)
 	return 1;
 }
 
-int SaveIrCodes()
+int SaveSpecialCodes()
 {
 	DBG_LOG_IN();
 	
-	DBG_MUTEX_LOCK(&ircode_mutex);
+	DBG_MUTEX_LOCK(&specialcode_mutex);
 	
 	FILE *f;
 	char cPath[MAX_PATH];
-	FillConfigPath(cPath, MAX_PATH, cIrCodeFile, 1);
-	if ((strlen(cIrCodeFile) == 0) || ((f = fopen(cPath,"w")) == NULL))
+	FillConfigPath(cPath, MAX_PATH, cSpecialCodeFile, 1);
+	if ((strlen(cSpecialCodeFile) == 0) || ((f = fopen(cPath,"w")) == NULL))
 	{
-		dbgprintf(1, "Error save:%s\n", cIrCodeFile);		
-		DBG_MUTEX_UNLOCK(&ircode_mutex);
+		dbgprintf(1, "Error save:%s\n", cSpecialCodeFile);		
+		DBG_MUTEX_UNLOCK(&specialcode_mutex);
 		DBG_LOG_OUT();
 		return 0;
 	}
@@ -12253,16 +12285,16 @@ int SaveIrCodes()
 	char Buff2[32];	
 	unsigned int n, i;
 		
-	for (n = 0; n < iIRCommandCnt; n++)
+	for (n = 0; n < iSpecialCodeCnt; n++)
 	{
 		memset(Buff1, 0, 1024);
-		sprintf(Buff1, "IrCommand=%.4s;", (char*)&mIRCommandList[n].ID);
-		for (i = 0; i < mIRCommandList[n].Len; i++)
+		sprintf(Buff1, "SpecialCommand=%.4s;", (char*)&mSpecialCodeList[n].ID);
+		for (i = 0; i < mSpecialCodeList[n].Len; i++)
 		{
 			memset(Buff2, 0, 32);
-			if (mIRCommandList[n].Code[i] & 0x0100) sprintf(Buff2, "&%i;", mIRCommandList[n].Code[i] & 0xFF);
-			if (mIRCommandList[n].Code[i] & 0x0200) strcpy(Buff2, "*;");
-			if ((mIRCommandList[n].Code[i] & 0x0300) == 0) sprintf(Buff2, "%i;", mIRCommandList[n].Code[i]);
+			if (mSpecialCodeList[n].Code[i] & 0x0100) sprintf(Buff2, "&%i;", mSpecialCodeList[n].Code[i] & 0xFF);
+			if (mSpecialCodeList[n].Code[i] & 0x0200) strcpy(Buff2, "*;");
+			if ((mSpecialCodeList[n].Code[i] & 0x0300) == 0) sprintf(Buff2, "%i;", mSpecialCodeList[n].Code[i]);
 							
 			strcat(Buff1, Buff2);
 		}
@@ -12271,39 +12303,39 @@ int SaveIrCodes()
 	}
 	fclose(f);
 	
-	DBG_MUTEX_UNLOCK(&ircode_mutex);	
+	DBG_MUTEX_UNLOCK(&specialcode_mutex);	
 	DBG_LOG_OUT();
 	return 1;
 }
 
-int TestIrCodes(int iMode)
+int TestSpecialCodes(int iMode)
 {
 	int i, n;
-	for (i = 0; i < iIRCommandCnt; i++)
+	for (i = 0; i < iSpecialCodeCnt; i++)
 	{
-		if (mIRCommandList[i].ID == 0)
+		if (mSpecialCodeList[i].ID == 0)
 		{
-			if (iMode == 0) dbgprintf(2, "TestSettings: IRCOMMAND(%i) ID is null\n", i);
-			else WEB_AddMessageInList("TestSettings: IRCOMMAND(%i) ID is null", i);
+			if (iMode == 0) dbgprintf(2, "TestSettings: SPECIALCOMMAND(%i) ID is null\n", i);
+			else WEB_AddMessageInList("TestSettings: SPECIALCOMMAND(%i) ID is null", i);
 		}
-		if ((mIRCommandList[i].Len < 1) || (mIRCommandList[i].Len > 60))
+		if ((mSpecialCodeList[i].Len < 1) || (mSpecialCodeList[i].Len > 60))
 		{
-			if (iMode == 0) dbgprintf(3, "TestSettings: IRCOMMAND(%i) Length not between 1 and 60\n", i);
-			else WEB_AddMessageInList("TestSettings: IRCOMMAND(%i) Length not between 1 and 60", i);
+			if (iMode == 0) dbgprintf(3, "TestSettings: SPECIALCOMMAND(%i) Length not between 1 and 60\n", i);
+			else WEB_AddMessageInList("TestSettings: SPECIALCOMMAND(%i) Length not between 1 and 60", i);
 		}
-		if (mIRCommandList[i].Len > MAX_IRCOMMAND_LEN)
+		if (mSpecialCodeList[i].Len > MAX_SPECIALCODE_LEN)
 		{
-			if (iMode == 0) dbgprintf(2, "TestSettings: IRCOMMAND(%i) Length very big(>%i)\n", i, MAX_IRCOMMAND_LEN);
-			else WEB_AddMessageInList("TestSettings: IRCOMMAND(%i) Length very big(>%i)", i, MAX_IRCOMMAND_LEN);
+			if (iMode == 0) dbgprintf(2, "TestSettings: SPECIALCOMMAND(%i) Length very big(>%i)\n", i, MAX_SPECIALCODE_LEN);
+			else WEB_AddMessageInList("TestSettings: SPECIALCOMMAND(%i) Length very big(>%i)", i, MAX_SPECIALCODE_LEN);
 		}
 		else
 		{
-			for (n = 0; n < mIRCommandList[i].Len; n++)
+			for (n = 0; n < mSpecialCodeList[i].Len; n++)
 			{
-				if (mIRCommandList[i].Code[n] > 0x0200)
+				if (mSpecialCodeList[i].Code[n] > 0x0200)
 				{
-					if (iMode == 0) dbgprintf(2, "TestSettings: IRCOMMAND(%i) Code(%i) not between 0 and 0x0200,  :%i\n", i, n, mIRCommandList[i].Code[n]);
-						else WEB_AddMessageInList("TestSettings: IRCOMMAND(%i) Code(%i) not between 0 and 0x0200,  :%i", i, n, mIRCommandList[i].Code[n]);
+					if (iMode == 0) dbgprintf(2, "TestSettings: SPECIALCOMMAND(%i) Code(%i) not between 0 and 0x0200,  :%i\n", i, n, mSpecialCodeList[i].Code[n]);
+						else WEB_AddMessageInList("TestSettings: SPECIALCOMMAND(%i) Code(%i) not between 0 and 0x0200,  :%i", i, n, mSpecialCodeList[i].Code[n]);
 					break;
 				}
 			}
@@ -13503,13 +13535,14 @@ int TestModules(int iMode)
 				}
 				break;
 			case MODULE_TYPE_RS485:
-				if ((miModuleList[i].Settings[1] != 0) && (miModuleList[i].Settings[1] != 4800) &&
+				if ((miModuleList[i].Settings[1] != 0) && (miModuleList[i].Settings[1] != 2400) &&
+					(miModuleList[i].Settings[1] != 4800) &&
 					(miModuleList[i].Settings[1] != 9600) && (miModuleList[i].Settings[1] != 19200) &&
 					(miModuleList[i].Settings[1] != 38400) && (miModuleList[i].Settings[1] != 57600) && 
 					(miModuleList[i].Settings[1] != 115200))
 				{
-					if (iMode == 0) dbgprintf(2, "TestModules: MODULE(%i) RS485 Settings[1] BaudRate not in (0, 4800, 9600, 19200, 38400, 57600, 115200)\n", i);
-					else WEB_AddMessageInList("TestModules: MODULE(%i) RS485 Settings[1] BaudRate not in (0, 4800, 9600, 19200, 38400, 57600, 115200)", i);
+					if (iMode == 0) dbgprintf(2, "TestModules: MODULE(%i) RS485 Settings[1] BaudRate not in (0, 2400, 4800, 9600, 19200, 38400, 57600, 115200)\n", i);
+					else WEB_AddMessageInList("TestModules: MODULE(%i) RS485 Settings[1] BaudRate not in (0, 2400, 4800, 9600, 19200, 38400, 57600, 115200)", i);
 				}
 				break;
 			case MODULE_TYPE_RC522:
@@ -14971,9 +15004,9 @@ void PrintSettings(void)
 	dbgprintf(4,"SystemID=%.4s\n",(char*)&miSystemList[0].ID);
 	
 	dbgprintf(4,"#####IR COMMANDS#########\n");
-	for (n = 0; n < iIRCommandCnt; n++) 
+	for (n = 0; n < iSpecialCodeCnt; n++) 
 	{
-	 dbgprintf(4,"IRCommand%i=%.4s; len:%i\n",n,(char*)&mIRCommandList[n].ID, mIRCommandList[n].Len);
+	 dbgprintf(4,"SPECIALCOMMAND%i=%.4s; len:%i\n",n,(char*)&mSpecialCodeList[n].ID, mSpecialCodeList[n].Len);
 	}
 	dbgprintf(4,"#####ALARMCLOCK#########\n");
 	for (n = 0; n < iAlarmClocksCnt; n++) 
@@ -18139,36 +18172,36 @@ void AddModuleEvents(MODULE_EVENT *meList, unsigned int uiCount)
 	DBG_LOG_OUT();	
 }
 
-void ClearSkipIrCodeList()
+void ClearSkipSpecialCodeList()
 {
-	DBG_MUTEX_LOCK(&skipircode_mutex);
-	if (iSkipIrCodeListCnt != 0) 
+	DBG_MUTEX_LOCK(&skipspecialcode_mutex);
+	if (iSkipSpecialCodeListCnt != 0) 
 	{
-		DBG_FREE(cSkipIrCodeList);
-		cSkipIrCodeList = NULL;
-		iSkipIrCodeListCnt = 0;	
+		DBG_FREE(cSkipSpecialCodeList);
+		cSkipSpecialCodeList = NULL;
+		iSkipSpecialCodeListCnt = 0;	
 	}
-	DBG_MUTEX_UNLOCK(&skipircode_mutex);	
+	DBG_MUTEX_UNLOCK(&skipspecialcode_mutex);	
 }
 
-void AddSkipIrCodeInList(uint16_t *pCode, unsigned int uiLen)
+void AddSkipSpecialCodeInList(uint16_t *pCode, unsigned int uiLen)
 {
-	DBG_MUTEX_LOCK(&skipircode_mutex);
-	if (uiLen <= MAX_IRCOMMAND_LEN)
+	DBG_MUTEX_LOCK(&skipspecialcode_mutex);
+	if (uiLen <= MAX_SPECIALCODE_LEN)
 	{
-		if (iSkipIrCodeListCnt < iSkipIrCodeMaxCnt)
+		if (iSkipSpecialCodeListCnt < iSkipSpecialCodeMaxCnt)
 		{
-			iSkipIrCodeListCnt++;		
-			cSkipIrCodeList = (IR_COMMAND_TYPE*)DBG_REALLOC(cSkipIrCodeList, iSkipIrCodeListCnt * sizeof(IR_COMMAND_TYPE));								
-			memset(&cSkipIrCodeList[iSkipIrCodeListCnt-1], 0, sizeof(IR_COMMAND_TYPE));
-			cSkipIrCodeList[iSkipIrCodeListCnt-1].Len = uiLen;
+			iSkipSpecialCodeListCnt++;		
+			cSkipSpecialCodeList = (SPECIAL_CODE_TYPE*)DBG_REALLOC(cSkipSpecialCodeList, iSkipSpecialCodeListCnt * sizeof(SPECIAL_CODE_TYPE));								
+			memset(&cSkipSpecialCodeList[iSkipSpecialCodeListCnt-1], 0, sizeof(SPECIAL_CODE_TYPE));
+			cSkipSpecialCodeList[iSkipSpecialCodeListCnt-1].Len = uiLen;
 			int n;
 			for (n = 0; n < uiLen; n++)
-				cSkipIrCodeList[iSkipIrCodeListCnt-1].Code[n] = pCode[n];
+				cSkipSpecialCodeList[iSkipSpecialCodeListCnt-1].Code[n] = pCode[n];
 		}
-	//	else memmove(cSkipIrCodeList, &cSkipIrCodeList[1], sizeof(SECURITY_KEY_INFO) * (ALIENKEY_MAX_CNT-1));	
+	//	else memmove(cSkipSpecialCodeList, &cSkipSpecialCodeList[1], sizeof(SECURITY_KEY_INFO) * (ALIENKEY_MAX_CNT-1));	
 	}
-	DBG_MUTEX_UNLOCK(&skipircode_mutex);	
+	DBG_MUTEX_UNLOCK(&skipspecialcode_mutex);	
 }
 	
 void ClearPtzSettingsList()
@@ -19016,7 +19049,7 @@ int ConnectToCamera(unsigned int uiNum, unsigned int uiID, GL_STATE_T *pstate, G
 	return ret;
 }
 
-void PrintIRCmd(uint16_t *cOutBuffer, unsigned int uiLen)
+void PrintSpecialCmd(uint16_t *cOutBuffer, unsigned int uiLen)
 {
 	char tempBuff[256];
 	char tempBuff2[32];
@@ -19065,20 +19098,20 @@ int GetIrDataID(uint16_t *cOutBuffer, unsigned int uiLen, unsigned int *uiOutID)
 	*uiOutID = 0;
 	int ret = 0;
 	int n2;
-	DBG_MUTEX_LOCK(&ircode_mutex);
-	for (n2 = 0; n2 < iIRCommandCnt; n2++)
+	DBG_MUTEX_LOCK(&specialcode_mutex);
+	for (n2 = 0; n2 < iSpecialCodeCnt; n2++)
 	{
-		if (uiLen == mIRCommandList[n2].Len)
+		if (uiLen == mSpecialCodeList[n2].Len)
 		{
-			if (SearchDataCombine((uint16_t*)cOutBuffer, uiLen, (uint16_t*)mIRCommandList[n2].Code, mIRCommandList[n2].Len, 0) != -1) 
+			if (SearchDataCombine((uint16_t*)cOutBuffer, uiLen, (uint16_t*)mSpecialCodeList[n2].Code, mSpecialCodeList[n2].Len, 0) != -1) 
 			{
-				*uiOutID = mIRCommandList[n2].ID;
+				*uiOutID = mSpecialCodeList[n2].ID;
 				ret = 1;
 				break;
 			}
 		}
 	}
-	DBG_MUTEX_UNLOCK(&ircode_mutex);
+	DBG_MUTEX_UNLOCK(&specialcode_mutex);
 				
 	if (ret) return 1; else return 0;
 }
@@ -20793,8 +20826,8 @@ void * thread_Scaner(void *pData)
 											}
 											else
 											{
-												AddSkipIrCodeInList(cOutBuffer, oclk);
-												PrintIRCmd(cOutBuffer, oclk);
+												AddSkipSpecialCodeInList(cOutBuffer, oclk);
+												PrintSpecialCmd(cOutBuffer, oclk);
 											}										
 										}
 										pModules[n].Status[i] = 0;
@@ -20935,8 +20968,8 @@ void * thread_Scaner(void *pData)
 							}
 							else
 							{
-								AddSkipIrCodeInList(cOutBuffer, oclk);
-								PrintIRCmd(cOutBuffer, oclk);
+								AddSkipSpecialCodeInList(cOutBuffer, oclk);
+								PrintSpecialCmd(cOutBuffer, oclk);
 							}
 						}
 					}
@@ -24227,7 +24260,7 @@ int main(int argc, char *argv[])
 		SaveCamRectangles();
 		SaveMnlActions();
 		SaveEvntActions();
-		SaveIrCodes();
+		SaveSpecialCodes();
 		SaveKeys();
 		SaveWidgets();
 		SaveStreamTypes();
@@ -24306,13 +24339,13 @@ int main(int argc, char *argv[])
 		}
 	}
 	
-	if (strlen(cIrCodeFile))
+	if (strlen(cSpecialCodeFile))
 	{
-		FillConfigPath(bb, 256, cIrCodeFile, 0);	
-		if (LoadIrCodes(bb) == 0) 
+		FillConfigPath(bb, 256, cSpecialCodeFile, 0);	
+		if (LoadSpecialCodes(bb) == 0) 
 		{
-			dbgprintf(1,"Error load IrCodeFile file: %s\n", bb);
-			SaveIrCodes();
+			dbgprintf(1,"Error load SpecialCodeFile file: %s\n", bb);
+			SaveSpecialCodes();
 		}
 	}
 	if (strlen(cKeyFile))
@@ -24560,7 +24593,7 @@ int main(int argc, char *argv[])
 	pthread_attr_init(&tattrFileIO);   
 	pthread_attr_setdetachstate(&tattrFileIO, PTHREAD_CREATE_DETACHED);
 				
-    pthread_mutex_init(&ircode_mutex, NULL);
+    pthread_mutex_init(&specialcode_mutex, NULL);
 	pthread_mutex_init(&rectangle_mutex, NULL);
 	pthread_mutex_init(&modulelist_mutex, NULL);
 	pthread_mutex_init(&securitylist_mutex, NULL);	
@@ -24575,7 +24608,7 @@ int main(int argc, char *argv[])
 	pthread_mutex_init(&alienkey_mutex, NULL);
 	pthread_mutex_init(&ptz_mutex, NULL);
 	pthread_mutex_init(&skipevent_mutex, NULL);
-	pthread_mutex_init(&skipircode_mutex, NULL);
+	pthread_mutex_init(&skipspecialcode_mutex, NULL);
 	pthread_mutex_init(&user_mutex, NULL);
 	pthread_mutex_init(&Network_Mutex, NULL);
 	pthread_mutex_init(&dyspcont_mutex, NULL);	
@@ -25898,8 +25931,8 @@ int main(int argc, char *argv[])
 	if (amiActionManual) DBG_FREE(amiActionManual);
 	dbgprintf(4, "Clear ActionInfo\n");	
 	if (maActionInfo) DBG_FREE(maActionInfo);
-	dbgprintf(4, "Clear IRCommandList\n");	
-	if (mIRCommandList) DBG_FREE(mIRCommandList);
+	dbgprintf(4, "Clear SpecialCommandList\n");	
+	if (mSpecialCodeList) DBG_FREE(mSpecialCodeList);
 	dbgprintf(4, "Clear SecurityKeys\n");	
 	if (skiSecurityKeys) DBG_FREE(skiSecurityKeys);
 	dbgprintf(4, "Clear WidgetList\n");	
@@ -25922,8 +25955,8 @@ int main(int argc, char *argv[])
 	if (miModuleList) DBG_FREE(miModuleList);
 	dbgprintf(4, "Clear ModuleEventList\n");	
 	if (iModuleEventCnt) DBG_FREE(meModuleEventList);
-	dbgprintf(4, "Clear SkipIrCodeList\n");	
-	if (iSkipIrCodeListCnt) DBG_FREE(cSkipIrCodeList);
+	dbgprintf(4, "Clear SkipSpecialCodeList\n");	
+	if (iSkipSpecialCodeListCnt) DBG_FREE(cSkipSpecialCodeList);
 	dbgprintf(4, "Clear SkipEventList\n");	
 	if (cSkipEventList) DBG_FREE(cSkipEventList);
 	dbgprintf(4, "Clear AlienKeyList\n");	
@@ -25964,7 +25997,7 @@ int main(int argc, char *argv[])
 	if (uiDevType & (DEVICE_TYPE_RC522 | DEVICE_TYPE_PN532)) pthread_attr_destroy(&tattrCardReader);
 
 	dbgprintf(4, "Closing Mutexes\n");	
-	pthread_mutex_destroy(&ircode_mutex);
+	pthread_mutex_destroy(&specialcode_mutex);
 	pthread_mutex_destroy(&rectangle_mutex);
 	pthread_mutex_destroy(&modulelist_mutex);
 	pthread_mutex_destroy(&securitylist_mutex);
@@ -25979,7 +26012,7 @@ int main(int argc, char *argv[])
 	pthread_mutex_destroy(&alienkey_mutex);
 	pthread_mutex_destroy(&ptz_mutex);
 	pthread_mutex_destroy(&skipevent_mutex);
-	pthread_mutex_destroy(&skipircode_mutex);
+	pthread_mutex_destroy(&skipspecialcode_mutex);
 	pthread_mutex_destroy(&user_mutex);
 	pthread_mutex_destroy(&Network_Mutex);	
 	pthread_mutex_destroy(&dyspcont_mutex);

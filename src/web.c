@@ -65,9 +65,9 @@ int iCurDirectoryPage;
 int iCurMnlActionsPage;
 int iCurEvntActionsPage;
 int iCurKeyPage;
-int iCurIrCodePage;
+int iCurSpecialCodePage;
 int iCurCamRectPage;
-int iCurSkipIrCodePage;
+int iCurSkipSpecialCodePage;
 int iCurAlienKeyPage;
 int iCurSkipEventPage;
 int iCurUserPage;
@@ -136,9 +136,9 @@ void web_start(unsigned int uiPort)
 	iCurKeyPage = 0;
 	iCurConnectPage = 0;
 	iCurConnectPage2 = 0;
-	iCurIrCodePage = 0;
+	iCurSpecialCodePage = 0;
 	iCurCamRectPage = 0;
-	iCurSkipIrCodePage = 0;
+	iCurSkipSpecialCodePage = 0;
 	iCurAlienKeyPage = 0;
 	iCurSkipEventPage = 0;
 	iCurUserPage = 0;
@@ -1836,7 +1836,7 @@ int WEB_get_msg_type(char *msg_rx, int iLen, unsigned int *uiType, unsigned int 
 			if (WEB_get_param_from_url(msg, msg_len, "Keys", param_value, 2048) >= 0) 
 				iValue[2] |= SearchStrInDataCaseIgn(param_value, strlen(param_value), 0, "ON") ? ACCESS_KEYS : 0;	
 			if (WEB_get_param_from_url(msg, msg_len, "Irs", param_value, 2048) >= 0) 
-				iValue[2] |= SearchStrInDataCaseIgn(param_value, strlen(param_value), 0, "ON") ? ACCESS_IRCODES : 0;	
+				iValue[2] |= SearchStrInDataCaseIgn(param_value, strlen(param_value), 0, "ON") ? ACCESS_SPECIALCODES : 0;	
 			if (WEB_get_param_from_url(msg, msg_len, "Sqrs", param_value, 2048) >= 0) 
 				iValue[2] |= SearchStrInDataCaseIgn(param_value, strlen(param_value), 0, "ON") ? ACCESS_CAMRECTS : 0;	
 			if (WEB_get_param_from_url(msg, msg_len, "Med", param_value, 2048) >= 0) 
@@ -1952,10 +1952,10 @@ int WEB_get_msg_type(char *msg_rx, int iLen, unsigned int *uiType, unsigned int 
 		}
 	}
 	
-	ret = SearchData(MARK_SKIPIRCODES, strlen(MARK_SKIPIRCODES), msg, msg_len, 0);
+	ret = SearchData(MARK_SKIPSPECIALCODES, strlen(MARK_SKIPSPECIALCODES), msg, msg_len, 0);
 	if (ret == 0) 
 	{
-		*uiType = WEB_MSG_SKIPIRCODES;
+		*uiType = WEB_MSG_SKIPSPECIALCODES;
 		ret = SearchData(MARK_LIST, strlen(MARK_LIST), msg, msg_len, 0);
 		if (ret > 0) 
 		{			
@@ -1980,10 +1980,10 @@ int WEB_get_msg_type(char *msg_rx, int iLen, unsigned int *uiType, unsigned int 
 		}
 	}
 	
-	ret = SearchData(MARK_IRCODES, strlen(MARK_IRCODES), msg, msg_len, 0);
+	ret = SearchData(MARK_SPECIALCODES, strlen(MARK_SPECIALCODES), msg, msg_len, 0);
 	if (ret == 0) 
 	{
-		*uiType = WEB_MSG_IRCODES;
+		*uiType = WEB_MSG_SPECIALCODES;
 		ret = SearchData(MARK_LIST, strlen(MARK_LIST), msg, msg_len, 0);
 		if (ret > 0) 
 		{			
@@ -4565,7 +4565,7 @@ unsigned int WEB_test_access(unsigned int uiType, unsigned int uiAccess)
 	if ((uiType == WEB_MSG_MNLACTIONS) && (!(uiAccess & ACCESS_MNLACTIONS))) uiType = WEB_MSG_LOGOUT;	
 	if ((uiType == WEB_MSG_EVNTACTIONS) && (!(uiAccess & ACCESS_EVNTACTIONS))) uiType = WEB_MSG_LOGOUT;	
 	if ((uiType == WEB_MSG_KEYS) && (!(uiAccess & ACCESS_KEYS))) uiType = WEB_MSG_LOGOUT;	
-	if ((uiType == WEB_MSG_IRCODES) && (!(uiAccess & ACCESS_IRCODES))) uiType = WEB_MSG_LOGOUT;	
+	if ((uiType == WEB_MSG_SPECIALCODES) && (!(uiAccess & ACCESS_SPECIALCODES))) uiType = WEB_MSG_LOGOUT;	
 	if ((uiType == WEB_MSG_CAMRECTS) && (!(uiAccess & ACCESS_CAMRECTS))) uiType = WEB_MSG_LOGOUT;	
 	if ((uiType == WEB_MSG_CONTROL) && (!(uiAccess & ACCESS_CONTROL))) uiType = WEB_MSG_LOGOUT;	
 	if ((uiType == WEB_MSG_YOUTUBE) && (!(uiAccess & ACCESS_YOUTUBE))) uiType = WEB_MSG_LOGOUT;	
@@ -4607,9 +4607,9 @@ char* WEB_GetWebMsgTypeName(unsigned int msg_type)
 		case WEB_MSG_MNLACTIONS: return "MNLACTIONS";
 		case WEB_MSG_EVNTACTIONS: return "EVNTACTIONS";
 		case WEB_MSG_KEYS: return "KEYS";
-		case WEB_MSG_IRCODES: return "IRCODES";
+		case WEB_MSG_SPECIALCODES: return "SPECIALCODES";
 		case WEB_MSG_CAMRECTS: return "CAMRECTS";
-		case WEB_MSG_SKIPIRCODES: return "SKIPIRCODES";
+		case WEB_MSG_SKIPSPECIALCODES: return "SKIPSPECIALCODES";
 		case WEB_MSG_ALIENKEYS: return "ALIENKEYS";
 		case WEB_MSG_SKIPEVENTS: return "SKIPEVENTS";
 		case WEB_MSG_USERS: return "USERS";
@@ -4813,9 +4813,9 @@ int WEB_main_form(char *cBuff, int iAuth, unsigned int uiAccess)
 		i++;
 		if (i > 3){ strcat(cBuff, "<br />\r\n"); i = 0;}
 	}
-	if (uiAccess & ACCESS_IRCODES) 
+	if (uiAccess & ACCESS_SPECIALCODES) 
 	{
-		strcat(cBuff, "<input type='button' value='КОДЫ ПУЛЬТА' onclick=\"window.location.href='/ircodes/'\" style='width: 200px;'>\r\n");
+		strcat(cBuff, "<input type='button' value='СПЕЦИАЛЬНЫЕ КОДЫ' onclick=\"window.location.href='/specialcodes/'\" style='width: 200px;'>\r\n");
 		i++;
 		if (i > 3){ strcat(cBuff, "<br />\r\n"); i = 0;}
 	}
@@ -5899,25 +5899,25 @@ int WEB_alienkeys_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int 
 	return 1;
 }
 
-int WEB_skipircode_del(int *pParams)
+int WEB_skipspecialcode_del(int *pParams)
 {
-	ClearSkipIrCodeList();
+	ClearSkipSpecialCodeList();
 	return 1;
 }
 
-int WEB_skipircode_save(int *pParams)
+int WEB_skipspecialcode_save(int *pParams)
 {
 	if ((pParams[0] > 0) && (pParams[0] < 256))
 	{
-		DBG_MUTEX_LOCK(&skipircode_mutex);
-		iSkipIrCodeMaxCnt = pParams[0];
-		DBG_MUTEX_UNLOCK(&skipircode_mutex);
+		DBG_MUTEX_LOCK(&skipspecialcode_mutex);
+		iSkipSpecialCodeMaxCnt = pParams[0];
+		DBG_MUTEX_UNLOCK(&skipspecialcode_mutex);
 	}	
-	ClearSkipIrCodeList();
+	ClearSkipSpecialCodeList();
 	return 1;
 }
 
-int WEB_skipircodes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPage, int errcode)
+int WEB_skipspecialcodes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPage, int errcode)
 {
 	int n;	
 	
@@ -5951,16 +5951,16 @@ int WEB_skipircodes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
-	strcat(msg_tx, "<br /><a href=\"/skipircodes/\"><h1>НОВЫЕ КОДЫ ПУЛЬТОВ</h1></a>\r\n");
+	strcat(msg_tx, "<br /><a href=\"/skipspecialcodes/\"><h1>НОВЫЕ СПЕЦИАЛЬНЫЕ КОДЫ</h1></a>\r\n");
 	
-	DBG_MUTEX_LOCK(&skipircode_mutex);
+	DBG_MUTEX_LOCK(&skipspecialcode_mutex);
 	memset(msg_subbody, 0, 65536);
 	sprintf(msg_subbody,
-					"<form action='/skipircodes/save'>Максимальное количество записей: \r\n"
+					"<form action='/skipspecialcodes/save'>Максимальное количество записей: \r\n"
 					"<input type='number' name='Num' min=1 max=255 value=%i style='width: 60px;'>\r\n"
 					"<input type='hidden' name='req_index' value=%i>\r\n"
 					"<button type='submit'>Сохранить</button>"
-					"<button type='submit' formaction='/skipircodes/delete?req_index=%i'>Очистить</button></form>\r\n", iSkipIrCodeMaxCnt, session->request_id, session->request_id);		
+					"<button type='submit' formaction='/skipspecialcodes/delete?req_index=%i'>Очистить</button></form>\r\n", iSkipSpecialCodeMaxCnt, session->request_id, session->request_id);		
 	strcat(msg_tx, msg_subbody);
 	
 	
@@ -5968,26 +5968,26 @@ int WEB_skipircodes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 					"<tr><th>Номер</th><th>ИД</th><th>Длина</th><th>Код</th><th>Действие</th></tr>");
 
 	int iSubPages, iCurPage, iFirstOption, iLastOption;
-	iSubPages = (int)ceil((double)iSkipIrCodeListCnt / WEB_PAGE_MAX_LEN);
-	if (iPage != -1) iCurSkipIrCodePage = iPage;
-	iCurPage = iCurSkipIrCodePage;
+	iSubPages = (int)ceil((double)iSkipSpecialCodeListCnt / WEB_PAGE_MAX_LEN);
+	if (iPage != -1) iCurSkipSpecialCodePage = iPage;
+	iCurPage = iCurSkipSpecialCodePage;
 	
 	if (iCurPage >= iSubPages) 
 	{
 		iCurPage = iSubPages - 1;
-		iCurSkipIrCodePage = iCurPage;
+		iCurSkipSpecialCodePage = iCurPage;
 	}
 	if (iCurPage <= 0) 
 	{
 		iCurPage = 0;
-		iCurSkipIrCodePage = iCurPage;
+		iCurSkipSpecialCodePage = iCurPage;
 	}
 	
 	iFirstOption = iCurPage * WEB_PAGE_MAX_LEN;
 	iLastOption = iFirstOption + WEB_PAGE_MAX_LEN;
-	if (iLastOption >= iSkipIrCodeListCnt) iLastOption = iSkipIrCodeListCnt;
+	if (iLastOption >= iSkipSpecialCodeListCnt) iLastOption = iSkipSpecialCodeListCnt;
 	
-	WEB_pages_list(msg_tx, "skipircodes", iSubPages, iCurPage, "");	
+	WEB_pages_list(msg_tx, "skipspecialcodes", iSubPages, iCurPage, "");	
 	
 	char codebuff[1024];	
 	unsigned int i;
@@ -5995,20 +5995,20 @@ int WEB_skipircodes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 	for (n = iFirstOption; n < iLastOption; n++)
 	{
 		memset(codebuff, 0, 1024);		
-		if (cSkipIrCodeList[n].Len < MAX_IRCOMMAND_LEN)
-			for (i = 0; i < cSkipIrCodeList[n].Len; i++)
+		if (cSkipSpecialCodeList[n].Len < MAX_SPECIALCODE_LEN)
+			for (i = 0; i < cSkipSpecialCodeList[n].Len; i++)
 			{
 				memset(msg_subbody, 0, 32);
-				if ((i+1) < cSkipIrCodeList[n].Len)
-					sprintf(msg_subbody, "%i,", cSkipIrCodeList[n].Code[i]);
+				if ((i+1) < cSkipSpecialCodeList[n].Len)
+					sprintf(msg_subbody, "%i,", cSkipSpecialCodeList[n].Code[i]);
 					else
-					sprintf(msg_subbody, "%i", cSkipIrCodeList[n].Code[i]);
+					sprintf(msg_subbody, "%i", cSkipSpecialCodeList[n].Code[i]);
 				strcat(codebuff, msg_subbody);
 			}
 				
 		memset(msg_subbody, 0, 65536);
 		sprintf(msg_subbody, 
-					"<tr><form action='/ircodes/add'>\r\n"
+					"<tr><form action='/specialcodes/add'>\r\n"
 					"<input type='hidden' name='req_index' value=%i>\r\n"
 					"<input type='hidden' name='Num' value=%i>"
 					"<td><input type='number' name='Pp' value=%i style='width: 50px;' disabled></td>\r\n"
@@ -6019,17 +6019,17 @@ int WEB_skipircodes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 					"<td><button type='submit'>Добавить</button></td></form></tr>\r\n",
 					session->request_id,
 					n,n, 
-					(char*)&cSkipIrCodeList[n].ID,
-					cSkipIrCodeList[n].Len, codebuff);		
+					(char*)&cSkipSpecialCodeList[n].ID,
+					cSkipSpecialCodeList[n].Len, codebuff);		
 		strcat(msg_tx, msg_subbody);
 		if (strlen(msg_tx) > (WEB_TX_BUF_SIZE_MAX - 2000)) break;		
 	}	
 	
-	DBG_MUTEX_UNLOCK(&skipircode_mutex);
+	DBG_MUTEX_UNLOCK(&skipspecialcode_mutex);
 	
 	strcat(msg_tx,	"</table>"
 					"<br />\r\n");
-	WEB_pages_list(msg_tx, "skipircodes", iSubPages, iCurPage, "");	
+	WEB_pages_list(msg_tx, "skipspecialcodes", iSubPages, iCurPage, "");	
 	strcat(msg_tx,	"<br />\r\n"
 					"</body>\r\n"
 					"</html>\r\n");	
@@ -6047,93 +6047,93 @@ int WEB_skipircodes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 	return 1;
 }
 
-int WEB_ircode_add(int *pParams, char* strParam)
+int WEB_specialcode_add(int *pParams, char* strParam)
 {
-	DBG_MUTEX_LOCK(&ircode_mutex);
-	iIRCommandCnt++;
-	mIRCommandList = (IR_COMMAND_TYPE*)DBG_REALLOC(mIRCommandList, sizeof(IR_COMMAND_TYPE)*iIRCommandCnt);
-	memset(&mIRCommandList[iIRCommandCnt-1], 0, sizeof(IR_COMMAND_TYPE));
-	mIRCommandList[iIRCommandCnt-1].ID = pParams[1];
-	mIRCommandList[iIRCommandCnt-1].Len = 0;
+	DBG_MUTEX_LOCK(&specialcode_mutex);
+	iSpecialCodeCnt++;
+	mSpecialCodeList = (SPECIAL_CODE_TYPE*)DBG_REALLOC(mSpecialCodeList, sizeof(SPECIAL_CODE_TYPE)*iSpecialCodeCnt);
+	memset(&mSpecialCodeList[iSpecialCodeCnt-1], 0, sizeof(SPECIAL_CODE_TYPE));
+	mSpecialCodeList[iSpecialCodeCnt-1].ID = pParams[1];
+	mSpecialCodeList[iSpecialCodeCnt-1].Len = 0;
 	int n, m;
 	char buffout[10];
 	m = strlen(strParam);
-	for (n = 0; n < MAX_IRCOMMAND_LEN; n++)
+	for (n = 0; n < MAX_SPECIALCODE_LEN; n++)
 		if (GetParamSetting(n, 44, strParam, m, buffout, 10) == 1)
 		{
-			mIRCommandList[iIRCommandCnt-1].Code[n] = 0;
-			if ((strlen(buffout) == 1) && (buffout[0] == 42)) mIRCommandList[iIRCommandCnt-1].Code[n] = 0x0200;
-			if ((strlen(buffout) > 1) && (buffout[0] == 38)) mIRCommandList[iIRCommandCnt-1].Code[n] = 0x0100 | ((uint16_t)Str2Int(&buffout[1]) & 0xFF);
+			mSpecialCodeList[iSpecialCodeCnt-1].Code[n] = 0;
+			if ((strlen(buffout) == 1) && (buffout[0] == 42)) mSpecialCodeList[iSpecialCodeCnt-1].Code[n] = 0x0200;
+			if ((strlen(buffout) > 1) && (buffout[0] == 38)) mSpecialCodeList[iSpecialCodeCnt-1].Code[n] = 0x0100 | ((uint16_t)Str2Int(&buffout[1]) & 0xFF);
 			
-			if (mIRCommandList[iIRCommandCnt-1].Code[n] == 0) mIRCommandList[iIRCommandCnt-1].Code[n] = (uint16_t)Str2Int(buffout) & 0xFF;				
-			mIRCommandList[iIRCommandCnt-1].Len++;
+			if (mSpecialCodeList[iSpecialCodeCnt-1].Code[n] == 0) mSpecialCodeList[iSpecialCodeCnt-1].Code[n] = (uint16_t)Str2Int(buffout) & 0xFF;				
+			mSpecialCodeList[iSpecialCodeCnt-1].Len++;
 		} else break;
-	DBG_MUTEX_UNLOCK(&ircode_mutex);
-	SaveIrCodes();
+	DBG_MUTEX_UNLOCK(&specialcode_mutex);
+	SaveSpecialCodes();
 	return 1;
 }
 
-int WEB_ircode_del(int *pParams)
+int WEB_specialcode_del(int *pParams)
 {
 	int ret = 0;
-	DBG_MUTEX_LOCK(&ircode_mutex);
-	if ((pParams[0] >= 0) && (pParams[0] < iIRCommandCnt) && iIRCommandCnt)
+	DBG_MUTEX_LOCK(&specialcode_mutex);
+	if ((pParams[0] >= 0) && (pParams[0] < iSpecialCodeCnt) && iSpecialCodeCnt)
 	{
-		IR_COMMAND_TYPE *ict = (IR_COMMAND_TYPE*)DBG_MALLOC(sizeof(IR_COMMAND_TYPE)*(iIRCommandCnt-1));
+		SPECIAL_CODE_TYPE *ict = (SPECIAL_CODE_TYPE*)DBG_MALLOC(sizeof(SPECIAL_CODE_TYPE)*(iSpecialCodeCnt-1));
 		int i;
 		int clk = 0;
-		for (i = 0; i < iIRCommandCnt; i++)
+		for (i = 0; i < iSpecialCodeCnt; i++)
 			if (i != pParams[0])
 			{
-				memcpy(&ict[clk], &mIRCommandList[i], sizeof(IR_COMMAND_TYPE));
+				memcpy(&ict[clk], &mSpecialCodeList[i], sizeof(SPECIAL_CODE_TYPE));
 				clk++;
 			}
-		DBG_FREE(mIRCommandList);
-		mIRCommandList = ict;
-		iIRCommandCnt--;
+		DBG_FREE(mSpecialCodeList);
+		mSpecialCodeList = ict;
+		iSpecialCodeCnt--;
 		ret = 1;
 	}
-	DBG_MUTEX_UNLOCK(&ircode_mutex);
-	if (ret) SaveIrCodes();
+	DBG_MUTEX_UNLOCK(&specialcode_mutex);
+	if (ret) SaveSpecialCodes();
 	return 1;
 }
 
-int WEB_ircode_save(int *pParams, char* strParam)
+int WEB_specialcode_save(int *pParams, char* strParam)
 {
 	int ret = 0;
-	DBG_MUTEX_LOCK(&ircode_mutex);
-	if ((pParams[0] >= 0) && (pParams[0] < iIRCommandCnt) && iIRCommandCnt)
+	DBG_MUTEX_LOCK(&specialcode_mutex);
+	if ((pParams[0] >= 0) && (pParams[0] < iSpecialCodeCnt) && iSpecialCodeCnt)
 	{
-		memset(&mIRCommandList[pParams[0]], 0, sizeof(IR_COMMAND_TYPE));
-		mIRCommandList[pParams[0]].ID = pParams[1];
-		mIRCommandList[pParams[0]].Len = 0;
+		memset(&mSpecialCodeList[pParams[0]], 0, sizeof(SPECIAL_CODE_TYPE));
+		mSpecialCodeList[pParams[0]].ID = pParams[1];
+		mSpecialCodeList[pParams[0]].Len = 0;
 		int n, m;
 		char buffout[10];
 		m = strlen(strParam);
-		for (n = 0; n < MAX_IRCOMMAND_LEN; n++)
+		for (n = 0; n < MAX_SPECIALCODE_LEN; n++)
 			if (GetParamSetting(n, 44, strParam, m, buffout, 10) == 1)
 			{
-				mIRCommandList[pParams[0]].Code[n] = 0;
-				if ((strlen(buffout) == 1) && (buffout[0] == 42)) mIRCommandList[pParams[0]].Code[n] = 0x0200;
-				if ((strlen(buffout) > 1) && (buffout[0] == 38)) mIRCommandList[pParams[0]].Code[n] = 0x0100 | ((uint16_t)Str2Int(&buffout[1]) & 0xFF);
+				mSpecialCodeList[pParams[0]].Code[n] = 0;
+				if ((strlen(buffout) == 1) && (buffout[0] == 42)) mSpecialCodeList[pParams[0]].Code[n] = 0x0200;
+				if ((strlen(buffout) > 1) && (buffout[0] == 38)) mSpecialCodeList[pParams[0]].Code[n] = 0x0100 | ((uint16_t)Str2Int(&buffout[1]) & 0xFF);
 				
-				if (mIRCommandList[pParams[0]].Code[n] == 0) mIRCommandList[pParams[0]].Code[n] = (uint16_t)Str2Int(buffout) & 0xFF;				
-				mIRCommandList[pParams[0]].Len++;
+				if (mSpecialCodeList[pParams[0]].Code[n] == 0) mSpecialCodeList[pParams[0]].Code[n] = (uint16_t)Str2Int(buffout) & 0xFF;				
+				mSpecialCodeList[pParams[0]].Len++;
 			} else break;
 		ret = 1;				
 	}
-	DBG_MUTEX_UNLOCK(&ircode_mutex);
-	if (ret) SaveIrCodes();
+	DBG_MUTEX_UNLOCK(&specialcode_mutex);
+	if (ret) SaveSpecialCodes();
 	return 1;
 }
 
-int WEB_ircodes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPage, int errcode)
+int WEB_specialcodes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPage, int errcode)
 {
 	int n;	
 	
-	DBG_MUTEX_LOCK(&ircode_mutex);
-	TestIrCodes(1);
-	DBG_MUTEX_UNLOCK(&ircode_mutex);
+	DBG_MUTEX_LOCK(&specialcode_mutex);
+	TestSpecialCodes(1);
+	DBG_MUTEX_UNLOCK(&specialcode_mutex);
 	
 	char *msg_subbody = (char*)DBG_MALLOC(65536);
 	
@@ -6165,36 +6165,36 @@ int WEB_ircodes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
-	strcat(msg_tx, "<br /><a href=\"/ircodes/\"><h1>КОДЫ ПУЛЬТОВ</h1></a>\r\n");
+	strcat(msg_tx, "<br /><a href=\"/specialcodes/\"><h1>КОДЫ ПУЛЬТОВ</h1></a>\r\n");
 	
 	WEB_GetMessageList(msg_tx);
 		
-	strcat(msg_tx, "<br /><input type='button' value='Добавить новые' onclick=\"window.location.href='/skipircodes/'\" style='width: 170px;'>\r\n");
+	strcat(msg_tx, "<br /><input type='button' value='Добавить новые' onclick=\"window.location.href='/skipspecialcodes/'\" style='width: 170px;'>\r\n");
 			
-	DBG_MUTEX_LOCK(&ircode_mutex);
+	DBG_MUTEX_LOCK(&specialcode_mutex);
 	
 	strcat(msg_tx, "<table border='1' width='100%' cellpadding='5'>"
 					"<tr><th>Номер</th><th>ИД</th><th>Длина</th><th>Код</th><th>Действие</th></tr>");
 
 	int iSubPages, iCurPage, iFirstOption, iLastOption;
-	iSubPages = (int)ceil((double)iIRCommandCnt / WEB_PAGE_MAX_LEN);
-	if (iPage != -1) iCurIrCodePage = iPage;
-	iCurPage = iCurIrCodePage;
+	iSubPages = (int)ceil((double)iSpecialCodeCnt / WEB_PAGE_MAX_LEN);
+	if (iPage != -1) iCurSpecialCodePage = iPage;
+	iCurPage = iCurSpecialCodePage;
 	if (iCurPage >= iSubPages) 
 	{
 		iCurPage = iSubPages - 1;
-		iCurIrCodePage = iCurPage;
+		iCurSpecialCodePage = iCurPage;
 	}
 	if (iCurPage <= 0) 
 	{
 		iCurPage = 0;
-		iCurIrCodePage = iCurPage;
+		iCurSpecialCodePage = iCurPage;
 	}
 	iFirstOption = iCurPage * WEB_PAGE_MAX_LEN;
 	iLastOption = iFirstOption + WEB_PAGE_MAX_LEN;
-	if (iLastOption >= iIRCommandCnt) iLastOption = iIRCommandCnt;
+	if (iLastOption >= iSpecialCodeCnt) iLastOption = iSpecialCodeCnt;
 	
-	WEB_pages_list(msg_tx, "ircodes", iSubPages, iCurPage, "");	
+	WEB_pages_list(msg_tx, "specialcodes", iSubPages, iCurPage, "");	
 		
 	char codebuff[1024];	
 	unsigned int i;
@@ -6202,28 +6202,28 @@ int WEB_ircodes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 	for (n = iFirstOption; n < iLastOption; n++)
 	{
 		memset(codebuff, 0, 1024);		
-		if (mIRCommandList[n].Len < MAX_IRCOMMAND_LEN)
-			for (i = 0; i < mIRCommandList[n].Len; i++)
+		if (mSpecialCodeList[n].Len < MAX_SPECIALCODE_LEN)
+			for (i = 0; i < mSpecialCodeList[n].Len; i++)
 			{
 				memset(msg_subbody, 0, 32);
-				if ((i+1) < mIRCommandList[n].Len)
+				if ((i+1) < mSpecialCodeList[n].Len)
 				{
-					if ((mIRCommandList[n].Code[i] & 0x0300) == 0) sprintf(msg_subbody, "%i,", mIRCommandList[n].Code[i]);
-					if (mIRCommandList[n].Code[i] & 0x0100)	sprintf(msg_subbody, "&%i,", mIRCommandList[n].Code[i] & 0xFF);
-					if (mIRCommandList[n].Code[i] & 0x0200)	sprintf(msg_subbody, "*,");
+					if ((mSpecialCodeList[n].Code[i] & 0x0300) == 0) sprintf(msg_subbody, "%i,", mSpecialCodeList[n].Code[i]);
+					if (mSpecialCodeList[n].Code[i] & 0x0100)	sprintf(msg_subbody, "&%i,", mSpecialCodeList[n].Code[i] & 0xFF);
+					if (mSpecialCodeList[n].Code[i] & 0x0200)	sprintf(msg_subbody, "*,");
 				}
 				else
 				{
-					if ((mIRCommandList[n].Code[i] & 0x0300) == 0) sprintf(msg_subbody, "%i", mIRCommandList[n].Code[i]);
-					if (mIRCommandList[n].Code[i] & 0x0100)	sprintf(msg_subbody, "&%i", mIRCommandList[n].Code[i] & 0xFF);
-					if (mIRCommandList[n].Code[i] & 0x0200)	sprintf(msg_subbody, "*");
+					if ((mSpecialCodeList[n].Code[i] & 0x0300) == 0) sprintf(msg_subbody, "%i", mSpecialCodeList[n].Code[i]);
+					if (mSpecialCodeList[n].Code[i] & 0x0100)	sprintf(msg_subbody, "&%i", mSpecialCodeList[n].Code[i] & 0xFF);
+					if (mSpecialCodeList[n].Code[i] & 0x0200)	sprintf(msg_subbody, "*");
 				}
 				strcat(codebuff, msg_subbody);
 			}
 				
 		memset(msg_subbody, 0, 65536);
 		sprintf(msg_subbody, 
-					"<tr><form action='/ircodes/save'>\r\n"
+					"<tr><form action='/specialcodes/save'>\r\n"
 					"<input type='hidden' name='req_index' value=%i>\r\n"
 					"<input type='hidden' name='Num' value=%i>"
 					"<td><input type='number' name='Pp' value=%i style='width: 50px;' disabled></td>\r\n"
@@ -6231,19 +6231,19 @@ int WEB_ircodes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 					"<td><input type='number' name='Len' min=0 max=255 value=%i style='width: 60px;' disabled>\r\n"
 					"<td><input type='text' name='CodeData' maxlength=512 value='%s' style='width: 400px;'></td>\r\n"
 					"<td><button type='submit'>Сохранить</button>\r\n"
-					"<button type='submit' formaction='/ircodes/delete'>Удалить</button></td></form></tr>\r\n",
+					"<button type='submit' formaction='/specialcodes/delete'>Удалить</button></td></form></tr>\r\n",
 					session->request_id,
 					n,n, 
-					(char*)&mIRCommandList[n].ID,
-					mIRCommandList[n].Len, codebuff);		
+					(char*)&mSpecialCodeList[n].ID,
+					mSpecialCodeList[n].Len, codebuff);		
 		strcat(msg_tx, msg_subbody);
 		if (strlen(msg_tx) > (WEB_TX_BUF_SIZE_MAX - 2000)) break;		
 	}	
-	DBG_MUTEX_UNLOCK(&ircode_mutex);
+	DBG_MUTEX_UNLOCK(&specialcode_mutex);
 	
 	memset(msg_subbody, 0, 65536);
 	sprintf(msg_subbody,
-					"<tr><form action='/ircodes/add'><td></td>\r\n"
+					"<tr><form action='/specialcodes/add'><td></td>\r\n"
 					"<input type='hidden' name='req_index' value=%i>\r\n"
 					"<td><input type='text' name='CodeID' maxlength=4 value='' style='width: 60px;'></td>\r\n"
 					"<td><input type='number' name='Len' min=0 max=255 value=0 style='width: 60px;' disabled>\r\n"
@@ -6255,7 +6255,7 @@ int WEB_ircodes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iP
 	strcat(msg_tx, msg_subbody);
 	strcat(msg_tx,	"</table>"
 					"<br />\r\n");
-	WEB_pages_list(msg_tx, "ircodes", iSubPages, iCurPage, "");	
+	WEB_pages_list(msg_tx, "specialcodes", iSubPages, iCurPage, "");	
 	strcat(msg_tx,	"<br />\r\n"
 					"</body>\r\n"
 					"</html>\r\n");	
@@ -7024,16 +7024,16 @@ int WEB_evntactions_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 	}
 	strcat(msg_tx, "	</select>\r\n");
 	
-	DBG_MUTEX_LOCK(&ircode_mutex);
+	DBG_MUTEX_LOCK(&specialcode_mutex);
 	strcat(msg_tx, "   Справочник IR:<select style='width: 240px;'%s>\r\n");
-	for (n = 0; n < iIRCommandCnt; n++)
+	for (n = 0; n < iSpecialCodeCnt; n++)
 	{
 		memset(msg_subbody, 0, 3072);
-		sprintf(msg_subbody, "<option value='%i'>%.4s</option>\r\n", n, (char*)&mIRCommandList[n].ID);
+		sprintf(msg_subbody, "<option value='%i'>%.4s</option>\r\n", n, (char*)&mSpecialCodeList[n].ID);
 		strcat(msg_tx, msg_subbody);		
 	}
 	strcat(msg_tx, "	</select>\r\n");
-	DBG_MUTEX_UNLOCK(&ircode_mutex);
+	DBG_MUTEX_UNLOCK(&specialcode_mutex);
 	
 	DBG_MUTEX_LOCK(&modulelist_mutex);	
 	strcat(msg_tx, "   Справочник модулей:<select style='width: 240px;'%s>\r\n");
@@ -7086,14 +7086,14 @@ int WEB_evntactions_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, in
 		strcat(msg_tx, msg_subbody);		
 	}
 	DBG_MUTEX_UNLOCK(&modulelist_mutex);	
-	DBG_MUTEX_LOCK(&ircode_mutex);
-	for (n = 0; n < iIRCommandCnt; n++)
+	DBG_MUTEX_LOCK(&specialcode_mutex);
+	for (n = 0; n < iSpecialCodeCnt; n++)
 	{
 		memset(msg_subbody, 0, 3072);
-		sprintf(msg_subbody, "<option value='%.4s'></option>\r\n", (char*)&mIRCommandList[n].ID);
+		sprintf(msg_subbody, "<option value='%.4s'></option>\r\n", (char*)&mSpecialCodeList[n].ID);
 		strcat(msg_tx, msg_subbody);		
 	}
-	DBG_MUTEX_UNLOCK(&ircode_mutex);
+	DBG_MUTEX_UNLOCK(&specialcode_mutex);
 	strcat(msg_tx, "</datalist>\r\n");	
 	
 	DBG_MUTEX_LOCK(&evntaction_mutex);
@@ -7671,16 +7671,16 @@ int WEB_mnlactions_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int
 	}		
 	strcat(msg_tx, "	</select>\r\n");
 	
-	DBG_MUTEX_LOCK(&ircode_mutex);
+	DBG_MUTEX_LOCK(&specialcode_mutex);
 	strcat(msg_tx, "   Справочник IR:<select style='width: 240px;'%s>\r\n");
-	for (n = 0; n < iIRCommandCnt; n++)
+	for (n = 0; n < iSpecialCodeCnt; n++)
 	{
 		memset(msg_subbody, 0, 3072);
-		sprintf(msg_subbody, "<option value='%i'>%s</option>\r\n", n, (char*)&mIRCommandList[n].ID);
+		sprintf(msg_subbody, "<option value='%i'>%s</option>\r\n", n, (char*)&mSpecialCodeList[n].ID);
 		strcat(msg_tx, msg_subbody);		
 	}
 	strcat(msg_tx, "	</select>\r\n");
-	DBG_MUTEX_UNLOCK(&ircode_mutex);
+	DBG_MUTEX_UNLOCK(&specialcode_mutex);
 	
 	DBG_MUTEX_LOCK(&modulelist_mutex);	
 	strcat(msg_tx, "   Справочник модулей:<select style='width: 240px;'%s>\r\n");
@@ -7734,14 +7734,14 @@ int WEB_mnlactions_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int
 		strcat(msg_tx, msg_subbody);		
 	}
 	DBG_MUTEX_UNLOCK(&modulelist_mutex);
-	DBG_MUTEX_LOCK(&ircode_mutex);
-	for (n = 0; n < iIRCommandCnt; n++)
+	DBG_MUTEX_LOCK(&specialcode_mutex);
+	for (n = 0; n < iSpecialCodeCnt; n++)
 	{
 		memset(msg_subbody, 0, 3072);
-		sprintf(msg_subbody, "<option value='%.4s'></option>\r\n", (char*)&mIRCommandList[n].ID);
+		sprintf(msg_subbody, "<option value='%.4s'></option>\r\n", (char*)&mSpecialCodeList[n].ID);
 		strcat(msg_tx, msg_subbody);		
 	}
-	DBG_MUTEX_UNLOCK(&ircode_mutex);
+	DBG_MUTEX_UNLOCK(&specialcode_mutex);
 	strcat(msg_tx, "</datalist>\r\n");	
 	
 	strcat(msg_tx, "<table border='1' width='100%' cellpadding='5'>"
@@ -12340,7 +12340,7 @@ int WEB_users_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPag
 					uiUserList[n].Access & ACCESS_EVNTACTIONS ? " checked" : "",
 					uiUserList[n].Access & ACCESS_MNLACTIONS ? " checked" : "",
 					uiUserList[n].Access & ACCESS_KEYS ? " checked" : "",
-					uiUserList[n].Access & ACCESS_IRCODES ? " checked" : "",
+					uiUserList[n].Access & ACCESS_SPECIALCODES ? " checked" : "",
 					uiUserList[n].Access & ACCESS_CAMRECTS ? " checked" : "",
 					uiUserList[n].Access & ACCESS_MANUAL ? " checked" : "",
 					uiUserList[n].Access & ACCESS_LOG ? " checked" : "",
@@ -16491,11 +16491,11 @@ int WEB_settings_save(int *pParams, char *strParams)
 			DBG_MUTEX_UNLOCK(&evntaction_mutex);			
 			break;
 		case 1:		
-			DBG_MUTEX_LOCK(&ircode_mutex);
-			memset(cIrCodeFile, 0, 256);
-			if (strlen(&strParams[0]) < 256) memcpy(cIrCodeFile, &strParams[0], strlen(&strParams[0]));
-											else memcpy(cIrCodeFile, &strParams[0], 255);
-			DBG_MUTEX_UNLOCK(&ircode_mutex);
+			DBG_MUTEX_LOCK(&specialcode_mutex);
+			memset(cSpecialCodeFile, 0, 256);
+			if (strlen(&strParams[0]) < 256) memcpy(cSpecialCodeFile, &strParams[0], strlen(&strParams[0]));
+											else memcpy(cSpecialCodeFile, &strParams[0], 255);
+			DBG_MUTEX_UNLOCK(&specialcode_mutex);
 			
 			DBG_MUTEX_LOCK(&securitylist_mutex);			
 			memset(cKeyFile, 0, 256);
@@ -16798,10 +16798,10 @@ int WEB_settings_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int i
 	
 	TestSettings(1);
 	
-	DBG_MUTEX_LOCK(&ircode_mutex);
-	char Copy_cIrCodeFile[256];
-	memcpy(Copy_cIrCodeFile, cIrCodeFile, 256);
-	DBG_MUTEX_UNLOCK(&ircode_mutex);
+	DBG_MUTEX_LOCK(&specialcode_mutex);
+	char Copy_cSpecialCodeFile[256];
+	memcpy(Copy_cSpecialCodeFile, cSpecialCodeFile, 256);
+	DBG_MUTEX_UNLOCK(&specialcode_mutex);
 					
 	pthread_mutex_lock(&dbg_mutex);
 	int Copy_iFileLog = iFileLog;
@@ -16961,7 +16961,7 @@ int WEB_settings_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int i
 				"<tr><td>Файл радиоволн:</td><td><input type='text' name='Val8' maxlength=63 value='%s' style='width: 300px;'></td>\r\n"
 				"<td><button type='submit'>Сохранить</button></td></tr></form>\r\n",
 				session->request_id,
-				cnt, Copy_cIrCodeFile, Copy_cKeyFile, Copy_cWidgetFile, cStreamFile, cStreamTypeFile, cMailFile, Copy_cSoundFile, cRadioFile);
+				cnt, Copy_cSpecialCodeFile, Copy_cKeyFile, Copy_cWidgetFile, cStreamFile, cStreamTypeFile, cMailFile, Copy_cSoundFile, cRadioFile);
 	strcat(msg_tx, msg_subbody);
 	cnt++;
 	memset(msg_subbody, 0, 3072);
@@ -18339,13 +18339,13 @@ void * thread_WEB_io(void* pData)
 							dbgprintf(2, "WEB_aleinkeys_respond ERROR\n");
 						}	
 						break;
-					case WEB_MSG_SKIPIRCODES: 
-						if (msg_act == WEB_ACT_SAVE) WEB_skipircode_save(msg_val);							
-						if (msg_act == WEB_ACT_DELETE) WEB_skipircode_del(msg_val);
-						if (WEB_skipircodes_respond(msg_rx, msg_tx, session, iPage, errcode) == 0)
+					case WEB_MSG_SKIPSPECIALCODES: 
+						if (msg_act == WEB_ACT_SAVE) WEB_skipspecialcode_save(msg_val);							
+						if (msg_act == WEB_ACT_DELETE) WEB_skipspecialcode_del(msg_val);
+						if (WEB_skipspecialcodes_respond(msg_rx, msg_tx, session, iPage, errcode) == 0)
 						{
 							msg_type = WEB_MSG_ERROR; 
-							dbgprintf(2, "WEB_skipircodes_respond ERROR\n");
+							dbgprintf(2, "WEB_skipspecialcodes_respond ERROR\n");
 						}	
 						break;
 					case WEB_MSG_RADIOS: 
@@ -18358,14 +18358,14 @@ void * thread_WEB_io(void* pData)
 							dbgprintf(2, "WEB_radios_respond ERROR\n");
 						}	
 						break;
-					case WEB_MSG_IRCODES: 
-						if (msg_act == WEB_ACT_SAVE) WEB_ircode_save(msg_val, strValue);							
-						if (msg_act == WEB_ACT_ADD) WEB_ircode_add(msg_val, strValue);
-						if (msg_act == WEB_ACT_DELETE) WEB_ircode_del(msg_val);
-						if (WEB_ircodes_respond(msg_rx, msg_tx, session, iPage, errcode) == 0)
+					case WEB_MSG_SPECIALCODES: 
+						if (msg_act == WEB_ACT_SAVE) WEB_specialcode_save(msg_val, strValue);							
+						if (msg_act == WEB_ACT_ADD) WEB_specialcode_add(msg_val, strValue);
+						if (msg_act == WEB_ACT_DELETE) WEB_specialcode_del(msg_val);
+						if (WEB_specialcodes_respond(msg_rx, msg_tx, session, iPage, errcode) == 0)
 						{
 							msg_type = WEB_MSG_ERROR; 
-							dbgprintf(2, "WEB_ircodes_respond ERROR\n");
+							dbgprintf(2, "WEB_specialcodes_respond ERROR\n");
 						}	
 						break;
 					case WEB_MSG_KEYS: 

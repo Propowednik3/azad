@@ -3925,7 +3925,7 @@ char uart_put(char *cdata, int ilen, MODULE_INFO *miModule)
 	return ret;
 }
 
-char put_char(char cdata, MODULE_INFO *miModule)
+char put_char(unsigned char cdata, MODULE_INFO *miModule)
 {
 	int ret = 1;
 	DBG_MUTEX_LOCK(&uart_mutex);
@@ -3947,6 +3947,34 @@ char put_char(char cdata, MODULE_INFO *miModule)
 		{
 			ret = 0;
 		}		
+	} else ret = -1;
+	
+	DBG_MUTEX_UNLOCK(&uart_mutex);
+	
+	return ret;
+}
+
+int put_chars(uint8_t *pdata, uint16_t data_len, MODULE_INFO *miModule)
+{
+	int ret = 0;
+	DBG_MUTEX_LOCK(&uart_mutex);
+	
+	if (uart0_filestream > 0)
+	{			
+		if (miModule) 
+		{
+			gpio_switch_on_module(miModule);
+			usleep(10000);
+		}
+		
+		ret = write(uart0_filestream, pdata, data_len);		//Filestream, bytes to write, number of bytes to write
+		
+		if (miModule) 
+		{
+			usleep(10000);
+			gpio_switch_off_module(miModule);
+		}
+		if (ret < 0) ret = -1;
 	} else ret = -1;
 	
 	DBG_MUTEX_UNLOCK(&uart_mutex);

@@ -38,13 +38,13 @@ pthread_mutex_t widget_mutex;
 pthread_mutex_t message_mutex;
 pthread_mutex_t modulelist_mutex;
 pthread_mutex_t rectangle_mutex;
-pthread_mutex_t ircode_mutex;
+pthread_mutex_t specialcode_mutex;
 pthread_mutex_t evntaction_mutex;
 pthread_mutex_t mnlaction_mutex;
 pthread_mutex_t alienkey_mutex;
 pthread_mutex_t ptz_mutex;
 pthread_mutex_t skipevent_mutex;
-pthread_mutex_t skipircode_mutex;
+pthread_mutex_t skipspecialcode_mutex;
 pthread_mutex_t securitylist_mutex;
 pthread_mutex_t systemlist_mutex;
 pthread_mutex_t user_mutex;
@@ -97,9 +97,9 @@ RADIO_INFO *riRadioStation;
 int iWidgetsCnt;
 WIDGET_INFO *wiWidgetList;
 
-int iSkipIrCodeMaxCnt;
-int iSkipIrCodeListCnt;
-IR_COMMAND_TYPE *cSkipIrCodeList;
+int iSkipSpecialCodeMaxCnt;
+int iSkipSpecialCodeListCnt;
+SPECIAL_CODE_TYPE *cSkipSpecialCodeList;
 
 int iAlienKeyMaxCnt;
 int iAlienKeyListCnt;
@@ -130,8 +130,8 @@ int iUpdateKeyInfoResult;
 unsigned int uiUpdateKeyInfoReader;
 int64_t iUpdateKeyInfoTimer;
 
-unsigned int iIRCommandCnt;
-IR_COMMAND_TYPE *mIRCommandList;
+unsigned int iSpecialCodeCnt;
+SPECIAL_CODE_TYPE *mSpecialCodeList;
 
 unsigned int iUserCnt;
 USER_INFO	*uiUserList;
@@ -177,7 +177,7 @@ char cStreamFile[256];
 char cPtzFile[256];
 char cWidgetFile[256];
 char cKeyFile[256];
-char cIrCodeFile[256];
+char cSpecialCodeFile[256];
 char cEvntActionFile[256];
 char cMnlActionFile[256];
 char cDirectoryFile[256];

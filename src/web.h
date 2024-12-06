@@ -28,8 +28,8 @@
 #define MARK_MNLACTIONS 	"/mnlactions/"
 #define MARK_EVNTACTIONS 	"/evntactions/"
 #define MARK_KEYS		 	"/keys/"
-#define MARK_IRCODES 		"/ircodes/"
-#define MARK_SKIPIRCODES 	"/skipircodes/"
+#define MARK_SPECIALCODES 	"/specialcodes/"
+#define MARK_SKIPSPECIALCODES 	"/skipspecialcodes/"
 #define MARK_SKIPEVENTS 	"/skipevents/"
 #define MARK_ALIENKEYS 		"/alienkeys/"
 #define MARK_CAMRECTS		"/camrects/"
@@ -109,8 +109,8 @@ typedef enum
 	WEB_MSG_MNLACTIONS,
 	WEB_MSG_EVNTACTIONS,
 	WEB_MSG_KEYS,
-	WEB_MSG_IRCODES,
-	WEB_MSG_SKIPIRCODES,
+	WEB_MSG_SPECIALCODES,
+	WEB_MSG_SKIPSPECIALCODES,
 	WEB_MSG_CAMRECTS,
 	WEB_MSG_ALIENKEYS,
 	WEB_MSG_SKIPEVENTS,

@@ -80,7 +80,7 @@
 #define START_AUDIO_FRAME_NUMBER 1000
 #define END_AUDIO_FRAME_NUMBER 1999
 
-#define MAX_IRCOMMAND_LEN 			128
+#define MAX_SPECIALCODE_LEN 	128
 #define MAX_FILE_LEN 				256
 #define MAX_SYS_MESSAGE_LEN			128
 #define MAX_ACCESS_LEVELS			10
@@ -141,7 +141,7 @@
 #define ACCESS_EVNTACTIONS	0x00001000
 #define ACCESS_MNLACTIONS	0x00002000
 #define ACCESS_KEYS			0x00004000
-#define ACCESS_IRCODES		0x00008000
+#define ACCESS_SPECIALCODES		0x00008000
 #define ACCESS_CAMRECTS		0x00010000
 #define ACCESS_CONTROL		0x00020000
 #define ACCESS_YOUTUBE		0x00040000
@@ -1042,8 +1042,8 @@ typedef struct
 {
 	unsigned int 	ID;
 	unsigned int 	Len;
-	uint16_t 		Code[MAX_IRCOMMAND_LEN];
-} IR_COMMAND_TYPE;
+	uint16_t 		Code[MAX_SPECIALCODE_LEN];
+} SPECIAL_CODE_TYPE;
 
 typedef struct
 {
@@ -1620,7 +1620,7 @@ int SaveCamRectangles();
 int SaveMnlActions();
 int SaveEvntActions();
 int SaveKeys();
-int SaveIrCodes();
+int SaveSpecialCodes();
 int SaveUsers();
 int SaveRadios();
 int SaveSettings();
@@ -1638,7 +1638,7 @@ int TestStreamTypes(int iMode);
 int TestStreams(int iMode);
 int TestWidgets(int iMode);
 int TestCamRectangles(int iMode);
-int TestIrCodes(int iMode);
+int TestSpecialCodes(int iMode);
 int TestKeys(int iMode);
 int TestEvntActions(int iMode);
 int TestMnlActions(int iMode);
@@ -1654,12 +1654,12 @@ void AddMessageInList(char *cMessage, int iMessageLen, unsigned int cAddr);
 void AddModuleEventInList(unsigned int uiID, int iNumSens, int iStatus, char* cName, unsigned int uiNameLen, char cExecNow);
 void AddModuleEvents(MODULE_EVENT *meList, unsigned int uiCount);
 void FillModuleEventList(MODULE_EVENT **meList, unsigned int *uiCount, unsigned int uiID, int iNumSens, int iStatus, char* cName, unsigned int uiNameLen, char cExecNow);
-void AddSkipIrCodeInList(uint16_t *pCode, unsigned int uiLen);
+void AddSkipSpecialCodeInList(uint16_t *pCode, unsigned int uiLen);
 void AddAlienKeyInList(unsigned char *Serial, unsigned int Len);
 void AddSkipEventInList(unsigned int uiID, unsigned int SubNumber, unsigned int Status);
 void ClearSkipEventList();
 void ClearAlienKeyList();
-void ClearSkipIrCodeList();
+void ClearSkipSpecialCodeList();
 char* GetCurrDateTimeStr(char* cBuff, int iLen);
 int System_Update();
 int System_Shutdown(void *pData, int iNum);
@@ -1697,13 +1697,13 @@ extern pthread_mutex_t widget_mutex;
 extern pthread_mutex_t message_mutex;
 extern pthread_mutex_t modulelist_mutex;
 extern pthread_mutex_t rectangle_mutex;
-extern pthread_mutex_t ircode_mutex;
+extern pthread_mutex_t specialcode_mutex;
 extern pthread_mutex_t evntaction_mutex;
 extern pthread_mutex_t mnlaction_mutex;
 extern pthread_mutex_t alienkey_mutex;
 extern pthread_mutex_t ptz_mutex;
 extern pthread_mutex_t skipevent_mutex;
-extern pthread_mutex_t skipircode_mutex;
+extern pthread_mutex_t skipspecialcode_mutex;
 extern pthread_mutex_t securitylist_mutex;
 extern pthread_mutex_t systemlist_mutex;
 extern pthread_mutex_t user_mutex;
@@ -1756,9 +1756,9 @@ extern RADIO_INFO *riRadioStation;
 extern int iWidgetsCnt;
 extern WIDGET_INFO *wiWidgetList;
 
-extern int iSkipIrCodeMaxCnt;
-extern int iSkipIrCodeListCnt;
-extern IR_COMMAND_TYPE *cSkipIrCodeList;
+extern int iSkipSpecialCodeMaxCnt;
+extern int iSkipSpecialCodeListCnt;
+extern SPECIAL_CODE_TYPE *cSkipSpecialCodeList;
 
 extern int iAlienKeyMaxCnt;
 extern int iAlienKeyListCnt;
@@ -1789,8 +1789,8 @@ extern int iUpdateKeyInfoResult;
 extern unsigned int uiUpdateKeyInfoReader;
 extern int64_t iUpdateKeyInfoTimer;
 
-extern unsigned int iIRCommandCnt;
-extern IR_COMMAND_TYPE *mIRCommandList;
+extern unsigned int iSpecialCodeCnt;
+extern SPECIAL_CODE_TYPE *mSpecialCodeList;
 
 extern unsigned int iUserCnt;
 extern USER_INFO	*uiUserList;
@@ -1836,7 +1836,7 @@ extern char cStreamFile[256];
 extern char cPtzFile[256];
 extern char cWidgetFile[256];
 extern char cKeyFile[256];
-extern char cIrCodeFile[256];
+extern char cSpecialCodeFile[256];
 extern char cEvntActionFile[256];
 extern char cMnlActionFile[256];
 extern char cDirectoryFile[256];
