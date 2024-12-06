@@ -6165,7 +6165,7 @@ int WEB_specialcodes_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, i
 					"</head>"
 					"<body>\r\n");
 	strcat(msg_tx, session->head);
-	strcat(msg_tx, "<br /><a href=\"/specialcodes/\"><h1>КОДЫ ПУЛЬТОВ</h1></a>\r\n");
+	strcat(msg_tx, "<br /><a href=\"/specialcodes/\"><h1>СПЕЦИАЛЬНЫЕ КОДЫ</h1></a>\r\n");
 	
 	WEB_GetMessageList(msg_tx);
 		
@@ -12246,7 +12246,7 @@ int WEB_users_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int iPag
 					"<tr><th>Номер</th><th>Включен</th><th>Уровень</th><th>Логин</th><th>Пароль</th><th>WEB</th><th>RTSP</th><th>ONVIF</th><th>Управление</th><th>YouTube</th><th>Медиа</th>"
 					"<th>Пользователи</th><th>Меню</th><th>Модули (настр.)</th><th>Модули (сост.)</th><th>Будильники</th><th>Радио</th><th>Звуки</th><th>Почта</th>"
 					"<th>Типы потоков</th><th>Потоки</th><th>Виджеты</th><th>Папки</th><th>События и действия</th><th>Ручные действия</th><th>Смарткарты</th>"
-					"<th>Команды пультов</th><th>Квадраты камеры</th><th>Инструкция</th><th>Лог</th><th>Проводник</th><th>Настройки</th><th>Камера</th>"
+					"<th>Специальные коды</th><th>Квадраты камеры</th><th>Инструкция</th><th>Лог</th><th>Проводник</th><th>Настройки</th><th>Камера</th>"
 					"<th>Микрофон</th><th>Система</th><th>Подключения</th><th>История подключений</th><th>Действие</th></tr>");
 
 	int iSubPages, iCurPage, iFirstOption, iLastOption;
@@ -16944,7 +16944,7 @@ int WEB_settings_respond(char *msg_rx, char *msg_tx, WEB_SESSION *session, int i
 				"<form action='/settings/save'>\r\n"
 				"<input type='hidden' name='req_index' value=%i>\r\n"
 				"<input type='hidden' name='Num' value=%i>\r\n"
-				"<tr><td>Файл команд пульта:</td><td><input type='text' name='Val1' maxlength=63 value='%s' style='width: 300px;'></td>\r\n"
+				"<tr><td>Файл специальных команд:</td><td><input type='text' name='Val1' maxlength=63 value='%s' style='width: 300px;'></td>\r\n"
 				"<td><button type='submit'>Сохранить</button></td></tr>"
 				"<tr><td>Файл смарткарт:</td><td><input type='text' name='Val2' maxlength=63 value='%s' style='width: 300px;'></td>\r\n"
 				"<td><button type='submit'>Сохранить</button></td></tr>"
