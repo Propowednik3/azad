@@ -13541,8 +13541,11 @@ int TestModules(int iMode)
 					(miModuleList[i].Settings[1] != 38400) && (miModuleList[i].Settings[1] != 57600) && 
 					(miModuleList[i].Settings[1] != 115200))
 				{
-					if (iMode == 0) dbgprintf(2, "TestModules: MODULE(%i) RS485 Settings[1] BaudRate not in (0, 2400, 4800, 9600, 19200, 38400, 57600, 115200)\n", i);
-					else WEB_AddMessageInList("TestModules: MODULE(%i) RS485 Settings[1] BaudRate not in (0, 2400, 4800, 9600, 19200, 38400, 57600, 115200)", i);
+					if (miModuleList[i].Settings[1] == 0) 
+						dbgprintf(2, "TestModules: MODULE(%i %.4s) RS485 Settings[1] BaudRate (%i) not in (0, 2400, 4800, 9600, 19200, 38400, 57600, 115200)\n", 
+												i, (char*)&miModuleList[i].ID, miModuleList[i].Settings[1]);
+					else WEB_AddMessageInList("TestModules: MODULE(%i %.4s) RS485 Settings[1] BaudRate (%i) not in (0, 2400, 4800, 9600, 19200, 38400, 57600, 115200)", 
+												i, (char*)&miModuleList[i].ID, miModuleList[i].Settings[1]);
 				}
 				break;
 			case MODULE_TYPE_RC522:
