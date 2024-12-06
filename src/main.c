@@ -5213,7 +5213,7 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 								int n;
 								Len = mSpecialCodeList[indx].Len;
 								for (n = 0; n < Len; n++)
-									Code[n] = mSpecialCodeList[indx].Code[n];
+									Code[n] = mSpecialCodeList[indx].Code[n] & 0xFF;
 								break;
 							}				
 						}
