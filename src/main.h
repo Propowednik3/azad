@@ -1686,6 +1686,8 @@ int MusicVolumeSet(int iNum);
 DIRECTORY_INFO * GetDirectoryInfoPoint(DIRECTORY_INFO*sourceList, unsigned int listSize, unsigned int type, char storage);
 int a_stime(time_t *t);
 
+extern char* fullVersion;
+
 extern unsigned char ucTimeUpdated;
 extern unsigned int iAccessLevel;
 extern unsigned int iDefAccessLevel;

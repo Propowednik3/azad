@@ -1030,7 +1030,7 @@ void close_keyboard()
 
 void emergency_stop()
 {
-	printf("\n\033[1m\033[32mPress 'Esc' to cancel start 'azad' VER:%s :\033[0m\n", VERSION); 
+	printf("\n\033[1m\033[32mPress 'Esc' to cancel start 'azad' VER:%s :\033[0m\n", fullVersion); 
 	init_keyboard();
 	int i = 40;
 	int ret;
@@ -18818,17 +18818,17 @@ void GetIntVersion(unsigned int *ver)
 {
 	int n, i = 0, m = 0;
 	memset(ver, 0, 4 * sizeof(int));
-	unsigned int ret = strlen(VERSION);
+	unsigned int ret = strlen(fullVersion);
 	for (n = 0; n < ret; n++)
 	{
-		if ((VERSION[n] == 46) || (n == (ret - 1)))
+		if ((fullVersion[n] == 46) || (n == (ret - 1)))
 		{
-			if (VERSION[n] == 46) 
+			if (fullVersion[n] == 46) 
 			{				
-				ver[m] = Str2IntLimit(&VERSION[i], n - i);
+				ver[m] = Str2IntLimit(&fullVersion[i], n - i);
 				i = n + 1;
 			}
-			else ver[m] = Str2IntLimit(&VERSION[i], n - i + 1);
+			else ver[m] = Str2IntLimit(&fullVersion[i], n - i + 1);
 			m++;
 		}
 	}
@@ -24128,7 +24128,7 @@ int main(int argc, char *argv[])
 {	
 	if (GetProcessNameCount("azad") > 1)
 	{
-		printf("azad process executing. exit.\n");
+		printf("azad process executing. exit. (%s)\n", fullVersion);
 		return -1;
 	}
 		
@@ -24235,8 +24235,8 @@ int main(int argc, char *argv[])
 	memset(miSystemList, 0, sizeof(SYSTEM_INFO));
 	miSystemList[0].Local = 1;
 	memset(miSystemList[0].Version, 0, 64);
-	if (strlen(VERSION) < 64) memcpy(miSystemList[0].Version, VERSION, strlen(VERSION));
-		else memcpy(miSystemList[0].Version, VERSION, 63);
+	if (strlen(fullVersion) < 64) memcpy(miSystemList[0].Version, fullVersion, strlen(fullVersion));
+		else memcpy(miSystemList[0].Version, fullVersion, 63);
 	miSystemList[0].IntVersion[0] = version[0];
 	miSystemList[0].IntVersion[1] = version[1];
 	miSystemList[0].IntVersion[2] = version[2];
@@ -24247,7 +24247,7 @@ int main(int argc, char *argv[])
 	
 	InitSettings();	
 	
-	printf("VERSION: %s\n", VERSION);
+	printf("VERSION: %s\n", fullVersion);
 	
 	total_cpu_load_init();
 	my_cpu_load_init();

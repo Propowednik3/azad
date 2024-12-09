@@ -9,24 +9,35 @@ message(STATUS "Architecture PI: ${BUILD_PI}")
 
 project(azad)
 
-set(CMAKE_BUILD_TYPE Debug)
-
 string(TIMESTAMP BUILDDATE "%Y%m%d")
 string(TIMESTAMP BUILDTIME "%H%M%S")
 
+set(CMAKE_BUILD_TYPE Debug)
 set("${PROJECT_NAME}_VERSION_MAJOR" "10")
-set("${PROJECT_NAME}_VERSION_MINOR" "1101")
-set("${PROJECT_NAME}_VERSION_PATCH" ${BUILDDATE})
-set("${PROJECT_NAME}_VERSION_TWEAK" ${BUILDTIME})
-set("${PROJECT_NAME}_VERSION" "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}.${${PROJECT_NAME}_VERSION_TWEAK}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/..)
 
+set(VER_GENERATE_SRCS ${PROJECT_SOURCE_DIR}/src/version_gen/generate.c)
+set(VER_GENERATE_BIN ${PROJECT_SOURCE_DIR}/src/version_gen/version_gen)
+set(VER_GENERATE_HEADER ${PROJECT_SOURCE_DIR}/src/version.h)
+set(VER_GENERATE_NUMBER ${PROJECT_SOURCE_DIR}/src/build-number.txt)
+
+add_custom_command(OUTPUT ${VER_GENERATE_BIN} COMMAND gcc -o ${VER_GENERATE_BIN} ${VER_GENERATE_SRCS} DEPENDS ${VER_GENERATE_SRCS})
+add_custom_target(generate_version ALL
+    COMMAND ${VER_GENERATE_BIN}
+    	-M ${${PROJECT_NAME}_VERSION_MAJOR}
+		-P ${PROJECT_NAME}
+		-F ${VER_GENERATE_NUMBER}
+		-i
+		> ${VER_GENERATE_HEADER}
+    DEPENDS ${VER_GENERATE_BIN}
+    VERBATIM
+    )
+    
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-attributes")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/..)
-                      
 file(GLOB C_FILES "src/*.c")
 
 list(FILTER C_FILES EXCLUDE REGEX ".*/updater.c$")
@@ -69,5 +80,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC -DVERSION="${${PROJECT_NAME}_V
 
 add_executable(updater "src/updater.c")
 target_link_libraries(updater m)
+
+add_dependencies(${PROJECT_NAME} generate_version)
 
 message(STATUS "Build ${PROJECT_NAME} version ${${PROJECT_NAME}_VERSION}")

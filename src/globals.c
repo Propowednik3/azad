@@ -1,5 +1,8 @@
 #include "pthread2threadx.h"
+#include "version.h"
 #include "omx_client.h"
+
+char* fullVersion = azad_VERSION;
 
 image_sensor_params ispCameraImageSettings;	
 TX_SEMAPHORE 	psem_omx_sync;
@@ -355,3 +358,4 @@ WEB_HISTORY_INFO *whWebHistory;
 unsigned int cThreadWriterStatus;
 TRANSFER_FILE_INFO tfTransferFileStatus;
 TX_EVENTER writeevent_evnt;
+

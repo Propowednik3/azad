@@ -1,6 +1,7 @@
 build/*
 src/*.o
 src/*.log
+src/version_gen/version_gen
 /azad
 /updater
 /*.log
