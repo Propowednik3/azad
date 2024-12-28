@@ -4512,8 +4512,8 @@ void* thread_PlayMediaFile(void *pData)
 	unsigned int uiIoTimeout = uiMediaIoTimeout * 1000000;
 	DBG_MUTEX_UNLOCK(&system_mutex);
 	
-	if (SearchStrInDataCaseIgn(cFileName, strlen(cFileName), 0, "RTSP://") == 1) uiIoTimeout = 0;
-	if (SearchStrInDataCaseIgn(cFileName, strlen(cFileName), 0, "RTMP://") == 1) uiIoTimeout = 0;
+	//if (SearchStrInDataCaseIgn(cFileName, strlen(cFileName), 0, "RTSP://") == 1) uiIoTimeout = 0;
+	//if (SearchStrInDataCaseIgn(cFileName, strlen(cFileName), 0, "RTMP://") == 1) uiIoTimeout = 0;
 	
 	if (mBuff->flag & 1) video_enable = 1;
 	if (mBuff->flag & 2) audio_enable = 1;    
@@ -4559,7 +4559,7 @@ void* thread_PlayMediaFile(void *pData)
     if (iTypeStream == 1) avformat_network_init();
 	
 	AVDictionary *stream_opts = 0;
-	if (uiIoTimeout > 0) av_dict_set_int(&stream_opts, "timeout", uiIoTimeout, 0);
+	if (uiIoTimeout > 0) av_dict_set_int(&stream_opts, "stimeout", uiIoTimeout, 0);
 	if (overTCP) av_dict_set(&stream_opts, "rtsp_transport", "tcp", 0);
 	
 	errnum = avformat_open_input(&fmt_ctx, (char*)cFileName, NULL, &stream_opts);
