@@ -3718,7 +3718,7 @@ int AudioFileInBuffer(char *cFileName, void **pBufferOut, unsigned int *uiBuffer
 	{
 		if (audio_dec_ctx->frame_size == 0) 
 		{
-			dbgprintf(2, "ffmpeg frame size is zero\n");
+			dbgprintf(2, "ffmpeg audio frame size = zero, break\n");
 			avcodec_close(video_dec_ctx);
 			avcodec_close(audio_dec_ctx);
 			avformat_close_input(&fmt_ctx); 
@@ -4705,7 +4705,7 @@ void* thread_PlayMediaFile(void *pData)
 	{
 		if (audio_dec_ctx->frame_size == 0) 
 		{
-			dbgprintf(2, "ffmpeg frame size is zero\n");
+			dbgprintf(audio_enable ? 2 : 3, "ffmpeg audio frame size = zero\n");
 		}
 		codec_info.CodecInfoFilled 			= 1;
 		codec_info.audio_sample_rate 		= audio_dec_ctx->sample_rate;
