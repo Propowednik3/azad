@@ -5013,6 +5013,7 @@ void* thread_PlayMediaFile(void *pData)
 					pkt_info.void_data = &abVideoData.AVBuffer[abVideoData.PlayBlockNum];
 					pkt_info.data_size = abVideoData.DataSize[abVideoData.PlayBlockNum];					
 					pkt_info.pts = av_rescale_q(abVideoData.AVBuffer[abVideoData.PlayBlockNum].pts, fmt_ctx->streams[video_stream_idx]->time_base, AV_TIME_BASE_Q);
+					if (iTypeStream) pkt_info.pts = 0;
 					pkt_info.uidata[0] = 0;
 					if (pause_status) pkt_info.uidata[0] = 2;
 					if (abVideoData.DataSize[abVideoData.PlayBlockNum] == 0) pkt_info.uidata[0] = 1;
