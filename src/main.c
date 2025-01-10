@@ -22748,7 +22748,7 @@ void * Shower()
 								memset(pScreenMenu[0].Options[3].Name, 0, 64);
 								if (iNewShow & SHOW_TYPE_URL) 
 								{
-									char cStreamID = 0;
+									unsigned int cStreamID = 0;
 									strcpy(pScreenMenu[0].Options[20].Name, "Поток: ");
 									DBG_MUTEX_LOCK(&system_mutex);		
 									if (iRadioCode < iInternetRadioCnt) 
