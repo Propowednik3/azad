@@ -9282,14 +9282,14 @@ char *GetModuleStatusName(unsigned int uiType, unsigned int uiStatusNum, char*Ou
 		case MODULE_TYPE_SPEAKER:
 			if (cLang)
 			{
-				if (uiStatusNum == 0) strcpy(Buffer, "Микрофон ID");
+				if (uiStatusNum == 0) strcpy(Buffer, "Микрофон/Поток ID");
 				if (uiStatusNum == 1) strcpy(Buffer, "Подключено");
 				if (uiStatusNum == 2) strcpy(Buffer, "Номер потока");
 				if (uiStatusNum == 3) strcpy(Buffer, "Громкость");
 			}
 			else
 			{
-				if (uiStatusNum == 0) strcpy(Buffer, "Mic ID");
+				if (uiStatusNum == 0) strcpy(Buffer, "Mic/Stream ID");
 				if (uiStatusNum == 1) strcpy(Buffer, "Connected");
 				if (uiStatusNum == 2) strcpy(Buffer, "Stream number");
 				if (uiStatusNum == 3) strcpy(Buffer, "Volume");
@@ -9340,14 +9340,14 @@ char *GetModuleStatusName(unsigned int uiType, unsigned int uiStatusNum, char*Ou
 		case MODULE_TYPE_DISPLAY:
 			if (cLang)
 			{
-				if (uiStatusNum == 0) strcpy(Buffer, "Камера ID");
+				if (uiStatusNum == 0) strcpy(Buffer, "Камера/Поток ID");
 				if (uiStatusNum == 1) strcpy(Buffer, "PTZ ID");
 				if (uiStatusNum == 2) strcpy(Buffer, "Меню");
 				if (uiStatusNum == 3) strcpy(Buffer, "Номер потока");
 			}
 			else
 			{
-				if (uiStatusNum == 0) strcpy(Buffer, "Camera ID");
+				if (uiStatusNum == 0) strcpy(Buffer, "Camera/Stream ID");
 				if (uiStatusNum == 1) strcpy(Buffer, "PTZ ID");
 				if (uiStatusNum == 2) strcpy(Buffer, "Menu");
 				if (uiStatusNum == 3) strcpy(Buffer, "Stream number");
@@ -22748,10 +22748,12 @@ void * Shower()
 								memset(pScreenMenu[0].Options[3].Name, 0, 64);
 								if (iNewShow & SHOW_TYPE_URL) 
 								{
+									char cStreamID = 0;
 									strcpy(pScreenMenu[0].Options[20].Name, "Поток: ");
 									DBG_MUTEX_LOCK(&system_mutex);		
 									if (iRadioCode < iInternetRadioCnt) 
 									{
+										cStreamID = irInternetRadio[iRadioCode].ID;
 										if (strlen(irInternetRadio[iRadioCode].Name) < 55) 
 											strcat(pScreenMenu[0].Options[20].Name, irInternetRadio[iRadioCode].Name);
 											else
@@ -22781,12 +22783,20 @@ void * Shower()
 									if (ret & FILE_TYPE_VIDEO)
 									{
 										n = ModuleTypeToNum(MODULE_TYPE_DISPLAY, 1);
-										if (n >= 0) miModuleList[n].Status[3] = iRadioCode + 1;		//Stream Num
+										if (n >= 0) 
+										{
+											miModuleList[n].Status[0] = cStreamID;
+											miModuleList[n].Status[3] = iRadioCode + 1;		//Stream Num
+										}
 									}
 									if (ret & FILE_TYPE_AUDIO)
 									{
 										n = ModuleTypeToNum(MODULE_TYPE_SPEAKER, 1);
-										if (n >= 0) miModuleList[n].Status[2] = iRadioCode + 1;		//Stream Num
+										if (n >= 0) 
+										{
+											miModuleList[n].Status[0] = cStreamID;
+											miModuleList[n].Status[2] = iRadioCode + 1;		//Stream Num
+										}
 									}										
 									DBG_MUTEX_UNLOCK(&modulelist_mutex);								
 									
