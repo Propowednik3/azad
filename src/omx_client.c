@@ -97,6 +97,8 @@ int omx_set_contrast_value(int CompNum, int eContrastControl);
 int omx_set_sharpness_value(int CompNum, int eSharpnessControl);
 int omx_set_saturation_value(int CompNum, int eSaturationControl);
 
+void* thread_omx_play_video_noclk_on_egl_from_func(void * pdata);
+
 TX_SEMAPHORE 	psem_components;
 static pthread_t thread1;
 pthread_attr_t tattr;
@@ -5558,12 +5560,14 @@ int omx_play_video_on_egl_from_func(func_link *f_link, GLuint texture_id, EGLDis
     tx_semaphore_add_in_list(psem_init, 2, 2);     
     
 	//dbgprintf(3,"!!!!!!!!! Start thread play video\n");
-	if (TimeCtrl)
+	if (TimeCtrl == 2)
+		pthread_create(&thread1, &tattr, thread_omx_play_video_noclk_on_egl_from_func, &e_link);
+	if (TimeCtrl == 1)
 		pthread_create(&thread1, &tattr, thread_omx_play_video_clk_on_egl_from_func, &e_link);
-		else
+	if (TimeCtrl == 0)
 		pthread_create(&thread1, &tattr, thread_omx_play_video_on_egl_from_func, &e_link);
 	
-    dbgprintf(8,"thread 2 created\n");
+	dbgprintf(8,"thread 2 created\n");
     tx_semaphore_wait(psem_init);
     
     if (e_link.errorcode == 0) 
@@ -5833,6 +5837,390 @@ void* thread_omx_play_video_clk_on_screen_from_func(void * pdata)
 	DBG_LOG_OUT();  
 	return (void*)1;
 }*/
+
+void* thread_omx_play_video_noclk_on_egl_from_func(void * pdata)
+{
+	dbgprintf(5, "Create new Thread: '%s', TID: %i, SID: %i\n", __func__, (unsigned int)pthread_self(), gettid());	
+	DBG_LOG_IN();
+	
+	pthread_setname_np(pthread_self(), "play_video_noclk");
+	
+	int res = -2;
+	
+	omx_egl_link *e_link = (omx_egl_link*)pdata;
+	omx_egl_link e_link2;
+	memcpy(&e_link2, pdata, sizeof(omx_egl_link));  
+   
+	if (m_iStarted == 0) {DBG_LOG_OUT();return (void*)-2;}
+	//tx_semaphore_wait(&psem_omx_run);
+	
+	DBG_MUTEX_LOCK(&OMX_mutex);
+	cThreadOmxPlayStatus++;
+	DBG_MUTEX_UNLOCK(&OMX_mutex);
+	
+	int iDecoderNum = omx_LoadComponent(OMX_COMP_VIDEO_DECODE, 0);
+	if (iDecoderNum < 0)
+	{
+		DBG_MUTEX_LOCK(&OMX_mutex);		
+		cThreadOmxPlayStatus--;
+		DBG_MUTEX_UNLOCK(&OMX_mutex);
+		DBG_LOG_OUT();
+		return (void*)-2;
+	}  	
+	int iEglRenderNum = omx_LoadComponent(OMX_COMP_EGL_RENDER, 2); 
+	if (iEglRenderNum < 0)
+	{
+		omx_Release_Component(iDecoderNum);
+		DBG_MUTEX_LOCK(&OMX_mutex);		
+		cThreadOmxPlayStatus--;
+		DBG_MUTEX_UNLOCK(&OMX_mutex);
+		DBG_LOG_OUT();
+		return (void*)-2;
+	}  	   
+	dbgprintf(8,"Comps init done\n"); 
+	  
+	tx_semaphore_add_in_list(&psem_omx_run, OMX_EVENT_STOP_VIDEO, TX_ANY);    
+	tx_semaphore_add_in_list(&psem_omx_run, OMX_EVENT_BUSY_VIDEO, TX_ANY);    
+   
+	omx_set_state(iDecoderNum, OMX_StateIdle, OMX_NOW);
+	omx_set_state(iEglRenderNum, OMX_StateIdle, OMX_NOW);
+	
+	dbgprintf(8,"Set video format\n");
+	omx_set_video_compression_format(iDecoderNum, OMX_PORT_1, OMX_PORT_IN, OMX_VIDEO_CodingAVC);
+	omx_set_count_buffers(iDecoderNum, OMX_PORT_1, OMX_PORT_IN, 20, VIDEO_CODER_BUFFER_SIZE);
+	 
+	omx_enable_port(iDecoderNum, OMX_PORT_1, OMX_PORT_IN, OMX_LATER);   
+	if (!omx_create_buffers(iDecoderNum, OMX_PORT_1, OMX_PORT_IN)) goto error_out;
+	omx_wait_exec_cmd(iDecoderNum);
+	   
+	omx_set_state(iDecoderNum, OMX_StateExecuting, OMX_NOW);
+	   
+	omx_add_cmd_in_list(iDecoderNum, OMX_EventPortSettingsChanged, OMX_CommandAny);   
+	omx_add_cmd_in_list(iEglRenderNum, OMX_EventPortSettingsChanged, OMX_CommandAny);
+			  
+	int status;
+	int iFlag, BufferSize;
+	omx_get_buffer_size(iDecoderNum, OMX_PORT_1, OMX_PORT_IN, &BufferSize);
+	int port_settings_changed = 0;
+	
+	//omx_start_packet StartPack;
+	//memset(&StartPack, 0, sizeof(omx_start_packet));
+	//StartPack.BufferCodecInfo = (char*)DBG_MALLOC(CODECINFO_BUFFER_SIZE);
+	//StartPack.BufferStartSize = ((VIDEO_WIDTH * VIDEO_HEIGHT * 3) / 2) * (VIDEO_INTRAPERIOD / 10);
+	//StartPack.BufferStartFrame = (char*)DBG_MALLOC(StartPack.BufferStartSize);
+	//int64_t prev_ms = 0;
+	//get_ms(&prev_ms);
+    unsigned int iNumFrame = 0;
+    int iTimeOut = 0;
+    unsigned char cLevel = 5;
+    int ret;
+    unsigned int uiOffSet = 0;
+   
+	int64_t iMaxTimeStamp = 0;
+	//void *DecBuff;
+	AVPacket avpkt;
+	avpkt.data = NULL;
+	avpkt.size = 0;
+	avpkt.flags = 0;
+	OMX_BUFFERHEADERTYPE *cur_buffer = omx_get_active_buffer(iDecoderNum, OMX_PORT_1, OMX_PORT_IN, 5000);		
+	if (!cur_buffer) dbgprintf(1,"thread_omx_play_video_clk_on_egl_from_func: Error omx_get_active_buffer ERROR_STOP_VIDEO\n");
+	//DecBuff = cur_buffer->pBuffer;
+	
+    char cClockState = 0;
+    
+	while (1) 
+    {	   
+		status = 0; //WAIT
+		cur_buffer = omx_get_active_buffer(iDecoderNum, OMX_PORT_1, OMX_PORT_IN, 5000);		
+		if (!cur_buffer)
+		{
+			dbgprintf(1,"thread_omx_play_video_clk_on_egl_from_func: Error omx_get_active_buffer ERROR_STOP_VIDEO\n");
+			status = -1; //EXIT
+			cLevel = 4;
+			//Menu_ResetShower(-1);
+		}
+		if (tx_semaphore_exist_in_list(&psem_omx_run, OMX_EVENT_STOP_VIDEO, TX_ANY) == 0)
+		{
+			status = 3; //EXIT
+			dbgprintf(5,"thread_omx_play_video_clk_on_egl_from_func: OMX_EVENT_STOP_VIDEO\n");	
+		} 
+		
+		if (status == 0)
+		{
+			if (avpkt.size == uiOffSet)
+			{
+				if (avpkt.flags == 1) av_free_packet(&avpkt);
+				if (avpkt.flags == 2) free(avpkt.data);				
+				avpkt.data = cur_buffer->pBuffer + cur_buffer->nOffset;
+				avpkt.size = BufferSize - cur_buffer->nOffset;
+				avpkt.flags = 0;
+				iFlag = port_settings_changed;		
+				status = e_link2.FuncRecv((void*)&avpkt, &iNumFrame, &iFlag, NULL, 1, e_link2.ConnectNum, e_link2.ConnectID);
+				if (status == 1)
+				{
+					if (avpkt.flags != 0)
+					{
+						//cur_buffer->pBuffer = avpkt.data;
+						uiOffSet = 0;
+						cur_buffer->nFilledLen = avpkt.size;
+						memcpy(cur_buffer->pBuffer, avpkt.data, cur_buffer->nFilledLen);
+					} else cur_buffer->nFilledLen = avpkt.size;		
+				}
+			}
+			else
+			{
+				if (avpkt.flags != 0)
+				{
+					//cur_buffer->pBuffer = avpkt.data + uiOffSet;
+					cur_buffer->nFilledLen = avpkt.size - uiOffSet;
+					if (cur_buffer->nFilledLen > BufferSize) cur_buffer->nFilledLen = BufferSize;
+					memcpy(cur_buffer->pBuffer, avpkt.data + uiOffSet, cur_buffer->nFilledLen);	
+				}
+				else 
+				{
+					add_sys_cmd_in_list(SYSTEM_CMD_VIDEO_ERROR, 0);	
+					dbgprintf(2, "%s: error rework video data\n", __func__);
+					status = 3;
+				}
+			}
+			if (status == 1)
+			{
+				if (cur_buffer->nFilledLen > BufferSize) cur_buffer->nFilledLen = BufferSize;
+				uiOffSet += cur_buffer->nFilledLen;
+				cur_buffer->nOffset = 0;
+				cur_buffer->nTimeStamp = ToOMXTime(avpkt.pts);
+				if (avpkt.pts > iMaxTimeStamp) iMaxTimeStamp = avpkt.pts;
+			}
+		}
+		if (status == 0)
+		{
+			iTimeOut++;
+			if (iTimeOut == 10)
+			{
+				status = 2;
+				dbgprintf(cLevel,"Stop video playing timout\n");	
+			}	
+		}
+		if (status == 4) 
+		{
+			if ((port_settings_changed == 1) && (cClockState == 1)) 
+			{
+				uiOffSet = avpkt.size;
+				//omx_set_clock_speed(iClockNum, 0);
+				//omx_set_clock_state(iClockNum, OMX_TIME_ClockStateStopped, 0);				
+				cClockState = 0;
+				//omx_set_state(iClockNum, OMX_StatePause, OMX_NOW);		
+				//omx_set_state(iDecoderNum, OMX_StatePause, OMX_NOW);				
+			}
+			if (tx_semaphore_exist_in_list(&psem_omx_sync, OMX_EVENT_SYNC_VIDEO, TX_ANY))
+			{
+				tx_semaphore_add_in_list(&psem_omx_sync, OMX_EVENT_WAITRENDER_VIDEO, TX_ANY);
+				tx_semaphore_go(&psem_omx_sync, OMX_EVENT_SYNC_VIDEO, TX_ANY);
+				ret = tx_semaphore_wait_event_timeout(&psem_omx_sync, OMX_EVENT_WAITRENDER_VIDEO, TX_ANY, 30);
+				if (ret == 0) 
+				{
+					tx_semaphore_delete_from_list(&psem_omx_sync, OMX_EVENT_WAITRENDER_VIDEO, TX_ANY);	
+					dbgprintf(8,"timeout sync from thread_omx_play_video_clk_on_egl_from_func\n");
+				}
+				//else dbgprintf(8,"ok sync from thread_omx_play_video_clk_on_egl_from_func %i\n", ret);
+			} 
+			else 
+			{
+				usleep(10000);
+			}
+		}
+		if ((status > 0) && (status != 4))
+		{
+			iTimeOut = 0;
+			if (status == 3)
+			{
+				iFlag |= OMX_BUFFERFLAG_EOS;
+				dbgprintf(cLevel,"Stop video playing\n");	
+			}
+			if (iFlag & OMX_BUFFERFLAG_EXTRADATA)
+			{
+				if (port_settings_changed == 1)
+				{	
+					if (iFlag & OMX_BUFFERFLAG_EOS)
+					{
+						dbgprintf(cLevel,"Extra stop video playing\n");	
+						//omx_set_state(iClockNum, OMX_StatePause, OMX_NOW);
+						//omx_set_clock_state(iClockNum, OMX_TIME_ClockStateStopped, 0);	
+						omx_flush_port(iDecoderNum, OMX_PORT_1, OMX_PORT_IN, OMX_NOW);
+						//dbgprintf(cLevel,"omx_flush_port\n");	
+					}
+					else
+					{
+						dbgprintf(cLevel,"New position video playing\n");	
+						//omx_set_state(iClockNum, OMX_StatePause, OMX_NOW);
+						//omx_set_clock_state(iClockNum, OMX_TIME_ClockStateStopped, 0);	
+						//omx_set_clock_time(iClockNum, OMX_PORT_1, avpkt.pts);
+						iMaxTimeStamp = avpkt.pts;
+						omx_flush_port(iDecoderNum, OMX_PORT_1, OMX_PORT_IN, OMX_NOW);
+						//omx_set_clock_state(iClockNum, OMX_TIME_ClockStateWaitingForStartTime, 1);
+						//omx_set_state(iClockNum, OMX_StateExecuting, OMX_NOW);
+						iFlag |= OMX_BUFFERFLAG_STARTTIME;
+					}
+				}
+				iFlag ^= OMX_BUFFERFLAG_EXTRADATA;				
+			}
+			if (iFlag & OMX_BUFFERFLAG_EOS) cur_buffer->nTimeStamp = ToOMXTime(iMaxTimeStamp);
+			
+			if ((port_settings_changed == 1) && (cClockState == 0)) 
+			{
+				cClockState = 1;
+				//omx_set_clock_speed(iClockNum, 1000);
+			}
+			
+			//printf("DECODING %i %i %i %i %i %i\n", (unsigned int)(FromOMXTime(cur_buffer->nTimeStamp)/1000), cur_buffer->nFilledLen, iFlag, iFlag & OMX_BUFFERFLAG_STARTTIME, iFlag & OMX_BUFFERFLAG_TIME_UNKNOWN, iFlag & OMX_BUFFERFLAG_EOS);
+			omx_add_cmd_in_list(iDecoderNum, OMX_EventEmptyBuffer, OMX_CommandAny);
+			if (!omx_activate_buffers(iDecoderNum, OMX_PORT_1, OMX_PORT_IN, iFlag))
+			{
+				add_sys_cmd_in_list(SYSTEM_CMD_VIDEO_ERROR, 0);	
+				dbgprintf(1,"thread_omx_play_video_clk_on_egl_from_func: TIMEOUT_STOP_VIDEO\n");
+				status = 3;
+			}
+			else
+			{
+				ret = omx_wait_event_timeout(iDecoderNum, OMX_EventEmptyBuffer, OMX_CommandAny, 5000);
+				if (ret == 0)
+				{
+					add_sys_cmd_in_list(SYSTEM_CMD_VIDEO_ERROR, 0);	
+					dbgprintf(1,"thread_omx_play_video_clk_on_egl_from_func: TIMEOUT_STOP_VIDEO\n");
+					status = 3;
+				}
+				omx_switch_next_buffer(iDecoderNum, OMX_PORT_1, OMX_PORT_IN);
+				//dbgprintf(8,"Readed from file %i bytes (status: %i)\n", data_len, status);	
+				if ((iFlag & OMX_BUFFERFLAG_EOS) && (status < 3)) status = 3;
+			}
+		}		
+		
+		if ((status < 0) || (status == 3))
+		{
+			if (port_settings_changed == 0)
+			{
+				//dbgprintf(cLevel,"Not success\n");
+				omx_delete_cmd_from_list(iDecoderNum, OMX_EventPortSettingsChanged, OMX_CommandAny);   
+				omx_delete_cmd_from_list(iEglRenderNum, OMX_EventPortSettingsChanged, OMX_CommandAny);
+				e_link->errorcode = 1;
+				tx_semaphore_go(e_link->psem_init,2,2);
+			}
+			else
+			{
+				if (status < 0) omx_delete_cmd_from_list(iEglRenderNum, OMX_EventBufferFlag, OMX_CommandAny);					
+			}
+			break;
+        }
+		
+		//dbgprintf(8,"current buffer\n");	   
+		if ((status == 1) && (port_settings_changed == 0) && (omx_wait_list_empty(iDecoderNum) == 1))
+		{
+			dbgprintf(8,"Create tunnels\n");
+			cClockState = 1;
+			omx_set_tunnel(iDecoderNum,OMX_PORT_1, iEglRenderNum,OMX_PORT_1, OMX_TRUE);
+			omx_set_state(iEglRenderNum, OMX_StateExecuting, OMX_NOW);
+			omx_wait_exec_cmd(iEglRenderNum);
+				
+			int real_output_width, real_output_height;
+			omx_get_frame_resolution(iDecoderNum, OMX_PORT_1, OMX_PORT_OUT, &real_output_width, &real_output_height);
+			//printf("%i,  %i, %i\n", elink.eglDisplay, elink.eglContext, elink.texture_id); 
+				
+			e_link->attr = iEglRenderNum;
+			e_link->sizeW = real_output_width;
+			e_link->sizeH = real_output_height;
+			//omx_create_egl_buffer(iEglRenderNum, real_output_width, real_output_height, e_link->texture_id, e_link->eglDisplay, e_link->eglContext);
+			//dbgprintf(8,"%i,  %i\n",real_output_width,real_output_height);
+			tx_semaphore_add_in_list_spec(e_link->psem_init,1,1,0);     
+			tx_semaphore_go(e_link->psem_init,2,2);
+			tx_semaphore_wait_spec(e_link->psem_init);
+			
+			omx_enable_port(iEglRenderNum, OMX_PORT_1, OMX_PORT_OUT,OMX_LATER);
+			omx_use_egl_buffer(iEglRenderNum);
+			omx_wait_exec_cmd(iEglRenderNum);
+			
+			omx_add_cmd_in_list_spec(iEglRenderNum, OMX_EventFillBuffer, OMX_CommandAny, 0);
+			if (!omx_activate_buffers(iEglRenderNum, OMX_PORT_1, OMX_PORT_OUT, 0))
+			{
+				e_link->errorcode = 1;
+				tx_semaphore_go(e_link->psem_init,2,2);
+				break;
+			}
+			omx_wait_exec_spec_cmd(iEglRenderNum);
+			
+			omx_add_cmd_in_list(iEglRenderNum, OMX_EventBufferFlag, OMX_CommandAny); 
+			tx_semaphore_go(e_link->psem_init,2,2);
+			port_settings_changed = 1;			
+		}
+	}
+	
+	if (e_link2.ConnectID != 0) CloseConnectID(e_link2.ConnectID);
+	
+	dbgprintf(8,"OMX Play done1 %i\n",status); 
+	
+	//cur_buffer->pBuffer = DecBuff;
+	
+	if (port_settings_changed == 1)
+		omx_wait_exec_cmd(iEglRenderNum); 
+		else 
+		omx_delete_cmd_from_list(iEglRenderNum, OMX_EventBufferFlag, OMX_CommandAny);
+		
+	dbgprintf(8,"OMX Play done2\n");
+	omx_flush_port(iDecoderNum, OMX_PORT_1, OMX_PORT_IN, OMX_NOW);
+	omx_flush_port(iDecoderNum, OMX_PORT_1, OMX_PORT_OUT, OMX_NOW);	
+	omx_flush_port(iEglRenderNum, OMX_PORT_1, OMX_PORT_IN, OMX_NOW);
+	omx_flush_port(iEglRenderNum, OMX_PORT_1, OMX_PORT_OUT, OMX_NOW);
+	
+	dbgprintf(8,"OMX Play done3\n");
+	 
+	omx_set_state(iDecoderNum, OMX_StateIdle, OMX_NOW);
+	if (port_settings_changed == 1)
+	{
+		omx_set_state(iEglRenderNum, OMX_StateIdle, OMX_NOW);
+	}
+	dbgprintf(8,"OMX Play done3.1\n");
+	omx_disable_port(iDecoderNum, OMX_PORT_1, OMX_PORT_IN, OMX_LATER);
+	omx_remove_buffers(iDecoderNum, OMX_PORT_1, OMX_PORT_IN);
+	omx_wait_exec_cmd(iDecoderNum);
+	
+	dbgprintf(8,"OMX Play done3.2\n"); 
+	omx_disable_port(iDecoderNum, OMX_PORT_1, OMX_PORT_OUT, OMX_LATER);
+	omx_disable_port(iEglRenderNum, OMX_PORT_1, OMX_PORT_IN, OMX_LATER);	
+	omx_disable_port(iEglRenderNum, OMX_PORT_1, OMX_PORT_OUT, OMX_LATER);
+	if (port_settings_changed == 1) omx_remove_buffers(iEglRenderNum, OMX_PORT_1, OMX_PORT_OUT);
+	
+	omx_wait_exec_cmd(iDecoderNum);
+	omx_wait_exec_cmd(iEglRenderNum);
+	
+	dbgprintf(8,"OMX Play done3.3\n");
+	omx_set_tunnel(iDecoderNum, OMX_PORT_1, -1, 0, OMX_FALSE);
+	
+	dbgprintf(8,"OMX Play done4\n");		
+	omx_set_state(iDecoderNum, OMX_StateLoaded, OMX_NOW);
+	omx_set_state(iEglRenderNum, OMX_StateLoaded, OMX_NOW);
+	
+   //eglDestroyImageKHR (*(e_link->eglDisplay), m_oCompList[iEglRenderNum].out_port[OMX_PORT_1].EglImage);
+   //DBG_FREE(StartPack.BufferCodecInfo);
+   //DBG_FREE(StartPack.BufferStartFrame);  
+   
+   res = 1;
+error_out:   
+   omx_Release_Component(iDecoderNum);
+   omx_Release_Component(iEglRenderNum);
+   
+   tx_semaphore_go(&psem_omx_run, OMX_EVENT_STOP_VIDEO, TX_ANY);   
+   tx_semaphore_go(&psem_omx_run, OMX_EVENT_BUSY_VIDEO, TX_ANY);   
+	//tx_semaphore_go(&psem_omx_sync, OMX_EVENT_STOP_VIDEO, TX_ANY);
+	
+   dbgprintf(cLevel,"OMX Play done5\n");
+	
+	DBG_MUTEX_LOCK(&OMX_mutex);		
+	cThreadOmxPlayStatus--;
+	DBG_MUTEX_UNLOCK(&OMX_mutex);
+	
+	DBG_LOG_OUT();  
+	dbgprintf(5, "Exit from Thread: '%s', TID: %i, SID: %i\n", __func__, (unsigned int)pthread_self(), gettid());		
+	return (void*)(intptr_t)res;
+}
 
 void* thread_omx_play_video_clk_on_egl_from_func(void * pdata)
 {
