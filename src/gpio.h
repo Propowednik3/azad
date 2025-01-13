@@ -168,6 +168,7 @@ int put_chars(uint8_t *pdata, uint16_t data_len, MODULE_INFO *miModule);
 int get_char();
 char uart_close(void);
 char uart_close_port(int iPort);
+int uart_485_send_data(int iPort, uint8_t *pdata, uint16_t data_len, MODULE_INFO *miModule);
 int get_uart_speed(int iCode);
 void get_uart_ports(uart_info **tty_list, uint32_t *tty_length);
 char* get_uart_chain_name(unsigned int uiPortNum, char *chain, unsigned int chainlen);

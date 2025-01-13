@@ -3954,6 +3954,35 @@ char put_char(unsigned char cdata, MODULE_INFO *miModule)
 	return ret;
 }
 
+int uart_485_send_data(int iPort, uint8_t *pdata, uint16_t data_len, MODULE_INFO *miModule)
+{
+	int ret = 0;
+	DBG_MUTEX_LOCK(&uart_mutex);
+	
+	if (iPort > 0)
+	{			
+		if (miModule) 
+		{
+			gpio_switch_on_module(miModule);
+			usleep(10000);
+		}
+		
+		ret = write(iPort, pdata, data_len);		//Filestream, bytes to write, number of bytes to write
+		//printf("put_chars %i %i %i\n", iPort, pdata, data_len);
+		if (miModule) 
+		{
+			usleep(10000);
+			gpio_switch_off_module(miModule);
+		}
+		if (ret < 0) ret = -1;
+	} else ret = -1;
+	
+	DBG_MUTEX_UNLOCK(&uart_mutex);
+	
+	return ret;
+}
+
+
 int put_chars(uint8_t *pdata, uint16_t data_len, MODULE_INFO *miModule)
 {
 	int ret = 0;
@@ -3968,7 +3997,7 @@ int put_chars(uint8_t *pdata, uint16_t data_len, MODULE_INFO *miModule)
 		}
 		
 		ret = write(uart0_filestream, pdata, data_len);		//Filestream, bytes to write, number of bytes to write
-		
+		//printf("put_chars %i %i %i\n", uart0_filestream, pdata, data_len);
 		if (miModule) 
 		{
 			usleep(10000);

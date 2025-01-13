@@ -5197,7 +5197,7 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 				else 
 				{
 					MODULE_INFO *subModule = NULL;
-					if (pModuleList->SubModule >= 0) subModule = &miModuleList[pModuleList->SubModule];
+					if (pModuleList->SubModule != -1) subModule = &miModuleList[pModuleList->SubModule];
 					if (iActionCode & 0xFFFFFF00)
 					{
 						DBG_MUTEX_UNLOCK(&modulelist_mutex);
@@ -5221,14 +5221,21 @@ int ModuleAction(unsigned int iModuleID, int iSubModuleNum, unsigned int iAction
 						
 						DBG_MUTEX_LOCK(&modulelist_mutex);
 						if (Len > 0)
-							put_chars(Code, Len, subModule);
-							else 
+						{
+							if (uart_485_send_data(pModuleList->InitParams[0], Code, Len, subModule) != Len)
+								dbgprintf(2, "Error send data to RS485: %.4s\n", (char*)&iID);							
+						}
+						else 
 							dbgprintf(2, "SpecialCode (%.4s) %s, for %.4s\n", (char*)&iActionCode, 
 																	(Len == 0) ? "empty":"not found", 
 																	(char*)&iID);						
 					}
 					else 
-						put_char(iActionCode & 0xFF, subModule);							
+					{
+						unsigned char bb = iActionCode & 0xFF;
+						if (uart_485_send_data(pModuleList->InitParams[0], &bb, 1, subModule) != 1)
+								dbgprintf(2, "Error send code %i to RS485: %.4s\n", bb, (char*)&iID);													
+					}
 				}
 				break;	
 			case MODULE_TYPE_KEYBOARD:
@@ -20345,7 +20352,10 @@ void * thread_Eventer(void *pData)
 									{
 										//Если нужно подождать перед выполнением но не ждем или надо перезапускать ожидание то обновляем счетчик ожидания
 										if ((maActionInfo[b].TimerWaitBefore) && ((maActionInfo[b].TimerWaitBeforeStatus == 0) || (maActionInfo[b].RestartTimer & 1)))
-													maActionInfo[b].TimerWaitBeforeStatus = maActionInfo[b].TimerWaitBefore;										
+										{
+											maActionInfo[b].TimerWaitBeforeStatus = maActionInfo[b].TimerWaitBefore;
+											if ((maActionInfo[b].AfterAccept == POST_ACTION_STOP) || (maActionInfo[b].AfterAccept == POST_ACTION_OFF_STOP)) ret = 2;
+										}
 									}
 									
 									//Если пред счетчик отработал, выполнили действие но ждем пост счетчик
@@ -24887,7 +24897,8 @@ int main(int argc, char *argv[])
 					(miModuleList[n].Type == MODULE_TYPE_CAMERA) ||
 					(miModuleList[n].Type == MODULE_TYPE_TFP625A))
 				{
-					miModuleList[n].SubModule = ModuleIdToNum(miModuleList[n].Settings[0], 1);			
+					miModuleList[n].SubModule = ModuleIdToNum(miModuleList[n].Settings[0], 1);	
+					printf("sub %i %i\n", miModuleList[n].Type, miModuleList[n].SubModule);		
 				}
 				if (miModuleList[n].Type == MODULE_TYPE_SPEAKER) 
 				{
